@@ -88,7 +88,7 @@
     <label>2ª Odd</label><input type="number" id="odd4_2" step="0.01" />
     <label>3ª Odd</label><input type="number" id="odd4_3" step="0.01" />
     <label>4ª Odd</label><input type="number" id="odd4_4" step="0.01" />
-    <button onclick="calcularDutching4()">Calcular</button>
+    <button onclick="calcularDutchingPorTotal('total4', ['odd4_1','odd4_2','odd4_3','odd4_4'], 'resultado4')">Calcular</button>
     <div class="resultado" id="resultado4"></div>
   </div>
 
@@ -113,7 +113,11 @@
     <label>Valor da 6ª Aposta</label><input type="number" id="val6_6" step="0.01" />
     <label>6ª Odd</label><input type="number" id="odd6_6" step="0.01" />
 
-    <button onclick="calcularDutching6()">Calcular</button>
+    <button onclick="calcularDutchingPorValores(
+      ['val6_1','val6_2','val6_3','val6_4','val6_5','val6_6'],
+      ['odd6_1','odd6_2','odd6_3','odd6_4','odd6_5','odd6_6'],
+      'resultado6'
+    )">Calcular</button>
     <div class="resultado" id="resultado6"></div>
   </div>
 
@@ -136,26 +140,33 @@
       const arbitragem = (p1 + p2) < 1;
 
       let valor2 = valor2Manual || 0;
-      let lucro1, lucro2;
-
       if (!valor2Manual) {
         valor2 = tipo === 'garantir_lucro'
           ? (valor1 * odd1) / odd2
-          : (valor1 * odd1) / (odd1 + odd2);
+          : valor2 = (valor1 * odd1) / (odd1 + odd2);
       }
 
-      lucro1 = (valor1 * odd1) - valor1 - valor2;
-      lucro2 = (valor2 * odd2) - valor1 - valor2;
       const total = valor1 + valor2;
+      const novaUnidade = total / valor1;
+
+      const lucro1 = (valor1 * odd1) - total;
+      const lucro2 = (valor2 * odd2) - total;
 
       const oddEfetiva1 = ((valor1 * odd1) / total).toFixed(2);
       const oddEfetiva2 = ((valor2 * odd2) / total).toFixed(2);
 
-      document.getElementById('resultado1').style.display = 'block';
-      document.getElementById('resultado1').innerText = 
+      let textoResultado =
+        `Cálculo de Cobertura\n\n` +
         `Aposta 1: R$${valor1.toFixed(2)} | Lucro: R$${lucro1.toFixed(2)} (Odd efetiva: ${oddEfetiva1})\n` +
-        `Aposta 2: R$${valor2.toFixed(2)} | Lucro: R$${lucro2.toFixed(2)} (Odd efetiva: ${oddEfetiva2})\n` +
-        `Arbitragem: ${arbitragem ? '✅ Sim' : '❌ Não'}`;
+        `Aposta 2: R$${valor2.toFixed(2)} | Lucro: R$${lucro2.toFixed(2)} (Odd efetiva: ${oddEfetiva2})\n\n` +
+        `Nova Unidade: ${novaUnidade.toFixed(2)}`;
+
+      if (tipo === 'garantir_lucro') {
+        textoResultado += `\nArbitragem: ${arbitragem ? '✅ Sim' : '❌ Não'}`;
+      }
+
+      document.getElementById('resultado1').style.display = 'block';
+      document.getElementById('resultado1').innerText = textoResultado;
     }
   
     function fecharPosicao() {
@@ -169,64 +180,75 @@
         return;
       }
 
-      // Calcula valor2 para que o retorno líquido seja o mesmo independente da aposta vencedora
       const valor2 = (valor1 * odd1) / odd2;
-
-      // Calcula o lucro líquido, que deve ser zero (ou quase) para fechar posição
       const total = valor1 + valor2;
+      const novaUnidade = total / valor1;
+
       const lucro1 = (valor1 * odd1) - total;
       const lucro2 = (valor2 * odd2) - total;
-    
+
       document.getElementById('valor2').value = valor2.toFixed(2);
-    
+
       const oddEfetiva1 = ((valor1 * odd1) / total).toFixed(2);
       const oddEfetiva2 = ((valor2 * odd2) / total).toFixed(2);
 
       document.getElementById('resultado1').style.display = 'block';
       document.getElementById('resultado1').innerText =
-        `Fechamento de Posição:\n` +
-        `Aposta 1: R$${valor1.toFixed(2)} | Lucro: R$${lucro1.toFixed(2)} (Odd efetiva: ${oddEfetiva1})\n`+
-        `Aposta 2: R$${valor2.toFixed(2)} | Lucro: R$${lucro2.toFixed(2)} (Odd efetiva: ${oddEfetiva2})`;
+        `Fechamento de Posição\n\n` +
+        `Aposta 1: R$${valor1.toFixed(2)} | Lucro: R$${lucro1.toFixed(2)} (Odd efetiva: ${oddEfetiva1})\n` +
+        `Aposta 2: R$${valor2.toFixed(2)} | Lucro: R$${lucro2.toFixed(2)} (Odd efetiva: ${oddEfetiva2})\n\n` +
+        `Nova Unidade: ${novaUnidade.toFixed(2)}`;
     }
-    
-    function calcularDutching4() {
-      const odds = [1, 2, 3, 4].map(i => parseFloat(document.getElementById(`odd4_${i}`).value)).filter(Boolean);
-      const total = parseFloat(document.getElementById('total4').value);
-      if (!odds.length || !total) return;
 
-      let somaInversa = odds.reduce((acc, o) => acc + (1 / o), 0);
-      let apostas = odds.map(o => (total * (1 / o)) / somaInversa);
-      let lucro = apostas.map((v, i) => (v * odds[i]) - total);
-      let oddEfetiva = apostas.map((v, i) => ((v * odds[i]) / total).toFixed(2));
+    function calcularDutchingPorTotal(totalId, oddsIds, resultadoId) {
+      const total = parseFloat(document.getElementById(totalId).value);
+      const odds = oddsIds.map(id => parseFloat(document.getElementById(id).value)).filter(o => !isNaN(o) && o > 0);
 
-      document.getElementById('resultado4').style.display = 'block';
-      document.getElementById('resultado4').innerText = apostas.map((v, i) =>
+      if (isNaN(total) || total <= 0 || odds.length === 0) {
+        document.getElementById(resultadoId).style.display = 'block';
+        document.getElementById(resultadoId).innerText = 'Preencha o valor total e ao menos uma odd válida.';
+        return;
+      }
+
+      const somaInversa = odds.reduce((acc, o) => acc + (1 / o), 0);
+      const apostas = odds.map(o => (total * (1 / o)) / somaInversa);
+      const lucro = apostas.map((v, i) => (v * odds[i]) - total);
+      const oddEfetiva = apostas.map((v, i) => ((v * odds[i]) / total).toFixed(2));
+
+      document.getElementById(resultadoId).style.display = 'block';
+      document.getElementById(resultadoId).innerText = apostas.map((v, i) =>
         `Aposta ${i + 1}: R$${v.toFixed(2)} | Lucro: R$${lucro[i].toFixed(2)} (Odd efetiva: ${oddEfetiva[i]})`
       ).join('\n');
     }
 
-    function calcularDutching6() {
-      let apostas = [], odds = [], total = 0;
-      for (let i = 1; i <= 6; i++) {
-        const v = parseFloat(document.getElementById(`val6_${i}`).value);
-        const o = parseFloat(document.getElementById(`odd6_${i}`).value);
-        if (v && o) {
+    function calcularDutchingPorValores(valoresIds, oddsIds, resultadoId) {
+      const apostas = [], odds = [];
+      let total = 0;
+
+      for (let i = 0; i < valoresIds.length; i++) {
+        const v = parseFloat(document.getElementById(valoresIds[i]).value);
+        const o = parseFloat(document.getElementById(oddsIds[i]).value);
+        if (!isNaN(v) && v > 0 && !isNaN(o) && o > 0) {
           apostas.push(v);
           odds.push(o);
           total += v;
         }
       }
 
-      if (!apostas.length) return;
+      if (apostas.length === 0) {
+        document.getElementById(resultadoId).style.display = 'block';
+        document.getElementById(resultadoId).innerText = 'Preencha pelo menos uma aposta e odd válidas.';
+        return;
+      }
 
-      const retorno = apostas.map((v, i) => (v * odds[i]));
+      const retorno = apostas.map((v, i) => v * odds[i]);
       const lucro = retorno.map(r => r - total);
       const oddEfetiva = retorno.map(r => (r / total).toFixed(2));
 
-      document.getElementById('resultado6').style.display = 'block';
-      document.getElementById('resultado6').innerText = apostas.map((v, i) =>
+      document.getElementById(resultadoId).style.display = 'block';
+      document.getElementById(resultadoId).innerText = apostas.map((v, i) =>
         `Aposta ${i + 1}: R$${v.toFixed(2)} | Lucro: R$${lucro[i].toFixed(2)} (Odd efetiva: ${oddEfetiva[i]})`
-      ).join('\n');
+      ).join('\n') + `\n\nTotal: R$${total.toFixed(2)}`;
     }
   </script>
 </body>
