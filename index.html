@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário de Análise e Operação v2.2</title>
+    <title>Formulário de Análise e Operação v2.3</title>
     <style>
         body {
             font-family: "Times New Roman", serif;
@@ -87,8 +87,7 @@
             display: flex;
             align-items: center;
         }
-        .option-item input[type="radio"],
-        .option-item input[type="checkbox"] {
+        .option-item input[type="radio"] {
             margin-right: 10px;
             cursor: pointer;
             width: 18px;
@@ -144,7 +143,7 @@
 
     <div class="form-container">
         <form id="analiseOperacaoForm" action="https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec" method="post" enctype="multipart/form-data">
-            <h2>Formulário de Análise e Operação</h2>
+            <h2>Formulário de Análise e Operação v2.3</h2>
             
             <div class="form-group">
                 <label for="evento_datetime">Data e Horário do Evento</label>
@@ -153,7 +152,6 @@
 
             <fieldset class="main-fieldset">
                 <legend class="fieldset-legend-main">Validações Metodológicas</legend>
-                
                 <div class="sub-group">
                     <p class="question-title">1. Mental</p>
                     <div class="options-container">
@@ -290,7 +288,7 @@
             </div>
 
             <fieldset id="analise_geral_fieldset" class="main-fieldset">
-                <legend class="fieldset-legend-main">Análise</legend>
+                <legend class="fieldset-legend-main">Analise</legend>
                 <div class="sub-group">
                     <p class="question-title">1X2 (2+ Gols Folga Sobre Consenso)</p>
                     <div class="options-container">
@@ -591,6 +589,62 @@
     </div>
 
     <script>
+        function populateSelect(selectId, optionsArray) {
+            const selectElement = document.getElementById(selectId);
+            if (!selectElement) return;
+
+            const otherOption = selectElement.querySelector('option[value^="outro_"]');
+            const placeholderOption = selectElement.options[0]; 
+
+            while (selectElement.options.length > 0) {
+                if (selectElement.options[0] === placeholderOption || selectElement.options[0] === otherOption) {
+                    break; 
+                }
+                if (selectElement.options.length > 1 && selectElement.options[1] !== otherOption) {
+                     selectElement.remove(1);
+                } else if (selectElement.options.length === 1 && selectElement.options[0] !== placeholderOption) {
+                     selectElement.remove(0); 
+                } else {
+                     if(selectElement.options.length === 1 && selectElement.options[0] !== placeholderOption && selectElement.options[0] !== otherOption) {
+                        selectElement.remove(0);
+                     } else if (selectElement.options.length > 1) {
+                        for (let i = selectElement.options.length - 1; i >= 0; i--) {
+                            const currentOption = selectElement.options[i];
+                            if (currentOption !== placeholderOption && currentOption !== otherOption) {
+                                selectElement.remove(i);
+                            }
+                        }
+                     }
+                     break;
+                }
+            }
+            
+            let sortedOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
+            sortedOptions.sort((a, b) => String(a).localeCompare(String(b)));
+            
+            sortedOptions.forEach(optionText => {
+                if (optionText === null || optionText === undefined || String(optionText).trim() === "") return;
+                
+                let optionExists = false;
+                for(let i=0; i < selectElement.options.length; i++) {
+                    if(selectElement.options[i].value === optionText) {
+                        optionExists = true;
+                        break;
+                    }
+                }
+                if(optionExists) return;
+
+                const option = document.createElement('option');
+                option.value = optionText;
+                option.textContent = optionText;
+                if (otherOption) {
+                    selectElement.insertBefore(option, otherOption);
+                } else {
+                    selectElement.appendChild(option);
+                }
+            });
+        }
+
         function setupDynamicSelect(selectId, inputId, optionValueToTrigger, isNumeric, suffix) {
             const selectElement = document.getElementById(selectId);
             const inputElement = document.getElementById(inputId);
@@ -613,11 +667,29 @@
                             return;
                         }
                         if (suffix) { newText += suffix; }
-                        const newOption = document.createElement('option');
-                        newOption.value = newText;
-                        newOption.textContent = newText;
-                        newOption.selected = true;
-                        selectElement.insertBefore(newOption, selectElement.querySelector('option[value="' + optionValueToTrigger + '"]'));
+
+                        let optionExists = false;
+                        for(let i=0; i < selectElement.options.length; i++) {
+                            if(selectElement.options[i].value.toLowerCase() === newText.toLowerCase()) {
+                                selectElement.value = selectElement.options[i].value;
+                                optionExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!optionExists) {
+                            const currentOptionTexts = [];
+                            for (let i = 0; i < selectElement.options.length; i++) {
+                                const opt = selectElement.options[i];
+                                if (opt.value && opt.value !== optionValueToTrigger && !opt.disabled) {
+                                    currentOptionTexts.push(opt.textContent);
+                                }
+                            }
+                            currentOptionTexts.push(newText);
+                            populateSelect(selectId, currentOptionTexts);
+                            selectElement.value = newText;
+                        }
+                        
                         inputElement.value = '';
                         inputElement.style.display = 'none';
                         selectElement.dispatchEvent(new Event('change'));
@@ -627,6 +699,28 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec";
+            
+            fetch(scriptUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error("Erro ao buscar listas:", data.error);
+                        return;
+                    }
+                    if (data.Equipes) {
+                        populateSelect('home_team_reordered_select', data.Equipes);
+                        populateSelect('away_team_reordered_select', data.Equipes);
+                    }
+                    if (data.Campeonatos) populateSelect('campeonato_select', data.Campeonatos);
+                    if (data.Estrategias) populateSelect('estrategia_select', data.Estrategias);
+                    if (data.CasasDeApostas) populateSelect('casa_apostas_select', data.CasasDeApostas);
+                    if (data.PerfisDePartida) populateSelect('perfil_partida_select', data.PerfisDePartida);
+                    if (data.Stakes) populateSelect('stake_select', data.Stakes);
+                    console.log("Listas dinâmicas carregadas e ordenadas com sucesso!");
+                })
+                .catch(error => console.error('Erro ao buscar listas do Google Sheet:', error));
+                
             setupDynamicSelect('home_team_reordered_select', 'outro_home_team_reordered_input', 'outro_home_team_reordered');
             setupDynamicSelect('away_team_reordered_select', 'outro_away_team_reordered_input', 'outro_away_team_reordered');
             setupDynamicSelect('estrategia_select', 'outra_estrategia_input', 'outro_estrategia');
@@ -636,7 +730,6 @@
             setupDynamicSelect('stake_select', 'outra_stake_input', 'outro_stake', true, ' Un');
             setupDynamicSelect('esporte_select', 'outro_esporte_input', 'outro_esporte');
             
-            // Validação para "Mercados Explorados"
             const form = document.getElementById('analiseOperacaoForm');
             const mercadosExploradosFieldset = document.getElementById('mercados_explorados_fieldset');
 
