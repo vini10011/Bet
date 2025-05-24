@@ -153,7 +153,7 @@
             <div class="form-group">
                 <label for="referencia_select">Referência</label>
                 <select id="referencia_select" name="referencia_select" required>
-                    <option value="" disabled selected>Carregando ou adicione uma referência...</option>
+                    <option value="" disabled selected>Carregando ou adicione...</option>
                     <option value="outro_referencia">Adicionar Nova Referência...</option>
                 </select>
                 <input type="text" id="outra_referencia_input" name="outra_referencia_input" class="dynamic-input" placeholder="Digite a nova referência e pressione Enter" style="display: none;">
@@ -296,7 +296,8 @@
 
             <div class="form-group">
                 <label for="home_team_reordered_select">Home (Equipe da Casa)</label>
-                <select id="home_team_reordered_select" name="home_team_reordered_select" required> <option value="" disabled selected>Carregando...</option>
+                <select id="home_team_reordered_select" name="home_team_reordered_select" required> 
+                    <option value="" disabled selected>Carregando...</option>
                     <option value="outro_home_team_reordered">Adicionar Nova Equipe...</option>
                 </select>
                 <input type="text" id="outro_home_team_reordered_input" name="outro_home_team_reordered_input" class="dynamic-input" placeholder="Digite o nome da equipe e pressione Enter" style="display: none;">
@@ -304,7 +305,8 @@
 
             <div class="form-group">
                 <label for="away_team_reordered_select">Away (Equipe Visitante)</label>
-                <select id="away_team_reordered_select" name="away_team_reordered_select" required> <option value="" disabled selected>Carregando...</option>
+                <select id="away_team_reordered_select" name="away_team_reordered_select" required> 
+                    <option value="" disabled selected>Carregando...</option>
                     <option value="outro_away_team_reordered">Adicionar Nova Equipe...</option>
                 </select>
                 <input type="text" id="outro_away_team_reordered_input" name="outro_away_team_reordered_input" class="dynamic-input" placeholder="Digite o nome da equipe e pressione Enter" style="display: none;">
@@ -459,6 +461,7 @@
         </form>
     </div>
     <script>
+        // Funções populateSelect, setupDynamicSelect e o DOMContentLoaded para Realização
         function populateSelect(selectId, optionsArray) {
             const selectElement = document.getElementById(selectId);
             if (!selectElement) return;
@@ -470,9 +473,22 @@
                     selectElement.remove(i);
                 }
             }
-            let sortedOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
-            sortedOptions.sort((a, b) => String(a).localeCompare(String(b)));
-            sortedOptions.forEach(optionText => {
+            let finalOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
+            // Ordenação condicional baseada no ID do select
+            if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
+                finalOptions.sort((a, b) => {
+                    const numA = parseInt(String(a).replace(/[^0-9]/g, ''), 10);
+                    const numB = parseInt(String(b).replace(/[^0-9]/g, ''), 10);
+                    if (!isNaN(numA) && !isNaN(numB)) { return numB - numA; }
+                    if (!isNaN(numB)) return 1;
+                    if (!isNaN(numA)) return -1;
+                    return String(b).localeCompare(String(a));
+                });
+            } else {
+                finalOptions.sort((a, b) => String(a).localeCompare(String(b)));
+            }
+            
+            finalOptions.forEach(optionText => {
                 if (optionText === null || optionText === undefined || String(optionText).trim() === "") return;
                 let optionExists = false;
                 for(let k=0; k < selectElement.options.length; k++) {
@@ -523,7 +539,21 @@
                                 }
                             }
                             currentOptionTexts.push(newText);
-                            populateSelect(selectId, currentOptionTexts);
+                            
+                            // Ordenação condicional ao adicionar novo item
+                            if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
+                                currentOptionTexts.sort((a, b) => {
+                                    const numA = parseInt(String(a).replace(/[^0-9]/g, ''), 10);
+                                    const numB = parseInt(String(b).replace(/[^0-9]/g, ''), 10);
+                                    if (!isNaN(numA) && !isNaN(numB)) { return numB - numA; }
+                                    if (!isNaN(numB)) return 1;
+                                    if (!isNaN(numA)) return -1;
+                                    return String(b).localeCompare(String(a));
+                                });
+                            } else {
+                                currentOptionTexts.sort((a, b) => String(a).localeCompare(String(b)));
+                            }
+                            populateSelect(selectId, currentOptionTexts); // populateSelect não ordena mais, recebe a lista pré-ordenada
                             selectElement.value = newText;
                         }
                         inputElement.value = '';
@@ -541,7 +571,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.error) { 
-                        console.error("Erro ao buscar listas:", data.error);
+                        console.error("Erro ao buscar listas para Realização:", data.error);
                         const realizacaoSelectsIds = ['referencia_select', 'home_team_reordered_select', 'away_team_reordered_select', 'estrategia_select', 'esporte_select', 'casa_apostas_select', 'campeonato_select', 'perfil_partida_select', 'stake_select'];
                         realizacaoSelectsIds.forEach(id => {
                              const el = document.getElementById(id);
@@ -549,7 +579,10 @@
                         });
                         return; 
                     }
+                    // Passa false para sortAlphabetically para Referencias, pois o doGet já ordenou decrescente
                     if (data.Referencias) populateSelect('referencia_select', data.Referencias);
+                    
+                    // Para outras listas, populateSelect as ordenará A-Z (ou o doGet já as ordenou A-Z)
                     if (data.Equipes) {
                         populateSelect('home_team_reordered_select', data.Equipes);
                         populateSelect('away_team_reordered_select', data.Equipes);
@@ -563,7 +596,7 @@
                     console.log("Listas dinâmicas para Realização carregadas.");
                 })
                 .catch(error => {
-                     console.error('Erro ao buscar listas do Google Sheet para Realização:', error);
+                     console.error('Erro na requisição fetch para Realização:', error);
                      const realizacaoSelectsIds = ['referencia_select', 'home_team_reordered_select', 'away_team_reordered_select', 'estrategia_select', 'esporte_select', 'casa_apostas_select', 'campeonato_select', 'perfil_partida_select', 'stake_select'];
                      realizacaoSelectsIds.forEach(id => {
                          const el = document.getElementById(id);
