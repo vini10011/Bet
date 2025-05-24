@@ -461,6 +461,7 @@
         </form>
     </div>
     <script>
+        // Funções populateSelect, setupDynamicSelect e o DOMContentLoaded para Realização
         function populateSelect(selectId, optionsArray) {
             const selectElement = document.getElementById(selectId);
             if (!selectElement) return;
@@ -473,6 +474,7 @@
                 }
             }
             let finalOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
+            // Ordenação condicional baseada no ID do select
             if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
                 finalOptions.sort((a, b) => {
                     const numA = parseInt(String(a).replace(/[^0-9]/g, ''), 10);
@@ -501,36 +503,6 @@
             });
         }
 
-        function populateCheckboxGroup(containerId, checkboxName, optionsArray) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            let sortedOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
-            sortedOptions.sort((a, b) => String(a).localeCompare(String(b)));
-            sortedOptions.forEach(optionText => {
-                if (optionText === null || optionText === undefined || String(optionText).trim() === "") return;
-                let checkboxExists = false;
-                const existingCheckboxes = container.querySelectorAll('input[type="checkbox"]');
-                existingCheckboxes.forEach(cb => {
-                    if (cb.value === optionText) { checkboxExists = true; }
-                });
-                if (checkboxExists) return;
-                const optionDiv = document.createElement('div');
-                optionDiv.className = 'option-item';
-                const checkboxInput = document.createElement('input');
-                checkboxInput.type = 'checkbox';
-                const checkboxId = checkboxName.replace('[]','') + '_' + String(optionText).replace(/\s+/g, '_').replace(/[^\w]/gi, '').toLowerCase();
-                checkboxInput.id = checkboxId;
-                checkboxInput.name = checkboxName; 
-                checkboxInput.value = optionText;
-                const checkboxLabel = document.createElement('label');
-                checkboxLabel.htmlFor = checkboxInput.id;
-                checkboxLabel.textContent = optionText;
-                optionDiv.appendChild(checkboxInput);
-                optionDiv.appendChild(checkboxLabel);
-                container.appendChild(optionDiv);
-            });
-        }
-
         function setupDynamicSelect(selectId, inputId, optionValueToTrigger, isNumeric, suffix) {
             const selectElement = document.getElementById(selectId);
             const inputElement = document.getElementById(inputId);
@@ -544,7 +516,7 @@
                 }
             });
             inputElement.addEventListener('keydown', function(event) {
-                if (event.keyCode === 13) { // Enter key
+                if (event.keyCode === 13) {
                     event.preventDefault();
                     let newText = inputElement.value.trim();
                     if (newText) {
@@ -591,13 +563,9 @@
                 }
             });
         }
-
+        
         document.addEventListener('DOMContentLoaded', function() {
             const scriptUrl = "https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec";
-            
-            // Identifica qual formulário estamos (realizacao ou validacao)
-            const isRealizacaoForm = !!document.getElementById('realizacaoForm');
-            const isValida
             
             fetch(scriptUrl)
                 .then(response => response.json())
@@ -611,7 +579,7 @@
                         });
                         return; 
                     }
-                    // Passa false para sortAlphabetically para Referencias, pois o doGet já ordenou decrescente - 
+                    // Passa false para sortAlphabetically para Referencias, pois o doGet já ordenou decrescente
                     if (data.Referencias) populateSelect('referencia_select', data.Referencias);
                     
                     // Para outras listas, populateSelect as ordenará A-Z (ou o doGet já as ordenou A-Z)
