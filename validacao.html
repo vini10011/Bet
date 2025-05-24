@@ -12,7 +12,7 @@
         .form-group label, .fieldset-legend-main, .question-title { display: block; font-weight: bold; color: #EAF9E1; margin-bottom: 7px; font-size: 17px; }
         .fieldset-legend-main { padding: 0 10px; color: #d4af37; font-size: 19px;}
         .form-group input[type="text"], .form-group input[type="datetime-local"], .form-group input[type="number"], .form-group input[type="file"], .form-group select, .form-group textarea { width: 100%; padding: 10px; border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: "Times New Roman", serif; background-color: #EAF9E1; color: #07251F; border: 1px solid #2a5a4a; }
-        .dynamic-input { margin-top: 8px; }
+        .dynamic-input { margin-top: 8px; } 
         .main-fieldset { border: 1px solid #2a5a4a; border-radius: 8px; padding: 12px 20px; margin-bottom: 22px; }
         .sub-group { margin-bottom: 18px; border-bottom: 1px dashed #2a5a4a; padding-bottom: 18px; }
         .sub-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
@@ -22,25 +22,85 @@
         .option-item label { color: #EAF9E1; font-weight: normal; cursor: pointer; margin-bottom: 0; font-size: 15px; }
         .submit-button { background-color: #d4af37; color: #07251F; border: none; font-weight: bold; cursor: pointer; display: inline-block; margin-top: 20px; padding: 10px 22px; border-radius: 8px; font-size: 17px; font-family: "Times New Roman", serif; }
         
-        /* Estilos para a mensagem de status (já existentes da melhoria anterior) */
-        #mensagemStatus {
-            display: none;
-            padding: 20px;
-            margin-top: 20px;
+        #mensagemStatus { display: none; padding: 20px; margin-top: 20px; border-radius: 8px; text-align: center; font-size: 18px; font-weight: bold; }
+        .sucesso { background-color: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; }
+        .erro { background-color: #f2dede; color: #a94442; border: 1px solid #ebccd1; }
+
+        #prognosticos-container {
+            border: 1px solid #2a5a4a;
             border-radius: 8px;
-            text-align: center;
-            font-size: 18px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .prognostico-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #2a5a4a;
+            flex-wrap: wrap; 
+        }
+        .prognostico-item:last-child {
+            border-bottom: none;
+        }
+        .prognostico-site-name { 
             font-weight: bold;
+            color: #EAF9E1;
+            flex-basis: 40%;
+            text-align: left;
+            margin-bottom: 5px; 
+            margin-right: 10px;
         }
-        .sucesso {
-            background-color: #dff0d8;
-            color: #3c763d;
-            border: 1px solid #d6e9c6;
+        .prognostico-site-name-input {
+            padding: 8px;
+            border-radius: 6px;
+            font-family: "Times New Roman", serif;
+            background-color: #EAF9E1;
+            color: #07251F;
+            border: 1px solid #2a5a4a;
+            box-sizing: border-box;
+            font-size: 15px;
+            font-weight: normal; 
+            flex-basis: 40%; 
+            margin-right: 10px; 
+            margin-bottom: 5px;
         }
-        .erro {
-            background-color: #f2dede;
-            color: #a94442;
-            border: 1px solid #ebccd1;
+
+        .prognostico-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-start; 
+            flex-grow: 1; 
+        }
+        .prognostico-options .option-item label {
+            font-size: 14px;
+        }
+        .prognostico-group-separator {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #d4af37;
+        }
+
+
+        @media (max-width: 700px) { 
+            .prognostico-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .prognostico-site-name,
+            .prognostico-site-name-input { 
+                flex-basis: 100%; 
+                margin-bottom: 10px;
+                margin-right: 0; 
+            }
+            .prognostico-options {
+                justify-content: flex-start;
+                width: 100%; 
+            }
+             .prognostico-options .option-item {
+                margin-bottom: 8px; 
+            }
         }
 
         @media (max-width: 600px) {
@@ -49,7 +109,7 @@
             h2 { font-size: 20px; }
             .form-group label, .fieldset-legend-main, .question-title { font-size: 15px; }
             .fieldset-legend-main {font-size: 17px;}
-            .form-group input[type="text"], .form-group input[type="datetime-local"], .form-group input[type="number"], .form-group input[type="file"], .form-group select, .form-group textarea { padding: 9px; font-size: 14px; }
+            .form-group input, .form-group select, .form-group textarea { padding: 9px; font-size: 14px; }
             .options-container { flex-direction: column; align-items: flex-start; gap: 6px; }
             .submit-button{padding: 9px 16px; font-size:15px;}
         }
@@ -57,7 +117,7 @@
 </head>
 <body>
     <div class="form-container">
-        <form id="validacaoForm" action="https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec" method="post" enctype="multipart/form-data">
+        <form id="validacaoForm" action="https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec" method="post">
             <input type="hidden" name="form_type" value="validacao">
             <h2>Validação de Operação</h2>
             
@@ -128,7 +188,7 @@
                         <div class="option-item"><input type="checkbox" id="v_gols_equipes_ht" name="v_gols_avaliacoes[]" value="UO_Equipes_HT"><label for="v_gols_equipes_ht">U/O - Equipes - HT</label></div>
                     </div>
                 </div>
-                 <div class="sub-group">
+                <div class="sub-group">
                     <p class="question-title">Cartões (O que aconteceu?)</p>
                      <div class="options-container">
                         <div class="option-item"><input type="checkbox" id="v_cartoes_totais" name="v_cartoes_avaliacoes[]" value="UO_Totais"><label for="v_cartoes_totais">U/O - Totais</label></div>
@@ -249,14 +309,47 @@
                 </div>
 
                 <div class="sub-group">
-                    <p class="question-title">Correspondência da Análise com (selecione um ou mais):</p>
-                    <div id="revisao_correspondencia_checkbox_container" class="options-container" style="flex-direction: column; align-items: flex-start;">
+                    <p class="question-title">Correspondência de Análise:</p>
+                    
+                    <div id="revisao_correspondencia_checkbox_container" class="options-container" style="flex-direction: column; align-items: flex-start; margin-bottom: 25px;">
                         <div class="option-item"><input type="checkbox" id="corresp_relatorio" name="revisao_correspondencia_predefinida[]" value="Relatório"><label for="corresp_relatorio">Relatório</label></div>
                         <div class="option-item"><input type="checkbox" id="corresp_analise_pessoal" name="revisao_correspondencia_predefinida[]" value="Análise Pessoal"><label for="corresp_analise_pessoal">Análise Pessoal</label></div>
-                        <div class="option-item"><input type="checkbox" id="corresp_predicoes" name="revisao_correspondencia_predefinida[]" value="Predições Estatísticas"><label for="corresp_predicoes">Predições Estatísticas</label></div>
-                        <div class="option-item"><input type="checkbox" id="corresp_prognosticos" name="revisao_correspondencia_predefinida[]" value="Prognosticos e Tips"><label for="corresp_prognosticos">Prognosticos e Tips</label></div>
                         <div class="option-item"><input type="checkbox" id="corresp_h2h" name="revisao_correspondencia_predefinida[]" value="H2H"><label for="corresp_h2h">H2H</label></div>
                     </div>
+
+                    <div id="prognosticos-container">
+                        <p class="question-title" style="font-size: 16px; color: #EAF9E1;">Prognósticos e Tips (sites de referência)</p>
+                        
+                        <div class="prognostico-item" data-site-name="Academia das Apostas"><strong class="prognostico-site-name">Academia das Apostas</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_acad_1X2" data-market="1X2"><label for="p_acad_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_acad_gols" data-market="Gols (+-1)"><label for="p_acad_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_acad_ambos" data-market="Ambos Marcam"><label for="p_acad_ambos">Ambos Marcam</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="Eagle Predict"><strong class="prognostico-site-name">Eagle Predict</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_eag_1X2" data-market="1X2"><label for="p_eag_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_eag_gols" data-market="Gols (+-1)"><label for="p_eag_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_eag_ambos" data-market="Ambos Marcam"><label for="p_eag_ambos">Ambos Marcam</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="FootyStats"><strong class="prognostico-site-name">FootyStats</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_foot_1X2" data-market="1X2"><label for="p_foot_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_foot_gols" data-market="Gols (+-1)"><label for="p_foot_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_foot_ambos" data-market="Ambos Marcam"><label for="p_foot_ambos">Ambos Marcam</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="Forebet"><strong class="prognostico-site-name">Forebet</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_fore_1X2" data-market="1X2"><label for="p_fore_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_fore_gols" data-market="Gols (+-1)"><label for="p_fore_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_fore_ambos" data-market="Ambos Marcam"><label for="p_fore_ambos">Ambos Marcam</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="KickOff UK"><strong class="prognostico-site-name">KickOff UK</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_kick_1X2" data-market="1X2"><label for="p_kick_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_kick_gols" data-market="Gols (+-1)"><label for="p_kick_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_kick_ambos" data-market="Ambos Marcam"><label for="p_kick_ambos">Ambos Marcam</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="PredictZ"><strong class="prognostico-site-name">PredictZ</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_pred_1X2" data-market="1X2"><label for="p_pred_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_pred_gols" data-market="Gols (+-1)"><label for="p_pred_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_pred_ambos" data-market="Ambos Marcam"><label for="p_pred_ambos">Ambos Marcam</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="RatingBet"><strong class="prognostico-site-name">RatingBet</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_rat_1X2" data-market="1X2"><label for="p_rat_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_rat_gols" data-market="Gols (+-1)"><label for="p_rat_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_rat_ambos" data-market="Ambos Marcam"><label for="p_rat_ambos">Ambos Marcam</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="SportsMole"><strong class="prognostico-site-name">SportsMole</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_sm_1X2" data-market="1X2"><label for="p_sm_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_sm_gols" data-market="Gols (+-1)"><label for="p_sm_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_sm_ambos" data-market="Ambos Marcam"><label for="p_sm_ambos">Ambos Marcam</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="Transfermarkt"><strong class="prognostico-site-name">Transfermarkt</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_tm_1X2" data-market="1X2"><label for="p_tm_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_tm_gols" data-market="Gols (+-1)"><label for="p_tm_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_tm_ambos" data-market="Ambos Marcam"><label for="p_tm_ambos">Ambos Marcam</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="WinDrawWin"><strong class="prognostico-site-name">WinDrawWin</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_wdw_1X2" data-market="1X2"><label for="p_wdw_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_wdw_gols" data-market="Gols (+-1)"><label for="p_wdw_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_wdw_ambos" data-market="Ambos Marcam"><label for="p_wdw_ambos">Ambos Marcam</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="xGScore"><strong class="prognostico-site-name">xGScore</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_xgscore_1X2" data-market="1X2"><label for="p_xgscore_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_xgscore_gols" data-market="Gols (+-1)"><label for="p_xgscore_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_xgscore_ambos" data-market="Ambos Marcam"><label for="p_xgscore_ambos">Ambos Marcam</label></div></div></div>
+
+                        <div class="prognostico-group-separator"></div>
+
+                        <div class="prognostico-item" data-site-name="Acertador das Bets"><strong class="prognostico-site-name">Acertador das Bets</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_acert_1X2" data-market="1X2"><label for="p_acert_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_acert_gols" data-market="Gols (+-1)"><label for="p_acert_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_acert_fin" data-market="Finalizações"><label for="p_acert_fin">Finalizações</label></div><div class="option-item"><input type="checkbox" id="p_acert_esc" data-market="Escanteios"><label for="p_acert_esc">Escanteios</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="Arena dos Dados"><strong class="prognostico-site-name">Arena dos Dados</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_arena_1X2" data-market="1X2"><label for="p_arena_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_arena_gols" data-market="Gols (+-1)"><label for="p_arena_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_arena_fin" data-market="Finalizações"><label for="p_arena_fin">Finalizações</label></div><div class="option-item"><input type="checkbox" id="p_arena_esc" data-market="Escanteios"><label for="p_arena_esc">Escanteios</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="Bruxo"><strong class="prognostico-site-name">Bruxo</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_bruxo_1X2" data-market="1X2"><label for="p_bruxo_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_bruxo_gols" data-market="Gols (+-1)"><label for="p_bruxo_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_bruxo_fin" data-market="Finalizações"><label for="p_bruxo_fin">Finalizações</label></div><div class="option-item"><input type="checkbox" id="p_bruxo_esc" data-market="Escanteios"><label for="p_bruxo_esc">Escanteios</label></div></div></div>
+                        <div class="prognostico-item" data-site-name="João da Info"><strong class="prognostico-site-name">João da Info</strong><div class="prognostico-options"><div class="option-item"><input type="checkbox" id="p_joao_1X2" data-market="1X2"><label for="p_joao_1X2">1X2</label></div><div class="option-item"><input type="checkbox" id="p_joao_gols" data-market="Gols (+-1)"><label for="p_joao_gols">Gols (+-1)</label></div><div class="option-item"><input type="checkbox" id="p_joao_fin" data-market="Finalizações"><label for="p_joao_fin">Finalizações</label></div><div class="option-item"><input type="checkbox" id="p_joao_esc" data-market="Escanteios"><label for="p_joao_esc">Escanteios</label></div></div></div>
+                        
+                        <div class="prognostico-item" id="prognostico_outros_item">
+                            <input type="text" id="prognostico_outros_nome_input" class="prognostico-site-name-input" placeholder="Outro">
+                            <div class="prognostico-options">
+                                <div class="option-item"><input type="checkbox" id="p_outros_1X2_custom" data-market="1X2"><label for="p_outros_1X2_custom">1X2</label></div>
+                                <div class="option-item"><input type="checkbox" id="p_outros_gols_custom" data-market="Gols (+-1)"><label for="p_outros_gols_custom">Gols (+-1)</label></div>
+                                <div class="option-item"><input type="checkbox" id="p_outros_fin_custom" data-market="Finalizações"><label for="p_outros_fin_custom">Finalizações</label></div>
+                                <div class="option-item"><input type="checkbox" id="p_outros_esc_custom" data-market="Escanteios"><label for="p_outros_esc_custom">Escanteios</label></div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <label for="revisao_correspondencia_outro_texto" style="margin-top:15px; display:block; font-weight:normal;">Outra Correspondência:</label>
                     <input type="text" id="revisao_correspondencia_outro_texto" name="revisao_correspondencia_outro_texto" class="dynamic-input">
                 </div>
@@ -283,31 +376,27 @@
                     <textarea id="revisao_obs_final" name="revisao_obs_final" rows="3"></textarea>
                 </div>
             </fieldset>
-
+            
+            <input type="hidden" id="resumo_prognosticos_hidden_input" name="resumo_prognosticos">
             <button type="submit" class="submit-button">Salvar Validação</button>
         </form>
         <div id="mensagemStatus"></div>
     </div>
 
     <script>
-        // MODIFICAÇÃO NA FUNÇÃO setupDynamicSelect para melhor input no celular
         function setupDynamicSelect(selectId, inputId, optionValueToTrigger, isNumeric, suffix) {
             const selectElement = document.getElementById(selectId);
             const inputElement = document.getElementById(inputId);
             if (!selectElement || !inputElement) { return; }
 
             const addNewOption = () => {
-                // Só processa se o input estiver visível
-                if (inputElement.style.display !== 'block') {
-                    return;
-                }
-
+                if (inputElement.style.display !== 'block') { return; }
                 let newText = inputElement.value.trim();
                 if (newText) {
                     if (isNumeric && isNaN(newText)) {
                         alert("Por favor, insira um valor numérico.");
-                        inputElement.focus(); // Deixa o foco para correção
-                        return; // Não esconde o input
+                        inputElement.focus();
+                        return;
                     }
                     if (suffix) { newText += suffix; }
 
@@ -319,7 +408,6 @@
                             break;
                         }
                     }
-
                     if (!optionExists) {
                         const currentOptionTexts = [];
                         for (let i = 0; i < selectElement.options.length; i++) {
@@ -329,28 +417,14 @@
                             }
                         }
                         currentOptionTexts.push(newText);
-                        
-                        if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
-                            currentOptionTexts.sort((a, b) => {
-                                const numA = parseInt(String(a).replace(/[^0-9]/g, ''), 10);
-                                const numB = parseInt(String(b).replace(/[^0-9]/g, ''), 10);
-                                if (!isNaN(numA) && !isNaN(numB)) { return numB - numA; }
-                                if (!isNaN(numB)) return 1;
-                                if (!isNaN(numA)) return -1;
-                                return String(b).localeCompare(String(a));
-                            });
-                        } else {
-                            currentOptionTexts.sort((a, b) => String(a).localeCompare(String(b)));
-                        }
-                        populateSelect(selectId, currentOptionTexts);
+                        // Ordenação já tratada em populateSelect
+                        populateSelect(selectId, currentOptionTexts, false); 
                         selectElement.value = newText;
                     }
-                    inputElement.value = ''; // Limpa o input
-                    inputElement.style.display = 'none'; // Esconde o input
-                    selectElement.dispatchEvent(new Event('change')); // Dispara o evento change no select
+                    inputElement.value = '';
+                    inputElement.style.display = 'none';
+                    selectElement.dispatchEvent(new Event('change'));
                 } else {
-                    // Se o texto for vazio ao perder o foco, e a opção "outro" ainda estiver selecionada,
-                    // simplesmente esconde o input para limpar a interface.
                     if (selectElement.value === optionValueToTrigger) {
                         inputElement.style.display = 'none';
                     }
@@ -360,48 +434,48 @@
             selectElement.addEventListener('change', function() {
                 if (this.value === optionValueToTrigger) {
                     inputElement.style.display = 'block';
-                    inputElement.value = ''; // Limpa o input ao mostrá-lo
+                    inputElement.value = '';
                     inputElement.focus();
                 } else {
                     inputElement.style.display = 'none';
-                    inputElement.value = ''; 
+                    inputElement.value = '';
                 }
             });
-
             inputElement.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter' || event.keyCode === 13) { 
-                    event.preventDefault(); // Previne submissão do formulário ou quebra de linha
+                if (event.key === 'Enter' || event.keyCode === 13) {
+                    event.preventDefault();
                     addNewOption();
                 }
             });
-
-            // Adiciona o listener para o evento 'blur' (perder o foco)
             inputElement.addEventListener('blur', function() {
-                // Usamos um pequeno delay para permitir que outros eventos (como clique no select)
-                // sejam processados antes, evitando conflitos.
                 setTimeout(() => {
-                    // Verifica se o input ainda está visível. Se o usuário clicou em uma opção do select
-                    // e o select 'change' escondeu o input, não fazemos nada.
                     if (inputElement.style.display === 'block') {
                         addNewOption();
                     }
-                }, 150); // 150ms é um tempo razoável
+                }, 150);
             });
         }
 
-        function populateSelect(selectId, optionsArray) {
+        function populateSelect(selectId, optionsArray, clearExisting = true) {
             const selectElement = document.getElementById(selectId);
             if (!selectElement) return;
             const otherOption = selectElement.querySelector('option[value^="outro_"]');
-            const placeholderOption = selectElement.options[0]; 
-            for (let i = selectElement.options.length - 1; i >= 0; i--) {
-                const currentOption = selectElement.options[i];
-                if (currentOption !== placeholderOption && currentOption !== otherOption) {
-                    selectElement.remove(i);
+            const placeholderOption = selectElement.options[0];
+            
+            if(clearExisting){
+                const keepValues = [];
+                if(placeholderOption) keepValues.push(placeholderOption.value);
+                if(otherOption) keepValues.push(otherOption.value);
+
+                for (let i = selectElement.options.length - 1; i >= 0; i--) {
+                    if (!keepValues.includes(selectElement.options[i].value)) {
+                        selectElement.remove(i);
+                    }
                 }
             }
-            let finalOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
-            if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
+
+            let finalOptions = Array.isArray(optionsArray) ? [...new Set(optionsArray)] : []; // Usa Set para garantir valores únicos
+             if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
                 finalOptions.sort((a, b) => {
                     const numA = parseInt(String(a).replace(/[^0-9]/g, ''), 10);
                     const numB = parseInt(String(b).replace(/[^0-9]/g, ''), 10);
@@ -418,48 +492,45 @@
                 if (optionText === null || optionText === undefined || String(optionText).trim() === "") return;
                 let optionExists = false;
                 for(let k=0; k < selectElement.options.length; k++) {
-                    if(selectElement.options[k].value === optionText) { optionExists = true; break; }
+                    if(selectElement.options[k].value === String(optionText)) { optionExists = true; break; }
                 }
                 if(optionExists) return;
+
                 const option = document.createElement('option');
                 option.value = optionText;
                 option.textContent = optionText;
-                if (otherOption) { selectElement.insertBefore(option, otherOption); } 
-                else { selectElement.appendChild(option); }
+                if (otherOption) {
+                    selectElement.insertBefore(option, otherOption);
+                } else {
+                    selectElement.appendChild(option);
+                }
             });
         }
 
         function populateCheckboxGroup(containerId, checkboxName, optionsArray) {
             const container = document.getElementById(containerId);
             if (!container) return;
-            let sortedOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
+            let sortedOptions = Array.isArray(optionsArray) ? [...new Set(optionsArray)] : []; // Unicos e ordenados
             sortedOptions.sort((a, b) => String(a).localeCompare(String(b)));
             
-            // Limpa checkboxes antigos, exceto os predefinidos no HTML (se houver)
-            const predefinedCheckboxes = [];
+            const initialCheckboxesValues = ['Relatório', 'Análise Pessoal', 'H2H'];
+            
             container.querySelectorAll('.option-item input[type="checkbox"]').forEach(cb => {
-                if (optionsArray.includes(cb.value)) { // Se o valor do checkbox predefinido está na lista de opções
-                     predefinedCheckboxes.push(cb.value); // Mantém o valor para não recriar
-                } else {
-                    // Se não está na lista de opções do servidor, remove o item DOM se não for um dos predefinidos fixos
-                    // Esta parte pode precisar de ajuste se você tiver checkboxes fixos no HTML que não vêm do servidor.
-                    // Por agora, vamos focar em popular os que vêm do servidor e não duplicar.
+                if (!initialCheckboxesValues.includes(cb.value)){
+                   cb.closest('.option-item').remove();
                 }
             });
 
             sortedOptions.forEach(optionText => {
-                if (optionText === null || optionText === undefined || String(optionText).trim() === "") return;
-                
-                // Verifica se já existe um checkbox com este valor para não duplicar
-                if (container.querySelector(`input[type="checkbox"][value="${optionText}"]`)) {
-                    return; 
-                }
+                if (optionText === null || optionText === undefined || String(optionText).trim() === "" || initialCheckboxesValues.includes(optionText)) return;
+                if (container.querySelector(`input[type="checkbox"][value="${optionText}"]`)) return;
 
                 const optionDiv = document.createElement('div');
                 optionDiv.className = 'option-item';
                 const checkboxInput = document.createElement('input');
                 checkboxInput.type = 'checkbox';
-                const checkboxId = checkboxName.replace('[]','') + '_' + String(optionText).replace(/\s+/g, '_').replace(/[^\w]/gi, '').toLowerCase();
+                // Gera IDs únicos para os checkboxes dinâmicos
+                const checkboxId = checkboxName.replace('[]','') + '_' + String(optionText).replace(/\s+/g, '_').replace(/[^\w-]/gi, '').toLowerCase();
                 checkboxInput.id = checkboxId;
                 checkboxInput.name = checkboxName; 
                 checkboxInput.value = optionText;
@@ -472,34 +543,57 @@
             });
         }
 
+        function aggregatePrognostics() {
+            const results = [];
+            const prognosticItems = document.querySelectorAll('.prognostico-item');
+
+            prognosticItems.forEach(item => {
+                let siteName = '';
+                if (item.id === 'prognostico_outros_item') {
+                    const customNameInput = item.querySelector('#prognostico_outros_nome_input');
+                    if (customNameInput) {
+                        siteName = customNameInput.value.trim();
+                    }
+                    if (!siteName) { 
+                         const anyMarketCheckedForOutros = item.querySelector('input[type="checkbox"]:checked');
+                         if (!anyMarketCheckedForOutros) {
+                            return; 
+                         }
+                         siteName = "Outro (Não Especificado)"; // Nome default se mercados marcados mas sem nome
+                    }
+                } else {
+                    siteName = item.dataset.siteName;
+                }
+
+                if (!siteName) return; 
+
+                const checkedMarkets = [];
+                item.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                    checkedMarkets.push(checkbox.dataset.market);
+                });
+
+                if (checkedMarkets.length > 0) {
+                    const marketsString = checkedMarkets.join(', ');
+                    results.push(`${siteName}: (${marketsString})`);
+                }
+            });
+
+            const finalString = results.join('; ');
+            const hiddenInput = document.getElementById('resumo_prognosticos_hidden_input');
+            if (hiddenInput) {
+                hiddenInput.value = finalString;
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const scriptUrl = "https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec";
-            
-            fetch(scriptUrl)
+            fetch("https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec")
                 .then(response => response.json())
                 .then(data => {
-                    if (data.error) { 
-                        console.error("Erro ao buscar listas:", data.error);
-                        // ... seu tratamento de erro para os selects ...
-                        return; 
-                    }
+                    if (data.error) { console.error("Erro ao buscar listas:", data.error); return; }
                     if (data.Estrategias) populateSelect('estrategia_select_val', data.Estrategias);
                     if (data.Esportes) populateSelect('esporte_select_val', data.Esportes);
                     if (data.Referencias) populateSelect('referencia_realizacao_select', data.Referencias);
                     if (data.CorrespondenciaItens) {
-                        // Limpa checkboxes dinâmicos antigos antes de popular
-                        const container = document.getElementById('revisao_correspondencia_checkbox_container');
-                        if (container) {
-                            // Remove apenas os que não estão na lista inicial do HTML
-                            const initialCheckboxes = ['Relatório', 'Análise Pessoal', 'Predições Estatísticas', 'Prognosticos e Tips', 'H2H'];
-                            Array.from(container.children).forEach(child => {
-                                const input = child.querySelector('input[type="checkbox"]');
-                                if (input && !initialCheckboxes.includes(input.value)) {
-                                    child.remove();
-                                }
-                            });
-                        }
                         populateCheckboxGroup(
                             'revisao_correspondencia_checkbox_container', 
                             'revisao_correspondencia_predefinida[]', 
@@ -508,17 +602,14 @@
                     }
                     console.log("Listas dinâmicas para Validação carregadas.");
                 })
-                .catch(error => {
-                    // ... seu tratamento de erro ...
-                });
+                .catch(error => { console.error('Erro ao carregar listas dinâmicas:', error); });
 
             setupDynamicSelect('estrategia_select_val', 'outra_estrategia_val_input', 'outro_estrategia_val');
             setupDynamicSelect('esporte_select_val', 'outro_esporte_val_input', 'outro_esporte_val');
             setupDynamicSelect('referencia_realizacao_select', 'outra_referencia_realizacao_input', 'outro_referencia_realizacao');
-
-            // MODIFICAÇÃO 3: Lógica de envio do formulário com mensagem de sucesso e redirecionamento
+            
             const form = document.getElementById('validacaoForm');
-            const mensagemStatus = document.getElementById('mensagemStatus'); // Pega o div da mensagem
+            const mensagemStatus = document.getElementById('mensagemStatus');
             const resultadoRedRadio = document.getElementById('resultado_red');
             const avaliacaoFieldset = document.getElementById('avaliacao_resultados_fieldset');
             const obsTextareaAvaliacao = document.getElementById('validacao_avaliacao_obs');
@@ -526,22 +617,20 @@
             
             if (form) {
                 form.addEventListener('submit', function(event) {
-                    event.preventDefault(); // Previne o envio padrão
+                    event.preventDefault();
+                    aggregatePrognostics(); 
 
-                    // SUAS VALIDAÇÕES ORIGINAIS (preservadas)
                     if (resultadoRedRadio && resultadoRedRadio.checked) {
                         if (avaliacaoFieldset) {
                             const subitemCheckboxesAvaliacao = avaliacaoFieldset.querySelectorAll('.sub-group input[type="checkbox"]:checked');
-                            let isAnyAvaliacaoSubitemChecked = subitemCheckboxesAvaliacao.length > 0;
                             const obsAvaliacaoIsFilled = obsTextareaAvaliacao && obsTextareaAvaliacao.value.trim() !== '';
-                            if (!isAnyAvaliacaoSubitemChecked && !obsAvaliacaoIsFilled) {
+                            if (subitemCheckboxesAvaliacao.length === 0 && !obsAvaliacaoIsFilled) {
                                 alert('Se o resultado for "Red", deve selecionar ao menos uma opção nos subitens de "Avaliação de Resultados" ou preencher "Outros/OBS" da mesma seção.');
                                 avaliacaoFieldset.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 return;
                             }
                         }
                     }
-
                     if (analisePartidaContainer) {
                         const analisePartidaCheckboxes = analisePartidaContainer.querySelectorAll('input[type="checkbox"]:checked');
                         if (analisePartidaCheckboxes.length === 0) {
@@ -551,7 +640,6 @@
                         }
                     }
 
-                    // Lógica de sucesso e redirecionamento
                     form.style.display = 'none';
                     mensagemStatus.textContent = 'Salvando validação, por favor aguarde';
                     mensagemStatus.className = 'sucesso';
@@ -563,17 +651,19 @@
                         method: 'POST',
                         body: dadosDoFormulario,
                     })
-                    .then(response => {
-                        mensagemStatus.textContent = 'Validação salva com sucesso! Redirecionando para a página inicial';
-                        mensagemStatus.className = 'sucesso';
-
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 2500);
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.status === 'success'){
+                            mensagemStatus.textContent = 'Validação salva com sucesso! Redirecionando para a página inicial';
+                            mensagemStatus.className = 'sucesso';
+                            setTimeout(() => { window.location.href = 'index.html'; }, 2500);
+                        } else {
+                            throw new Error(data.message || 'Erro desconhecido do servidor.');
+                        }
                     })
                     .catch(error => {
-                        console.error('Erro de rede ao enviar o formulário:', error);
-                        mensagemStatus.textContent = 'Ocorreu um erro ao salvar. Verifique sua conexão e tente novamente';
+                        console.error('Erro ao enviar o formulário:', error);
+                        mensagemStatus.textContent = 'Ocorreu um erro ao salvar: ' + error.message;
                         mensagemStatus.className = 'erro';
                         form.style.display = 'block'; 
                     });
