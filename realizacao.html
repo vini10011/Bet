@@ -571,40 +571,50 @@
         function populateSelect(selectId, optionsArray) {
             const selectElement = document.getElementById(selectId);
             if (!selectElement) return;
+        
+            // Preserva a opção "Outro" e a opção de placeholder (a primeira)
             const otherOption = selectElement.querySelector('option[value^="outro_"]');
-            const placeholderOption = selectElement.options[0]; 
+            const placeholderOption = selectElement.options[0];
+        
+            // Limpa apenas as opções dinâmicas antigas
             for (let i = selectElement.options.length - 1; i >= 0; i--) {
                 const currentOption = selectElement.options[i];
                 if (currentOption !== placeholderOption && currentOption !== otherOption) {
                     selectElement.remove(i);
                 }
             }
-            let finalOptions = Array.isArray(optionsArray) ? [optionsArray] : [];
-            if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
-                finalOptions.sort((a, b) => {
-                    const numA = parseInt(String(a).replace(/[^0-9]/g, ''), 10);
-                    const numB = parseInt(String(b).replace(/[^0-9]/g, ''), 10);
-                    if (!isNaN(numA) && !isNaN(numB)) { return numB - numA; }
-                    if (!isNaN(numB)) return 1;
-                    if (!isNaN(numA)) return -1;
-                    return String(b).localeCompare(String(a));
-                });
-            } else {
-                finalOptions.sort((a, b) => String(a).localeCompare(String(b)));
-            }
-            
+        
+            // --- CORREÇÃO APLICADA AQUI ---
+            // Simplesmente garante que estamos trabalhando com um array.
+            const finalOptions = Array.isArray(optionsArray) ? optionsArray : [];
+        
+            // O código de ordenação foi removido daqui porque o seu Code.gs já faz isso no servidor,
+            // o que é mais eficiente. O cliente só precisa exibir o que recebe.
+        
             finalOptions.forEach(optionText => {
+                // Ignora valores vazios ou nulos
                 if (optionText === null || optionText === undefined || String(optionText).trim() === "") return;
+        
+                // Verifica se a opção já não existe para evitar duplicatas
                 let optionExists = false;
-                for(let k=0; k < selectElement.options.length; k++) {
-                    if(selectElement.options[k].value === optionText) { optionExists = true; break; }
+                for (let k = 0; k < selectElement.options.length; k++) {
+                    if (selectElement.options[k].value === String(optionText)) {
+                        optionExists = true;
+                        break;
+                    }
                 }
-                if(optionExists) return;
+                if (optionExists) return;
+        
                 const option = document.createElement('option');
                 option.value = optionText;
                 option.textContent = optionText;
-                if (otherOption) { selectElement.insertBefore(option, otherOption); } 
-                else { selectElement.appendChild(option); }
+        
+                // Insere a nova opção antes da opção "Outro"
+                if (otherOption) {
+                    selectElement.insertBefore(option, otherOption);
+                } else {
+                    selectElement.appendChild(option);
+                }
             });
         }
         
