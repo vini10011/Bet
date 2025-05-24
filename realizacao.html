@@ -149,10 +149,14 @@
                     </div>
                 </div>
             </fieldset>
-
+            
             <div class="form-group">
-                <label for="referencia">Referência</label>
-                <input type="text" id="referencia" name="referencia" placeholder="Ex: Partida da 5ª rodada, ID da análise, etc." required>
+                <label for="referencia_select">Referência</label>
+                <select id="referencia_select" name="referencia_select" required>
+                    <option value="" disabled selected>Carregando ou adicione uma referência...</option>
+                    <option value="outro_referencia">Adicionar Nova Referência...</option>
+                </select>
+                <input type="text" id="outra_referencia_input" name="outra_referencia_input" class="dynamic-input" placeholder="Digite a nova referência e pressione Enter" style="display: none;">
             </div>
             
             <div class="form-group">
@@ -175,7 +179,7 @@
 
             <fieldset id="analise_geral_fieldset_realizacao" class="main-fieldset">
                 <legend class="fieldset-legend-main">Análise da Partida (Pré-Operação)</legend>
-                <div class="sub-group">
+                 <div class="sub-group">
                     <p class="question-title">1X2 (2+ Gols Folga Sobre Consenso)</p>
                     <div class="options-container">
                         <div class="option-item"><input type="radio" id="r_analise_1x2_na" name="analise_1x2_resultado" value="NaoSeAplica" required><label for="r_analise_1x2_na">Não se Aplica</label></div>
@@ -292,7 +296,8 @@
 
             <div class="form-group">
                 <label for="home_team_reordered_select">Home (Equipe da Casa)</label>
-                <select id="home_team_reordered_select" name="home_team_reordered_select" required> <option value="" disabled selected>Carregando...</option>
+                <select id="home_team_reordered_select" name="home_team_reordered_select" required>
+                    <option value="" disabled selected>Carregando...</option>
                     <option value="outro_home_team_reordered">Adicionar Nova Equipe...</option>
                 </select>
                 <input type="text" id="outro_home_team_reordered_input" name="outro_home_team_reordered_input" class="dynamic-input" placeholder="Digite o nome da equipe e pressione Enter" style="display: none;">
@@ -300,7 +305,8 @@
 
             <div class="form-group">
                 <label for="away_team_reordered_select">Away (Equipe Visitante)</label>
-                <select id="away_team_reordered_select" name="away_team_reordered_select" required> <option value="" disabled selected>Carregando...</option>
+                <select id="away_team_reordered_select" name="away_team_reordered_select" required>
+                    <option value="" disabled selected>Carregando...</option>
                     <option value="outro_away_team_reordered">Adicionar Nova Equipe...</option>
                 </select>
                 <input type="text" id="outro_away_team_reordered_input" name="outro_away_team_reordered_input" class="dynamic-input" placeholder="Digite o nome da equipe e pressione Enter" style="display: none;">
@@ -333,7 +339,7 @@
                         <div class="option-item"><input type="checkbox" id="m_r_1x2_na" name="m_r_1x2_opcoes[]" value="NaoExplorado"><label for="m_r_1x2_na">Não Explorado</label></div>
                     </div>
                 </div>
-                <div class="sub-group">
+                 <div class="sub-group">
                     <p class="question-title">Gols</p>
                     <div class="options-container">
                         <div class="option-item"><input type="checkbox" id="m_r_gols_totais" name="m_r_gols_opcoes[]" value="UO_Totais"><label for="m_r_gols_totais">U/O - Totais</label></div>
@@ -434,7 +440,7 @@
                 <div class="sub-group">
                     <p class="question-title">Problemas</p>
                     <div class="options-container">
-                        <div class="option-item"><input type="radio" id="op_prob_nenhum_r" name="op_problemas_realizacao" value="nenhum"><label for="op_prob_nenhum_r">Nenhum</label></div>
+                        <div class="option-item"><input type="radio" id="op_prob_nenhum_r" name="op_problemas_realizacao" value="nenhum" required><label for="op_prob_nenhum_r">Nenhum</label></div>
                         <div class="option-item"><input type="radio" id="op_prob_mercado_r" name="op_problemas_realizacao" value="falta_mercado"><label for="op_prob_mercado_r">Falta de Mercado</label></div>
                         <div class="option-item"><input type="radio" id="op_prob_liquidez_r" name="op_problemas_realizacao" value="falta_liquidez"><label for="op_prob_liquidez_r">Falta de Liquidez Faixa Pretendida</label></div>
                         <div class="option-item"><input type="radio" id="op_prob_multipla_r" name="op_problemas_realizacao" value="dificuldade_multipla"><label for="op_prob_multipla_r">Dificuldades com Múltipla</label></div>
@@ -455,6 +461,7 @@
         </form>
     </div>
     <script>
+        // Funções populateSelect, setupDynamicSelect e o DOMContentLoaded para Realização
         function populateSelect(selectId, optionsArray) {
             const selectElement = document.getElementById(selectId);
             if (!selectElement) return;
@@ -538,13 +545,14 @@
                 .then(data => {
                     if (data.error) { 
                         console.error("Erro ao buscar listas:", data.error);
-                        const realizacaoSelectsIds = ['home_team_reordered_select', 'away_team_reordered_select', 'estrategia_select', 'esporte_select', 'casa_apostas_select', 'campeonato_select', 'perfil_partida_select', 'stake_select'];
+                        const realizacaoSelectsIds = ['referencia_select', 'home_team_reordered_select', 'away_team_reordered_select', 'estrategia_select', 'esporte_select', 'casa_apostas_select', 'campeonato_select', 'perfil_partida_select', 'stake_select'];
                         realizacaoSelectsIds.forEach(id => {
                              const el = document.getElementById(id);
                              if(el && el.options.length > 0) el.options[0].textContent = "Erro ao carregar";
                         });
                         return; 
                     }
+                    if (data.Referencias) populateSelect('referencia_select', data.Referencias);
                     if (data.Equipes) {
                         populateSelect('home_team_reordered_select', data.Equipes);
                         populateSelect('away_team_reordered_select', data.Equipes);
@@ -559,13 +567,14 @@
                 })
                 .catch(error => {
                      console.error('Erro ao buscar listas do Google Sheet para Realização:', error);
-                     const realizacaoSelectsIds = ['home_team_reordered_select', 'away_team_reordered_select', 'estrategia_select', 'esporte_select', 'casa_apostas_select', 'campeonato_select', 'perfil_partida_select', 'stake_select'];
+                     const realizacaoSelectsIds = ['referencia_select', 'home_team_reordered_select', 'away_team_reordered_select', 'estrategia_select', 'esporte_select', 'casa_apostas_select', 'campeonato_select', 'perfil_partida_select', 'stake_select'];
                      realizacaoSelectsIds.forEach(id => {
                          const el = document.getElementById(id);
                          if(el && el.options.length > 0) el.options[0].textContent = "Falha no carregamento";
                      });
                 });
 
+            setupDynamicSelect('referencia_select', 'outra_referencia_input', 'outro_referencia');
             setupDynamicSelect('home_team_reordered_select', 'outro_home_team_reordered_input', 'outro_home_team_reordered');
             setupDynamicSelect('away_team_reordered_select', 'outro_away_team_reordered_input', 'outro_away_team_reordered');
             setupDynamicSelect('estrategia_select', 'outra_estrategia_input', 'outro_estrategia');
