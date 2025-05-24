@@ -351,7 +351,7 @@
                 }
             });
             inputElement.addEventListener('keydown', function(event) {
-                if (event.keyCode === 13) { // Enter key
+                if (event.keyCode === 13) {
                     event.preventDefault();
                     let newText = inputElement.value.trim();
                     if (newText) {
@@ -374,7 +374,6 @@
                                 }
                             }
                             currentOptionTexts.push(newText);
-                            
                             // Ordenação condicional ao adicionar novo item
                             if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
                                 currentOptionTexts.sort((a, b) => {
@@ -388,7 +387,7 @@
                             } else {
                                 currentOptionTexts.sort((a, b) => String(a).localeCompare(String(b)));
                             }
-                            populateSelect(selectId, currentOptionTexts); // populateSelect não ordena mais, recebe a lista pré-ordenada
+                            populateSelect(selectId, currentOptionTexts);
                             selectElement.value = newText;
                         }
                         inputElement.value = '';
@@ -401,10 +400,6 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const scriptUrl = "https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec";
-            
-            // Identifica qual formulário estamos (realizacao ou validacao)
-            const isRealizacaoForm = !!document.getElementById('realizacaoForm');
-            const isValida
             
             fetch(scriptUrl)
                 .then(response => response.json())
