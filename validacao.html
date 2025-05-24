@@ -69,22 +69,22 @@
             <div class="form-group">
                 <label for="referencia_realizacao_select">Referência da Operação Original</label>
                 <select id="referencia_realizacao_select" name="referencia_realizacao_select" required>
-                    <option value="" disabled selected>Carregando ou adicione...</option>
-                    <option value="outro_referencia_realizacao">Adicionar Nova Referência...</option>
+                    <option value="" disabled selected></option>
+                    <option value="outro_referencia_realizacao">Outro</option>
                 </select>
                 <input type="text" id="outra_referencia_realizacao_input" name="outra_referencia_realizacao_input" class="dynamic-input" placeholder="Digite a nova referência" style="display: none;">
             </div>
 
             <div class="form-group">
-                <label for="retorno_pretendido">Odd Registrada na Realização</label>
-                <input type="number" id="retorno_pretendido" name="retorno_pretendido" placeholder="Ex: 1.85" step="0.01" required>
+                <label for="retorno_pretendido">Odd Pretendida</label>
+                <input type="number" id="retorno_pretendido" name="retorno_pretendido" step="0.01" required>
             </div>
 
             <div class="form-group">
                 <label for="estrategia_select_val">Estratégia Utilizada</label>
                 <select id="estrategia_select_val" name="estrategia_select_val" required>
                     <option value="" disabled selected></option>
-                    <option value="outro_estrategia_val"></option>
+                    <option value="outro_estrategia_val">Outro</option>
                 </select>
                 <input type="text" id="outra_estrategia_val_input" name="outra_estrategia_val_input" class="dynamic-input" placeholder="Digite a nova estratégia" style="display: none;">
             </div>
@@ -93,7 +93,7 @@
                 <label for="esporte_select_val">Esporte</label>
                 <select id="esporte_select_val" name="esporte_select_val" required>
                      <option value="" disabled selected></option>
-                     <option value="outro_esporte_val"></option>
+                     <option value="outro_esporte_val">Outro</option>
                 </select>
                 <input type="text" id="outro_esporte_val_input" name="outro_esporte_val_input" class="dynamic-input" placeholder="Digite o novo esporte" style="display: none;">
             </div>
@@ -194,7 +194,7 @@
                 </div>
                 <div class="form-group">
                     <label for="validacao_avaliacao_obs">Outros/OBS (Avaliação de Resultados)</label>
-                    <textarea id="validacao_avaliacao_obs" name="validacao_avaliacao_obs" rows="4" placeholder="Observações sobre os resultados..."></textarea>
+                    <textarea id="validacao_avaliacao_obs" name="validacao_avaliacao_obs" rows="4"></textarea>
                 </div>
             </fieldset>
 
@@ -232,12 +232,12 @@
 
                 <div class="form-group">
                     <label for="revisao_retorno_odd">Retorno Alcançado (Odd Efetiva da Operação)</label>
-                    <input type="number" id="revisao_retorno_odd" name="revisao_retorno_odd" placeholder="Ex: 2.10 ou 0.00 se perdida" step="0.01" required>
+                    <input type="number" id="revisao_retorno_odd" name="revisao_retorno_odd" step="0.01" required>
                 </div>
 
                 <div class="form-group">
                     <label for="revisao_nova_unidade">Nova Unidade (após esta operação, se alterada)</label>
-                    <input type="number" id="revisao_nova_unidade" name="revisao_nova_unidade" placeholder="Ex: 1.5" step="0.1">
+                    <input type="number" id="revisao_nova_unidade" name="revisao_nova_unidade" step="0.1">
                 </div>
 
                 <div class="sub-group">
@@ -257,12 +257,12 @@
                         <div class="option-item"><input type="checkbox" id="corresp_prognosticos" name="revisao_correspondencia_predefinida[]" value="Prognosticos e Tips"><label for="corresp_prognosticos">Prognosticos e Tips</label></div>
                         <div class="option-item"><input type="checkbox" id="corresp_h2h" name="revisao_correspondencia_predefinida[]" value="H2H"><label for="corresp_h2h">H2H</label></div>
                     </div>
-                    <label for="revisao_correspondencia_outro_texto" style="margin-top:15px; display:block; font-weight:normal;">Adicionar outra Correspondência (será salva na lista):</label>
-                    <input type="text" id="revisao_correspondencia_outro_texto" name="revisao_correspondencia_outro_texto" class="dynamic-input" placeholder="Digite para adicionar nova correspondência">
+                    <label for="revisao_correspondencia_outro_texto" style="margin-top:15px; display:block; font-weight:normal;">Outra Correspondência:</label>
+                    <input type="text" id="revisao_correspondencia_outro_texto" name="revisao_correspondencia_outro_texto" class="dynamic-input">
                 </div>
 
                 <div id="analise_partida_container" class="sub-group">
-                    <p class="question-title">Analise da Partida (selecione ao menos uma):</p>
+                    <p class="question-title">Análise da Partida (selecione ao menos uma):</p>
                     <div class="options-container" style="flex-direction: column; align-items: flex-start;">
                         <div class="option-item"><input type="checkbox" id="ap_dentro_esperado" name="analise_partida_opcoes[]" value="Dentro do Esperado"><label for="ap_dentro_esperado">Dentro do Esperado</label></div>
                         <div class="option-item"><input type="checkbox" id="ap_under" name="analise_partida_opcoes[]" value="Under"><label for="ap_under">Under</label></div>
@@ -275,12 +275,12 @@
 
                 <div class="form-group">
                     <label for="revisao_texto">Revisão Detalhada da Operação</label>
-                    <textarea id="revisao_texto" name="revisao_texto" rows="5" placeholder="Análise do que ocorreu, aprendizados, pontos positivos/negativos, etc..." required></textarea>
+                    <textarea id="revisao_texto" name="revisao_texto" rows="5" required></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="revisao_obs_final">Outros / OBS (Revisão)</label>
-                    <textarea id="revisao_obs_final" name="revisao_obs_final" rows="3" placeholder="Observações adicionais sobre a revisão..."></textarea>
+                    <textarea id="revisao_obs_final" name="revisao_obs_final" rows="3"></textarea>
                 </div>
             </fieldset>
 
@@ -545,7 +545,7 @@
                     if (analisePartidaContainer) {
                         const analisePartidaCheckboxes = analisePartidaContainer.querySelectorAll('input[type="checkbox"]:checked');
                         if (analisePartidaCheckboxes.length === 0) {
-                            alert("Por favor, selecione ao menos uma opção em 'Analise da Partida'.");
+                            alert("Por favor, selecione ao menos uma opção em 'Análise da Partida'.");
                             analisePartidaContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             return; 
                         }
@@ -553,7 +553,7 @@
 
                     // Lógica de sucesso e redirecionamento
                     form.style.display = 'none';
-                    mensagemStatus.textContent = 'Salvando validação, por favor aguarde...';
+                    mensagemStatus.textContent = 'Salvando validação, por favor aguarde';
                     mensagemStatus.className = 'sucesso';
                     mensagemStatus.style.display = 'block';
 
@@ -564,7 +564,7 @@
                         body: dadosDoFormulario,
                     })
                     .then(response => {
-                        mensagemStatus.textContent = 'Validação salva com sucesso! Redirecionando para a página inicial...';
+                        mensagemStatus.textContent = 'Validação salva com sucesso! Redirecionando para a página inicial';
                         mensagemStatus.className = 'sucesso';
 
                         setTimeout(() => {
@@ -573,7 +573,7 @@
                     })
                     .catch(error => {
                         console.error('Erro de rede ao enviar o formulário:', error);
-                        mensagemStatus.textContent = 'Ocorreu um erro ao salvar. Verifique sua conexão e tente novamente.';
+                        mensagemStatus.textContent = 'Ocorreu um erro ao salvar. Verifique sua conexão e tente novamente';
                         mensagemStatus.className = 'erro';
                         form.style.display = 'block'; 
                     });
