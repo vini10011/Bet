@@ -6,6 +6,22 @@
     <title>Bet</title>
     <link rel="shortcut icon" type="image/png" href="favicon.png">
     <style>
+        #version-info {
+            position: fixed;
+            bottom: 8px; /* Um pouco mais de espaço */
+            right: 10px;
+            z-index: 9999;
+        
+            /* --- Estilos adequados ao seu design --- */
+            background-color: #103a2f; /* Fundo para combinar com o container */
+            color: #EAF9E1;           /* Cor do texto para combinar com o corpo da página */
+            border: 1px solid #d4af37; /* Borda para usar a cor de destaque (dourado) */
+            font-family: monospace;    /* Mantido para legibilidade do hash do commit */
+            font-size: 11px;           /* Um pouco maior para melhor leitura */
+            
+            padding: 4px 8px;
+            border-radius: 6px; /* Um pouco mais arredondado para combinar */
+        } 
         body { font-family: "Times New Roman", serif; background-color: #07251F; color: #EAF9E1; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; text-align: center; }
         .container { border: 1px solid #d4af37; padding: 40px 60px; border-radius: 12px; background-color: #103a2f; }
         h1 { color: #d4af37; margin-bottom: 30px; }
@@ -19,6 +35,7 @@
         <a href="realizacao.html" class="button">Registro de Operação</a>
         <a href="validacao.html" class="button">Validação de Operação</a>
         <a href="calculadora.html" class="button">Cálculos e Predições</a>
+        commit: {{ site.github.latest_commit_hash | slice: 0, 7 }}
     </div>
 </body>
 </html>
