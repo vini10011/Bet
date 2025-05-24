@@ -46,8 +46,12 @@
             </div>
 
             <div class="form-group">
-                <label for="referencia_realizacao">Referência da Operação Original</label>
-                <input type="text" id="referencia_realizacao" name="referencia_realizacao" placeholder="Cole aqui a referência da operação de realização" required>
+                <label for="referencia_realizacao_select">Referência da Operação Original</label>
+                <select id="referencia_realizacao_select" name="referencia_realizacao_select" required>
+                    <option value="" disabled selected>Carregando ou adicione...</option>
+                    <option value="outro_referencia_realizacao">Adicionar Nova Referência...</option>
+                </select>
+                <input type="text" id="outra_referencia_realizacao_input" name="outra_referencia_realizacao_input" class="dynamic-input" placeholder="Digite a nova referência e pressione Enter" style="display: none;">
             </div>
 
             <div class="form-group">
@@ -231,13 +235,13 @@
                         <div class="option-item"><input type="checkbox" id="corresp_predicoes" name="revisao_correspondencia_predefinida[]" value="Predições Estatísticas"><label for="corresp_predicoes">Predições Estatísticas</label></div>
                         <div class="option-item"><input type="checkbox" id="corresp_prognosticos" name="revisao_correspondencia_predefinida[]" value="Prognosticos e Tips"><label for="corresp_prognosticos">Prognosticos e Tips</label></div>
                         <div class="option-item"><input type="checkbox" id="corresp_h2h" name="revisao_correspondencia_predefinida[]" value="H2H"><label for="corresp_h2h">H2H</label></div>
-                        </div>
+                    </div>
                     <label for="revisao_correspondencia_outro_texto" style="margin-top:15px; display:block; font-weight:normal;">Adicionar outra Correspondência (será salva na lista):</label>
                     <input type="text" id="revisao_correspondencia_outro_texto" name="revisao_correspondencia_outro_texto" class="dynamic-input" placeholder="Digite para adicionar nova correspondência">
                 </div>
 
                 <div id="analise_partida_container" class="sub-group">
-                    <p class="question-title">Análise da Partida (selecione ao menos uma):</p>
+                    <p class="question-title">Analise da Partida (selecione ao menos uma):</p>
                     <div class="options-container" style="flex-direction: column; align-items: flex-start;">
                         <div class="option-item"><input type="checkbox" id="ap_dentro_esperado" name="analise_partida_opcoes[]" value="Dentro do Esperado"><label for="ap_dentro_esperado">Dentro do Esperado</label></div>
                         <div class="option-item"><input type="checkbox" id="ap_under" name="analise_partida_opcoes[]" value="Under"><label for="ap_under">Under</label></div>
@@ -392,6 +396,7 @@
                             data.CorrespondenciaItens
                         );
                     }
+                     if (data.Referencias) populateSelect('referencia_realizacao_select', data.Referencias);
                     console.log("Listas dinâmicas para Validação carregadas.");
                 })
                 .catch(error => {
@@ -404,6 +409,8 @@
 
             setupDynamicSelect('estrategia_select_val', 'outra_estrategia_val_input', 'outro_estrategia_val');
             setupDynamicSelect('esporte_select_val', 'outro_esporte_val_input', 'outro_esporte_val');
+            setupDynamicSelect('referencia_realizacao_select', 'outra_referencia_realizacao_input', 'outro_referencia_realizacao');
+
 
             const form = document.getElementById('validacaoForm');
             const resultadoRedRadio = document.getElementById('resultado_red');
