@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validação de Operação</title>
+    <style>
+        body { font-family: "Times New Roman", serif; background-color: #07251F; color: #EAF9E1; margin: 0; padding: 20px; line-height: 1.6; }
+        .form-container { background-color: #103a2f; padding: 20px 30px; border-radius: 12px; border: 1px solid #d4af37; width: 100%; max-width: 750px; margin: 20px auto; }
+        h2 { text-align: center; color: #d4af37; font-size: 24px; margin-bottom:25px;}
+        .form-group { margin-bottom: 18px; }
+        .form-group label, .fieldset-legend-main, .question-title { display: block; font-weight: bold; color: #EAF9E1; margin-bottom: 7px; font-size: 17px; }
+        .fieldset-legend-main { padding: 0 10px; color: #d4af37; font-size: 19px;}
+        .form-group input[type="text"], .form-group input[type="datetime-local"], .form-group input[type="number"], .form-group input[type="file"], .form-group select, .form-group textarea { width: 100%; padding: 10px; border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: "Times New Roman", serif; background-color: #EAF9E1; color: #07251F; border: 1px solid #2a5a4a; }
+        .dynamic-input { margin-top: 8px; }
+        .main-fieldset { border: 1px solid #2a5a4a; border-radius: 8px; padding: 12px 20px; margin-bottom: 22px; }
+        .sub-group { margin-bottom: 18px; border-bottom: 1px dashed #2a5a4a; padding-bottom: 18px; }
+        .sub-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .options-container { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+        .option-item { display: flex; align-items: center; margin-bottom: 5px;}
+        .option-item input[type="radio"], .option-item input[type="checkbox"] { margin-right: 8px; cursor: pointer; width: 17px; height: 17px; flex-shrink: 0;}
+        .option-item label { color: #EAF9E1; font-weight: normal; cursor: pointer; margin-bottom: 0; font-size: 15px; }
+        .submit-button { background-color: #d4af37; color: #07251F; border: none; font-weight: bold; cursor: pointer; display: inline-block; margin-top: 20px; padding: 10px 22px; border-radius: 8px; font-size: 17px; font-family: "Times New Roman", serif; }
+        
+        @media (max-width: 600px) {
+            body { padding: 10px; margin:10px;}
+            .form-container { padding: 15px; }
+            h2 { font-size: 20px; }
+            .form-group label, .fieldset-legend-main, .question-title { font-size: 15px; }
+            .fieldset-legend-main {font-size: 17px;}
+            .form-group input[type="text"], .form-group input[type="datetime-local"], .form-group input[type="number"], .form-group input[type="file"], .form-group select, .form-group textarea { padding: 9px; font-size: 14px; }
+            .options-container { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .submit-button{padding: 9px 16px; font-size:15px;}
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <form id="validacaoForm" action="https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="form_type" value="validacao">
+            <h2>Validação de Operação</h2>
+            
+            <div class="form-group">
+                <label for="validacao_datetime">Data e Horário da Validação</label>
+                <input type="datetime-local" id="validacao_datetime" name="validacao_datetime" required>
+            </div>
+
+            <div class="form-group">
+                <label for="referencia_realizacao">Referência da Operação Original</label>
+                <input type="text" id="referencia_realizacao" name="referencia_realizacao" placeholder="Cole aqui a referência da operação de realização" required>
+            </div>
+
+            <div class="form-group">
+                <label for="retorno_pretendido">Odd Registrada na Realização</label>
+                <input type="number" id="retorno_pretendido" name="retorno_pretendido" placeholder="Ex: 1.85" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="estrategia_select_val">Estratégia Utilizada</label>
+                <select id="estrategia_select_val" name="estrategia_select_val" required>
+                    <option value="" disabled selected>Carregando...</option>
+                    <option value="outro_estrategia_val">Outro...</option>
+                </select>
+                <input type="text" id="outra_estrategia_val_input" name="outra_estrategia_val_input" class="dynamic-input" placeholder="Digite a nova estratégia e pressione Enter" style="display: none;">
+            </div>
+
+            <div class="form-group">
+                <label for="esporte_select_val">Esporte</label>
+                <select id="esporte_select_val" name="esporte_select_val" required>
+                     <option value="" disabled selected>Carregando...</option>
+                     <option value="outro_esporte_val">Outro...</option>
+                </select>
+                <input type="text" id="outro_esporte_val_input" name="outro_esporte_val_input" class="dynamic-input" placeholder="Digite o novo esporte e pressione Enter" style="display: none;">
+            </div>
+
+            <fieldset id="avaliacao_resultados_fieldset" class="main-fieldset">
+                <legend class="fieldset-legend-main">Avaliação de Resultados (Pós-Partida)</legend>
+                <div class="sub-group">
+                    <p class="question-title">Resultado Final da Operação</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="resultado_green" name="resultado_final" value="Green" required><label for="resultado_green">Green</label></div>
+                        <div class="option-item"><input type="radio" id="resultado_red" name="resultado_final" value="Red"><label for="resultado_red">Red</label></div>
+                    </div>
+                </div>
+                <p style="color: #d4af37; font-style: italic; margin-top: -10px; margin-bottom: 20px;">Se o resultado for "Red", é recomendado detalhar a avaliação abaixo ou em "Outros/OBS".</p>
+                
+                <div class="sub-group">
+                    <p class="question-title">1X2 (O que aconteceu?)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="v_1x2_home" name="v_1x2_avaliacoes[]" value="Home"><label for="v_1x2_home">Home</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_1x2_away" name="v_1x2_avaliacoes[]" value="Away"><label for="v_1x2_away">Away</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_1x2_draw" name="v_1x2_avaliacoes[]" value="Draw"><label for="v_1x2_draw">Draw</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_1x2_hd" name="v_1x2_avaliacoes[]" value="Home&Draw"><label for="v_1x2_hd">Home&Draw</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_1x2_ad" name="v_1x2_avaliacoes[]" value="Away&Draw"><label for="v_1x2_ad">Away&Draw</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Gols (O que aconteceu?)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="v_gols_totais" name="v_gols_avaliacoes[]" value="UO_Totais"><label for="v_gols_totais">U/O - Totais</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_gols_equipes" name="v_gols_avaliacoes[]" value="UO_Equipes"><label for="v_gols_equipes">U/O - Equipes</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_gols_totais_ht" name="v_gols_avaliacoes[]" value="UO_Totais_HT"><label for="v_gols_totais_ht">U/O - Totais - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_gols_equipes_ht" name="v_gols_avaliacoes[]" value="UO_Equipes_HT"><label for="v_gols_equipes_ht">U/O - Equipes - HT</label></div>
+                    </div>
+                </div>
+                 <div class="sub-group">
+                    <p class="question-title">Cartões (O que aconteceu?)</p>
+                     <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="v_cartoes_totais" name="v_cartoes_avaliacoes[]" value="UO_Totais"><label for="v_cartoes_totais">U/O - Totais</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_cartoes_equipes" name="v_cartoes_avaliacoes[]" value="UO_Equipes"><label for="v_cartoes_equipes">U/O - Equipes</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_cartoes_totais_ht" name="v_cartoes_avaliacoes[]" value="UO_Totais_HT"><label for="v_cartoes_totais_ht">U/O - Totais - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_cartoes_equipes_ht" name="v_cartoes_avaliacoes[]" value="UO_Equipes_HT"><label for="v_cartoes_equipes_ht">U/O - Equipes - HT</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Defesas de Goleiro (O que aconteceu?)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="v_defesas_home" name="v_defesas_avaliacoes[]" value="Home"><label for="v_defesas_home">Home</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_defesas_away" name="v_defesas_avaliacoes[]" value="Away"><label for="v_defesas_away">Away</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_defesas_ha" name="v_defesas_avaliacoes[]" value="Home/Away"><label for="v_defesas_ha">Home/Away</label></div>
+                    </div>
+                </div>
+                 <div class="sub-group">
+                    <p class="question-title">Escanteios (O que aconteceu?)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="v_escanteios_totais" name="v_escanteios_avaliacoes[]" value="UO_Totais"><label for="v_escanteios_totais">U/O - Totais</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_escanteios_equipes" name="v_escanteios_avaliacoes[]" value="UO_Equipes"><label for="v_escanteios_equipes">U/O - Equipes</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_escanteios_totais_ht" name="v_escanteios_avaliacoes[]" value="UO_Totais_HT"><label for="v_escanteios_totais_ht">U/O - Totais - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_escanteios_equipes_ht" name="v_escanteios_avaliacoes[]" value="UO_Equipes_HT"><label for="v_escanteios_equipes_ht">U/O - Equipes - HT</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Finalizações (O que aconteceu?)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="v_finalizacoes_totais" name="v_finalizacoes_avaliacoes[]" value="UO_Totais"><label for="v_finalizacoes_totais">U/O - Totais</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_finalizacoes_equipes" name="v_finalizacoes_avaliacoes[]" value="UO_Equipes"><label for="v_finalizacoes_equipes">U/O - Equipes</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_finalizacoes_totais_ht" name="v_finalizacoes_avaliacoes[]" value="UO_Totais_HT"><label for="v_finalizacoes_totais_ht">U/O - Totais - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_finalizacoes_equipes_ht" name="v_finalizacoes_avaliacoes[]" value="UO_Equipes_HT"><label for="v_finalizacoes_equipes_ht">U/O - Equipes - HT</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Finalizações no Gol (O que aconteceu?)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="v_f_gol_totais" name="v_f_gol_avaliacoes[]" value="UO_Totais"><label for="v_f_gol_totais">U/O - Totais</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_f_gol_equipes" name="v_f_gol_avaliacoes[]" value="UO_Equipes"><label for="v_f_gol_equipes">U/O - Equipes</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_f_gol_totais_ht" name="v_f_gol_avaliacoes[]" value="UO_Totais_HT"><label for="v_f_gol_totais_ht">U/O - Totais - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_f_gol_equipes_ht" name="v_f_gol_avaliacoes[]" value="UO_Equipes_HT"><label for="v_f_gol_equipes_ht">U/O - Equipes - HT</label></div>
+                    </div>
+                </div>
+                 <div class="sub-group">
+                    <p class="question-title">Impedimentos (O que aconteceu?)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="v_impedimentos_totais" name="v_impedimentos_avaliacoes[]" value="UO_Totais"><label for="v_impedimentos_totais">U/O - Totais</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_impedimentos_equipes" name="v_impedimentos_avaliacoes[]" value="UO_Equipes"><label for="v_impedimentos_equipes">U/O - Equipes</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_impedimentos_totais_ht" name="v_impedimentos_avaliacoes[]" value="UO_Totais_HT"><label for="v_impedimentos_totais_ht">U/O - Totais - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_impedimentos_equipes_ht" name="v_impedimentos_avaliacoes[]" value="UO_Equipes_HT"><label for="v_impedimentos_equipes_ht">U/O - Equipes - HT</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Outros Mercados (O que aconteceu?)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="v_outros_ambos" name="v_outros_avaliacoes[]" value="ambos_marcam"><label for="v_outros_ambos">Ambos Marcam</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_outros_trave" name="v_outros_avaliacoes[]" value="bola_trave"><label for="v_outros_trave">Bola na Trave</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_outros_handicap" name="v_outros_avaliacoes[]" value="handicap"><label for="v_outros_handicap">Handicap</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_outros_ha" name="v_outros_avaliacoes[]" value="handicap_asiatico"><label for="v_outros_ha">Handicap Asiático</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_outros_penalti" name="v_outros_avaliacoes[]" value="penalti"><label for="v_outros_penalti">Pênalti</label></div>
+                        <div class="option-item"><input type="checkbox" id="v_outros_jogador" name="v_outros_avaliacoes[]" value="especiais_jogador"><label for="v_outros_jogador">Especiais Jogador</label></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="validacao_avaliacao_obs">Outros/OBS (Avaliação de Resultados)</label>
+                    <textarea id="validacao_avaliacao_obs" name="validacao_avaliacao_obs" rows="4" placeholder="Observações sobre os resultados..."></textarea>
+                </div>
+            </fieldset>
+
+            <fieldset id="revisao_operacao_fieldset" class="main-fieldset">
+                <legend class="fieldset-legend-main">Revisão da Operação</legend>
+
+                <div class="sub-group">
+                    <p class="question-title">Operação bem-sucedida (Operacionalmente)?</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="rev_op_sim" name="revisao_status_operacao" value="Sim" required><label for="rev_op_sim">Sim</label></div>
+                        <div class="option-item"><input type="radio" id="rev_op_nao" name="revisao_status_operacao" value="Nao"><label for="rev_op_nao">Não</label></div>
+                        <div class="option-item"><input type="radio" id="rev_op_canc_parte" name="revisao_status_operacao" value="Cancelada_Parte"><label for="rev_op_canc_parte">Cancelada - Parte</label></div>
+                        <div class="option-item"><input type="radio" id="rev_op_canc_contra" name="revisao_status_operacao" value="Cancelada_Contraparte"><label for="rev_op_canc_contra">Cancelada - Contraparte</label></div>
+                        <div class="option-item"><input type="radio" id="rev_op_devolvida" name="revisao_status_operacao" value="Devolvida"><label for="rev_op_devolvida">Devolvida</label></div>
+                        <div class="option-item"><input type="radio" id="rev_op_parcial" name="revisao_status_operacao" value="Parcialmente"><label for="rev_op_parcial">Parcialmente</label></div>
+                    </div>
+                </div>
+
+                <div class="sub-group">
+                    <p class="question-title">Cash Out?</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="rev_cashout_sim" name="revisao_cash_out" value="Sim" required><label for="rev_cashout_sim">Sim</label></div>
+                        <div class="option-item"><input type="radio" id="rev_cashout_nao" name="revisao_cash_out" value="Nao"><label for="rev_cashout_nao">Não</label></div>
+                    </div>
+                </div>
+
+                <div class="sub-group">
+                    <p class="question-title">Cobertura (Hedge)?</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="rev_cobertura_sim" name="revisao_cobertura" value="Sim" required><label for="rev_cobertura_sim">Sim</label></div>
+                        <div class="option-item"><input type="radio" id="rev_cobertura_nao" name="revisao_cobertura" value="Nao"><label for="rev_cobertura_nao">Não</label></div>
+                        <div class="option-item"><input type="radio" id="rev_cobertura_middle" name="revisao_cobertura" value="Middle"><label for="rev_cobertura_middle">Middle</label></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="revisao_retorno_odd">Retorno Alcançado (Odd Efetiva da Operação)</label>
+                    <input type="number" id="revisao_retorno_odd" name="revisao_retorno_odd" placeholder="Ex: 2.10 ou 0.00 se perdida" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="revisao_nova_unidade">Nova Unidade (após esta operação, se alterada)</label>
+                    <input type="number" id="revisao_nova_unidade" name="revisao_nova_unidade" placeholder="Ex: 1.5" step="0.1">
+                </div>
+
+                <div class="sub-group">
+                    <p class="question-title">Operação Bem sucedida até o Fim da Partida?</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="rev_op_ate_fim_sim" name="revisao_op_ate_fim" value="Sim" required><label for="rev_op_ate_fim_sim">Sim</label></div>
+                        <div class="option-item"><input type="radio" id="rev_op_ate_fim_nao" name="revisao_op_ate_fim" value="Nao"><label for="rev_op_ate_fim_nao">Não</label></div>
+                    </div>
+                </div>
+
+                <div class="sub-group">
+                    <p class="question-title">Correspondência da Análise com (selecione um ou mais):</p>
+                    <div id="revisao_correspondencia_checkbox_container" class="options-container" style="flex-direction: column; align-items: flex-start;">
+                        <div class="option-item"><input type="checkbox" id="corresp_relatorio" name="revisao_correspondencia_predefinida[]" value="Relatório"><label for="corresp_relatorio">Relatório</label></div>
+                        <div class="option-item"><input type="checkbox" id="corresp_analise_pessoal" name="revisao_correspondencia_predefinida[]" value="Análise Pessoal"><label for="corresp_analise_pessoal">Análise Pessoal</label></div>
+                        <div class="option-item"><input type="checkbox" id="corresp_predicoes" name="revisao_correspondencia_predefinida[]" value="Predições Estatísticas"><label for="corresp_predicoes">Predições Estatísticas</label></div>
+                        <div class="option-item"><input type="checkbox" id="corresp_prognosticos" name="revisao_correspondencia_predefinida[]" value="Prognosticos e Tips"><label for="corresp_prognosticos">Prognosticos e Tips</label></div>
+                        <div class="option-item"><input type="checkbox" id="corresp_h2h" name="revisao_correspondencia_predefinida[]" value="H2H"><label for="corresp_h2h">H2H</label></div>
+                        </div>
+                    <label for="revisao_correspondencia_outro_texto" style="margin-top:15px; display:block; font-weight:normal;">Adicionar outra Correspondência (será salva na lista):</label>
+                    <input type="text" id="revisao_correspondencia_outro_texto" name="revisao_correspondencia_outro_texto" class="dynamic-input" placeholder="Digite para adicionar nova correspondência">
+                </div>
+
+                <div id="analise_partida_container" class="sub-group">
+                    <p class="question-title">Análise da Partida (selecione ao menos uma):</p>
+                    <div class="options-container" style="flex-direction: column; align-items: flex-start;">
+                        <div class="option-item"><input type="checkbox" id="ap_dentro_esperado" name="analise_partida_opcoes[]" value="Dentro do Esperado"><label for="ap_dentro_esperado">Dentro do Esperado</label></div>
+                        <div class="option-item"><input type="checkbox" id="ap_under" name="analise_partida_opcoes[]" value="Under"><label for="ap_under">Under</label></div>
+                        <div class="option-item"><input type="checkbox" id="ap_over" name="analise_partida_opcoes[]" value="Over"><label for="ap_over">Over</label></div>
+                        <div class="option-item"><input type="checkbox" id="ap_truncada" name="analise_partida_opcoes[]" value="Truncada"><label for="ap_truncada">Truncada</label></div>
+                        <div class="option-item"><input type="checkbox" id="ap_aberta" name="analise_partida_opcoes[]" value="Aberta"><label for="ap_aberta">Aberta</label></div>
+                        <div class="option-item"><input type="checkbox" id="ap_zebra" name="analise_partida_opcoes[]" value="Zebra"><label for="ap_zebra">Zebra</label></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="revisao_texto">Revisão Detalhada da Operação</label>
+                    <textarea id="revisao_texto" name="revisao_texto" rows="5" placeholder="Análise do que ocorreu, aprendizados, pontos positivos/negativos, etc..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="revisao_obs_final">Outros / OBS (Revisão)</label>
+                    <textarea id="revisao_obs_final" name="revisao_obs_final" rows="3" placeholder="Observações adicionais sobre a revisão..."></textarea>
+                </div>
+            </fieldset>
+
+            <button type="submit" class="submit-button">Salvar Validação</button>
+        </form>
+    </div>
+
+    <script>
+        function populateSelect(selectId, optionsArray) {
+            const selectElement = document.getElementById(selectId);
+            if (!selectElement) return;
+            const otherOption = selectElement.querySelector('option[value^="outro_"]');
+            const placeholderOption = selectElement.options[0]; 
+            for (let i = selectElement.options.length - 1; i >= 0; i--) {
+                const currentOption = selectElement.options[i];
+                if (currentOption !== placeholderOption && currentOption !== otherOption) {
+                    selectElement.remove(i);
+                }
+            }
+            let sortedOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
+            sortedOptions.sort((a, b) => String(a).localeCompare(String(b)));
+            sortedOptions.forEach(optionText => {
+                if (optionText === null || optionText === undefined || String(optionText).trim() === "") return;
+                let optionExists = false;
+                for(let k=0; k < selectElement.options.length; k++) {
+                    if(selectElement.options[k].value === optionText) { optionExists = true; break; }
+                }
+                if(optionExists) return;
+                const option = document.createElement('option');
+                option.value = optionText;
+                option.textContent = optionText;
+                if (otherOption) { selectElement.insertBefore(option, otherOption); } 
+                else { selectElement.appendChild(option); }
+            });
+        }
+
+        function populateCheckboxGroup(containerId, checkboxName, optionsArray) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            let sortedOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
+            sortedOptions.sort((a, b) => String(a).localeCompare(String(b)));
+            sortedOptions.forEach(optionText => {
+                if (optionText === null || optionText === undefined || String(optionText).trim() === "") return;
+                let checkboxExists = false;
+                const existingCheckboxes = container.querySelectorAll('input[type="checkbox"]');
+                existingCheckboxes.forEach(cb => {
+                    if (cb.value === optionText) { checkboxExists = true; }
+                });
+                if (checkboxExists) return;
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option-item';
+                const checkboxInput = document.createElement('input');
+                checkboxInput.type = 'checkbox';
+                const checkboxId = checkboxName.replace('[]','') + '_' + String(optionText).replace(/\s+/g, '_').replace(/[^\w]/gi, '').toLowerCase();
+                checkboxInput.id = checkboxId;
+                checkboxInput.name = checkboxName; 
+                checkboxInput.value = optionText;
+                const checkboxLabel = document.createElement('label');
+                checkboxLabel.htmlFor = checkboxInput.id;
+                checkboxLabel.textContent = optionText;
+                optionDiv.appendChild(checkboxInput);
+                optionDiv.appendChild(checkboxLabel);
+                container.appendChild(optionDiv);
+            });
+        }
+
+        function setupDynamicSelect(selectId, inputId, optionValueToTrigger, isNumeric, suffix) {
+            const selectElement = document.getElementById(selectId);
+            const inputElement = document.getElementById(inputId);
+            if (!selectElement || !inputElement) { return; }
+            selectElement.addEventListener('change', function() {
+                if (this.value === optionValueToTrigger) {
+                    inputElement.style.display = 'block';
+                    inputElement.focus();
+                } else {
+                    inputElement.style.display = 'none';
+                }
+            });
+            inputElement.addEventListener('keydown', function(event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    let newText = inputElement.value.trim();
+                    if (newText) {
+                        if (isNumeric && isNaN(newText)) {
+                            alert("Por favor, insira um valor numérico."); return;
+                        }
+                        if (suffix) { newText += suffix; }
+                        let optionExists = false;
+                        for(let i=0; i < selectElement.options.length; i++) {
+                            if(selectElement.options[i].value.toLowerCase() === newText.toLowerCase()) {
+                                selectElement.value = selectElement.options[i].value; optionExists = true; break;
+                            }
+                        }
+                        if (!optionExists) {
+                            const currentOptionTexts = [];
+                            for (let i = 0; i < selectElement.options.length; i++) {
+                                const opt = selectElement.options[i];
+                                if (opt.value && opt.value !== optionValueToTrigger && !opt.disabled) {
+                                    currentOptionTexts.push(opt.textContent);
+                                }
+                            }
+                            currentOptionTexts.push(newText);
+                            populateSelect(selectId, currentOptionTexts);
+                            selectElement.value = newText;
+                        }
+                        inputElement.value = '';
+                        inputElement.style.display = 'none';
+                        selectElement.dispatchEvent(new Event('change'));
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec";
+            
+            fetch(scriptUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) { 
+                        console.error("Erro ao buscar listas:", data.error);
+                        document.getElementById('estrategia_select_val').options[0].textContent = "Erro ao carregar";
+                        document.getElementById('esporte_select_val').options[0].textContent = "Erro ao carregar";
+                        const checkboxContainer = document.getElementById('revisao_correspondencia_checkbox_container');
+                        if(checkboxContainer) checkboxContainer.insertAdjacentHTML('beforeend', '<p style="font-style:italic; color: #EAF9E1;">Erro ao carregar opções de correspondência.</p>');
+                        return; 
+                    }
+                    if (data.Estrategias) populateSelect('estrategia_select_val', data.Estrategias);
+                    if (data.Esportes) populateSelect('esporte_select_val', data.Esportes);
+                    if (data.CorrespondenciaItens) {
+                        populateCheckboxGroup(
+                            'revisao_correspondencia_checkbox_container', 
+                            'revisao_correspondencia_predefinida[]', 
+                            data.CorrespondenciaItens
+                        );
+                    }
+                    console.log("Listas dinâmicas para Validação carregadas.");
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar listas do Google Sheet:', error);
+                    document.getElementById('estrategia_select_val').options[0].textContent = "Falha no carregamento";
+                    document.getElementById('esporte_select_val').options[0].textContent = "Falha no carregamento";
+                    const checkboxContainer = document.getElementById('revisao_correspondencia_checkbox_container');
+                    if(checkboxContainer) checkboxContainer.insertAdjacentHTML('beforeend', '<p style="font-style:italic; color: #EAF9E1;">Falha ao carregar opções de correspondência.</p>');
+                });
+
+            setupDynamicSelect('estrategia_select_val', 'outra_estrategia_val_input', 'outro_estrategia_val');
+            setupDynamicSelect('esporte_select_val', 'outro_esporte_val_input', 'outro_esporte_val');
+
+            const form = document.getElementById('validacaoForm');
+            const resultadoRedRadio = document.getElementById('resultado_red');
+            const avaliacaoFieldset = document.getElementById('avaliacao_resultados_fieldset');
+            const obsTextareaAvaliacao = document.getElementById('validacao_avaliacao_obs');
+            const analisePartidaContainer = document.getElementById('analise_partida_container');
+            
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    // Validação condicional para "Avaliação de Resultados"
+                    if (resultadoRedRadio && resultadoRedRadio.checked) {
+                        if (avaliacaoFieldset) {
+                            const subitemCheckboxesAvaliacao = avaliacaoFieldset.querySelectorAll('.sub-group input[type="checkbox"]:checked');
+                            let isAnyAvaliacaoSubitemChecked = subitemCheckboxesAvaliacao.length > 0;
+                            
+                            const obsAvaliacaoIsFilled = obsTextareaAvaliacao && obsTextareaAvaliacao.value.trim() !== '';
+                            if (!isAnyAvaliacaoSubitemChecked && !obsAvaliacaoIsFilled) {
+                                alert('Se o resultado for "Red", deve selecionar ao menos uma opção nos subitens de "Avaliação de Resultados" ou preencher "Outros/OBS" da mesma seção.');
+                                event.preventDefault();
+                                avaliacaoFieldset.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                return;
+                            }
+                        }
+                    }
+
+                    // Validação para "Analise da Partida"
+                    if (analisePartidaContainer) {
+                        const analisePartidaCheckboxes = analisePartidaContainer.querySelectorAll('input[type="checkbox"]:checked');
+                        if (analisePartidaCheckboxes.length === 0) {
+                            alert("Por favor, selecione ao menos uma opção em 'Analise da Partida'.");
+                            event.preventDefault();
+                            analisePartidaContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            return; 
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
