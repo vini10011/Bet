@@ -279,9 +279,21 @@
                     selectElement.remove(i);
                 }
             }
-            let sortedOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
-            sortedOptions.sort((a, b) => String(a).localeCompare(String(b)));
-            sortedOptions.forEach(optionText => {
+            let finalOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
+            if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
+                finalOptions.sort((a, b) => {
+                    const numA = parseInt(String(a).replace(/[^0-9]/g, ''), 10);
+                    const numB = parseInt(String(b).replace(/[^0-9]/g, ''), 10);
+                    if (!isNaN(numA) && !isNaN(numB)) { return numB - numA; }
+                    if (!isNaN(numB)) return 1;
+                    if (!isNaN(numA)) return -1;
+                    return String(b).localeCompare(String(a));
+                });
+            } else {
+                finalOptions.sort((a, b) => String(a).localeCompare(String(b)));
+            }
+            
+            finalOptions.forEach(optionText => {
                 if (optionText === null || optionText === undefined || String(optionText).trim() === "") return;
                 let optionExists = false;
                 for(let k=0; k < selectElement.options.length; k++) {
@@ -362,6 +374,19 @@
                                 }
                             }
                             currentOptionTexts.push(newText);
+                            // Ordenação condicional ao adicionar novo item
+                            if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
+                                currentOptionTexts.sort((a, b) => {
+                                    const numA = parseInt(String(a).replace(/[^0-9]/g, ''), 10);
+                                    const numB = parseInt(String(b).replace(/[^0-9]/g, ''), 10);
+                                    if (!isNaN(numA) && !isNaN(numB)) { return numB - numA; }
+                                    if (!isNaN(numB)) return 1;
+                                    if (!isNaN(numA)) return -1;
+                                    return String(b).localeCompare(String(a));
+                                });
+                            } else {
+                                currentOptionTexts.sort((a, b) => String(a).localeCompare(String(b)));
+                            }
                             populateSelect(selectId, currentOptionTexts);
                             selectElement.value = newText;
                         }
@@ -383,12 +408,14 @@
                         console.error("Erro ao buscar listas:", data.error);
                         document.getElementById('estrategia_select_val').options[0].textContent = "Erro ao carregar";
                         document.getElementById('esporte_select_val').options[0].textContent = "Erro ao carregar";
+                        document.getElementById('referencia_realizacao_select').options[0].textContent = "Erro ao carregar Refs";
                         const checkboxContainer = document.getElementById('revisao_correspondencia_checkbox_container');
                         if(checkboxContainer) checkboxContainer.insertAdjacentHTML('beforeend', '<p style="font-style:italic; color: #EAF9E1;">Erro ao carregar opções de correspondência.</p>');
                         return; 
                     }
                     if (data.Estrategias) populateSelect('estrategia_select_val', data.Estrategias);
                     if (data.Esportes) populateSelect('esporte_select_val', data.Esportes);
+                    if (data.Referencias) populateSelect('referencia_realizacao_select', data.Referencias);
                     if (data.CorrespondenciaItens) {
                         populateCheckboxGroup(
                             'revisao_correspondencia_checkbox_container', 
@@ -396,13 +423,13 @@
                             data.CorrespondenciaItens
                         );
                     }
-                     if (data.Referencias) populateSelect('referencia_realizacao_select', data.Referencias);
                     console.log("Listas dinâmicas para Validação carregadas.");
                 })
                 .catch(error => {
                     console.error('Erro ao buscar listas do Google Sheet:', error);
                     document.getElementById('estrategia_select_val').options[0].textContent = "Falha no carregamento";
                     document.getElementById('esporte_select_val').options[0].textContent = "Falha no carregamento";
+                    document.getElementById('referencia_realizacao_select').options[0].textContent = "Falha Refs";
                     const checkboxContainer = document.getElementById('revisao_correspondencia_checkbox_container');
                     if(checkboxContainer) checkboxContainer.insertAdjacentHTML('beforeend', '<p style="font-style:italic; color: #EAF9E1;">Falha ao carregar opções de correspondência.</p>');
                 });
@@ -410,7 +437,6 @@
             setupDynamicSelect('estrategia_select_val', 'outra_estrategia_val_input', 'outro_estrategia_val');
             setupDynamicSelect('esporte_select_val', 'outro_esporte_val_input', 'outro_esporte_val');
             setupDynamicSelect('referencia_realizacao_select', 'outra_referencia_realizacao_input', 'outro_referencia_realizacao');
-
 
             const form = document.getElementById('validacaoForm');
             const resultadoRedRadio = document.getElementById('resultado_red');
@@ -420,12 +446,10 @@
             
             if (form) {
                 form.addEventListener('submit', function(event) {
-                    // Validação condicional para "Avaliação de Resultados"
                     if (resultadoRedRadio && resultadoRedRadio.checked) {
                         if (avaliacaoFieldset) {
                             const subitemCheckboxesAvaliacao = avaliacaoFieldset.querySelectorAll('.sub-group input[type="checkbox"]:checked');
                             let isAnyAvaliacaoSubitemChecked = subitemCheckboxesAvaliacao.length > 0;
-                            
                             const obsAvaliacaoIsFilled = obsTextareaAvaliacao && obsTextareaAvaliacao.value.trim() !== '';
                             if (!isAnyAvaliacaoSubitemChecked && !obsAvaliacaoIsFilled) {
                                 alert('Se o resultado for "Red", deve selecionar ao menos uma opção nos subitens de "Avaliação de Resultados" ou preencher "Outros/OBS" da mesma seção.');
@@ -436,7 +460,6 @@
                         }
                     }
 
-                    // Validação para "Analise da Partida"
                     if (analisePartidaContainer) {
                         const analisePartidaCheckboxes = analisePartidaContainer.querySelectorAll('input[type="checkbox"]:checked');
                         if (analisePartidaCheckboxes.length === 0) {
