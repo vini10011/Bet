@@ -296,8 +296,7 @@
 
             <div class="form-group">
                 <label for="home_team_reordered_select">Home (Equipe da Casa)</label>
-                <select id="home_team_reordered_select" name="home_team_reordered_select" required>
-                    <option value="" disabled selected>Carregando...</option>
+                <select id="home_team_reordered_select" name="home_team_reordered_select" required> <option value="" disabled selected>Carregando...</option>
                     <option value="outro_home_team_reordered">Adicionar Nova Equipe...</option>
                 </select>
                 <input type="text" id="outro_home_team_reordered_input" name="outro_home_team_reordered_input" class="dynamic-input" placeholder="Digite o nome da equipe e pressione Enter" style="display: none;">
@@ -305,8 +304,7 @@
 
             <div class="form-group">
                 <label for="away_team_reordered_select">Away (Equipe Visitante)</label>
-                <select id="away_team_reordered_select" name="away_team_reordered_select" required>
-                    <option value="" disabled selected>Carregando...</option>
+                <select id="away_team_reordered_select" name="away_team_reordered_select" required> <option value="" disabled selected>Carregando...</option>
                     <option value="outro_away_team_reordered">Adicionar Nova Equipe...</option>
                 </select>
                 <input type="text" id="outro_away_team_reordered_input" name="outro_away_team_reordered_input" class="dynamic-input" placeholder="Digite o nome da equipe e pressione Enter" style="display: none;">
@@ -461,7 +459,6 @@
         </form>
     </div>
     <script>
-        // Funções populateSelect, setupDynamicSelect e o DOMContentLoaded para Realização
         function populateSelect(selectId, optionsArray) {
             const selectElement = document.getElementById(selectId);
             if (!selectElement) return;
