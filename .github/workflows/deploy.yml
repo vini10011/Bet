@@ -23,7 +23,7 @@ jobs:
 
       - name: Replace placeholder with commit hash
         run: |
-          sed -i "s|%%VERSION%%|commit: ${{ steps.vars.outputs.sha_short }}|g" index.html
+          sed -i "s|%%VERSION%%|version: ${{ steps.vars.outputs.sha_short }}|g" index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
