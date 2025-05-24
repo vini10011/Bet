@@ -22,6 +22,27 @@
         .option-item label { color: #EAF9E1; font-weight: normal; cursor: pointer; margin-bottom: 0; font-size: 15px; }
         .submit-button { background-color: #d4af37; color: #07251F; border: none; font-weight: bold; cursor: pointer; display: inline-block; margin-top: 20px; padding: 10px 22px; border-radius: 8px; font-size: 17px; font-family: "Times New Roman", serif; }
         
+        /* MODIFICAÇÃO 1: Adição dos estilos para a mensagem de status */
+        #mensagemStatus {
+            display: none;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .sucesso {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        .erro {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+
         @media (max-width: 600px) {
             body { padding: 10px; margin:10px;}
             .form-container { padding: 15px; }
@@ -265,6 +286,7 @@
 
             <button type="submit" class="submit-button">Salvar Validação</button>
         </form>
+        <div id="mensagemStatus"></div>
     </div>
 
     <script>
@@ -438,7 +460,9 @@
             setupDynamicSelect('esporte_select_val', 'outro_esporte_val_input', 'outro_esporte_val');
             setupDynamicSelect('referencia_realizacao_select', 'outra_referencia_realizacao_input', 'outro_referencia_realizacao');
 
+            // MODIFICAÇÃO 3: Substituição da lógica de envio do formulário
             const form = document.getElementById('validacaoForm');
+            const mensagemStatus = document.getElementById('mensagemStatus'); // Pega o div da mensagem
             const resultadoRedRadio = document.getElementById('resultado_red');
             const avaliacaoFieldset = document.getElementById('avaliacao_resultados_fieldset');
             const obsTextareaAvaliacao = document.getElementById('validacao_avaliacao_obs');
@@ -446,6 +470,10 @@
             
             if (form) {
                 form.addEventListener('submit', function(event) {
+                    // Passo 1: Previne o envio padrão do formulário.
+                    event.preventDefault();
+
+                    // Passo 2: SUAS VALIDAÇÕES ORIGINAIS ESTÃO PRESERVADAS AQUI.
                     if (resultadoRedRadio && resultadoRedRadio.checked) {
                         if (avaliacaoFieldset) {
                             const subitemCheckboxesAvaliacao = avaliacaoFieldset.querySelectorAll('.sub-group input[type="checkbox"]:checked');
@@ -453,9 +481,8 @@
                             const obsAvaliacaoIsFilled = obsTextareaAvaliacao && obsTextareaAvaliacao.value.trim() !== '';
                             if (!isAnyAvaliacaoSubitemChecked && !obsAvaliacaoIsFilled) {
                                 alert('Se o resultado for "Red", deve selecionar ao menos uma opção nos subitens de "Avaliação de Resultados" ou preencher "Outros/OBS" da mesma seção.');
-                                event.preventDefault();
                                 avaliacaoFieldset.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                return;
+                                return; // Interrompe se a validação falhar.
                             }
                         }
                     }
@@ -464,11 +491,41 @@
                         const analisePartidaCheckboxes = analisePartidaContainer.querySelectorAll('input[type="checkbox"]:checked');
                         if (analisePartidaCheckboxes.length === 0) {
                             alert("Por favor, selecione ao menos uma opção em 'Analise da Partida'.");
-                            event.preventDefault();
                             analisePartidaContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            return; 
+                            return; // Interrompe se a validação falhar.
                         }
                     }
+
+                    // Passo 3: Oculta o formulário e mostra a mensagem "Enviando...".
+                    form.style.display = 'none';
+                    mensagemStatus.textContent = 'Salvando validação, por favor aguarde...';
+                    mensagemStatus.className = 'sucesso';
+                    mensagemStatus.style.display = 'block';
+
+                    // Passo 4: Envia os dados em segundo plano usando Fetch.
+                    const dadosDoFormulario = new FormData(form);
+                    
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: dadosDoFormulario,
+                    })
+                    .then(response => {
+                        // Passo 5: Mostra a mensagem de sucesso.
+                        mensagemStatus.textContent = 'Validação salva com sucesso! Redirecionando para a página inicial...';
+                        mensagemStatus.className = 'sucesso';
+
+                        // Passo 6: Redireciona para index.html após 2.5 segundos.
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 2500);
+                    })
+                    .catch(error => {
+                        // Em caso de erro de rede, exibe uma mensagem e re-exibe o formulário.
+                        console.error('Erro de rede ao enviar o formulário:', error);
+                        mensagemStatus.textContent = 'Ocorreu um erro ao salvar. Verifique sua conexão e tente novamente.';
+                        mensagemStatus.className = 'erro';
+                        form.style.display = 'block'; 
+                    });
                 });
             }
         });
