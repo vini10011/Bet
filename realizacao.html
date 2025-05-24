@@ -23,7 +23,7 @@
         .submit-button { background-color: #d4af37; color: #07251F; border: none; font-weight: bold; cursor: pointer; display: inline-block; margin-top: 20px; padding: 10px 22px; border-radius: 8px; font-size: 17px; font-family: "Times New Roman", serif; }
         .form-group input[type="file"]::file-selector-button { margin-right: 12px; border: none; background: #d4af37; padding: 7px 10px; border-radius: 5px; color: #07251F; cursor: pointer; font-family: "Times New Roman", serif; font-weight: bold; }
         
-        /* MODIFICAÇÃO 1: Estilos para a mensagem de status */
+        /* Estilos para a mensagem de status (já existentes da melhoria anterior) */
         #mensagemStatus {
             display: none;
             padding: 20px;
@@ -177,7 +177,7 @@
                     <option value="" disabled selected>Carregando ou adicione...</option>
                     <option value="outro_referencia">Adicionar Nova Referência...</option>
                 </select>
-                <input type="text" id="outra_referencia_input" name="outra_referencia_input" class="dynamic-input" placeholder="Digite a nova referência e pressione Enter" style="display: none;">
+                <input type="text" id="outra_referencia_input" name="outra_referencia_input" class="dynamic-input" placeholder="Digite a nova referência" style="display: none;">
             </div>
             
             <div class="form-group">
@@ -186,7 +186,7 @@
                     <option value="" disabled selected>Carregando...</option>
                     <option value="outro_estrategia">Outro...</option>
                 </select>
-                <input type="text" id="outra_estrategia_input" name="outra_estrategia_input" class="dynamic-input" placeholder="Digite a nova estratégia e pressione Enter" style="display: none;">
+                <input type="text" id="outra_estrategia_input" name="outra_estrategia_input" class="dynamic-input" placeholder="Digite a nova estratégia" style="display: none;">
             </div>
 
             <div class="form-group">
@@ -195,7 +195,7 @@
                      <option value="" disabled selected>Carregando...</option>
                      <option value="outro_esporte">Outro...</option>
                 </select>
-                <input type="text" id="outro_esporte_input" name="outro_esporte_input" class="dynamic-input" placeholder="Digite o novo esporte e pressione Enter" style="display: none;">
+                <input type="text" id="outro_esporte_input" name="outro_esporte_input" class="dynamic-input" placeholder="Digite o novo esporte" style="display: none;">
             </div>
 
             <fieldset id="analise_geral_fieldset_realizacao" class="main-fieldset">
@@ -294,7 +294,7 @@
                     <option value="" disabled selected>Carregando...</option>
                     <option value="outro_casa_apostas">Outro...</option>
                 </select>
-                <input type="text" id="outra_casa_apostas_input" name="outra_casa_apostas_input" class="dynamic-input" placeholder="Digite a nova casa e pressione Enter" style="display: none;">
+                <input type="text" id="outra_casa_apostas_input" name="outra_casa_apostas_input" class="dynamic-input" placeholder="Digite a nova casa" style="display: none;">
             </div>
 
             <div class="form-group">
@@ -303,7 +303,7 @@
                     <option value="" disabled selected>Carregando...</option>
                     <option value="outro_campeonato">Adicionar Novo Campeonato...</option>
                 </select>
-                <input type="text" id="outro_campeonato_input" name="outro_campeonato_input" class="dynamic-input" placeholder="Digite o nome do campeonato e pressione Enter" style="display: none;">
+                <input type="text" id="outro_campeonato_input" name="outro_campeonato_input" class="dynamic-input" placeholder="Digite o nome do campeonato" style="display: none;">
             </div>
             
             <div class="form-group">
@@ -312,7 +312,7 @@
                     <option value="" disabled selected>Carregando...</option>
                     <option value="outro_perfil_partida">Outro...</option>
                 </select>
-                <input type="text" id="outro_perfil_partida_input" name="outro_perfil_partida_input" class="dynamic-input" placeholder="Digite o novo perfil e pressione Enter" style="display: none;">
+                <input type="text" id="outro_perfil_partida_input" name="outro_perfil_partida_input" class="dynamic-input" placeholder="Digite o novo perfil" style="display: none;">
             </div>
 
             <div class="form-group">
@@ -321,7 +321,7 @@
                     <option value="" disabled selected>Carregando...</option>
                     <option value="outro_home_team_reordered">Adicionar Nova Equipe...</option>
                 </select>
-                <input type="text" id="outro_home_team_reordered_input" name="outro_home_team_reordered_input" class="dynamic-input" placeholder="Digite o nome da equipe e pressione Enter" style="display: none;">
+                <input type="text" id="outro_home_team_reordered_input" name="outro_home_team_reordered_input" class="dynamic-input" placeholder="Digite o nome da equipe" style="display: none;">
             </div>
 
             <div class="form-group">
@@ -330,7 +330,7 @@
                     <option value="" disabled selected>Carregando...</option>
                     <option value="outro_away_team_reordered">Adicionar Nova Equipe...</option>
                 </select>
-                <input type="text" id="outro_away_team_reordered_input" name="outro_away_team_reordered_input" class="dynamic-input" placeholder="Digite o nome da equipe e pressione Enter" style="display: none;">
+                <input type="text" id="outro_away_team_reordered_input" name="outro_away_team_reordered_input" class="dynamic-input" placeholder="Digite o nome da equipe" style="display: none;">
             </div>
 
             <div class="form-group">
@@ -480,9 +480,99 @@
 
             <button type="submit" class="submit-button">Finalizar Registro de Realização</button>
         </form>
+        <div id="mensagemStatus"></div>
     </div>
     <script>
-        // Funções populateSelect, setupDynamicSelect e o DOMContentLoaded para Realização
+        // MODIFICAÇÃO NA FUNÇÃO setupDynamicSelect para melhor input no celular
+        function setupDynamicSelect(selectId, inputId, optionValueToTrigger, isNumeric, suffix) {
+            const selectElement = document.getElementById(selectId);
+            const inputElement = document.getElementById(inputId);
+            if (!selectElement || !inputElement) { return; }
+
+            const addNewOption = () => {
+                if (inputElement.style.display !== 'block') {
+                    return;
+                }
+                let newText = inputElement.value.trim();
+                if (newText) {
+                    if (isNumeric && isNaN(newText)) {
+                        alert("Por favor, insira um valor numérico.");
+                        inputElement.focus(); 
+                        return;
+                    }
+                    if (suffix) { newText += suffix; }
+
+                    let optionExists = false;
+                    for (let i = 0; i < selectElement.options.length; i++) {
+                        if (selectElement.options[i].value.toLowerCase() === newText.toLowerCase()) {
+                            selectElement.value = selectElement.options[i].value;
+                            optionExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!optionExists) {
+                        const currentOptionTexts = [];
+                        for (let i = 0; i < selectElement.options.length; i++) {
+                            const opt = selectElement.options[i];
+                            if (opt.value && opt.value !== optionValueToTrigger && !opt.disabled) {
+                                currentOptionTexts.push(opt.textContent);
+                            }
+                        }
+                        currentOptionTexts.push(newText);
+                        
+                        if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
+                            currentOptionTexts.sort((a, b) => {
+                                const numA = parseInt(String(a).replace(/[^0-9]/g, ''), 10);
+                                const numB = parseInt(String(b).replace(/[^0-9]/g, ''), 10);
+                                if (!isNaN(numA) && !isNaN(numB)) { return numB - numA; }
+                                if (!isNaN(numB)) return 1;
+                                if (!isNaN(numA)) return -1;
+                                return String(b).localeCompare(String(a));
+                            });
+                        } else {
+                            currentOptionTexts.sort((a, b) => String(a).localeCompare(String(b)));
+                        }
+                        populateSelect(selectId, currentOptionTexts);
+                        selectElement.value = newText;
+                    }
+                    inputElement.value = '';
+                    inputElement.style.display = 'none';
+                    selectElement.dispatchEvent(new Event('change'));
+                } else {
+                    if (selectElement.value === optionValueToTrigger) {
+                        inputElement.style.display = 'none';
+                    }
+                }
+            };
+
+            selectElement.addEventListener('change', function() {
+                if (this.value === optionValueToTrigger) {
+                    inputElement.style.display = 'block';
+                    inputElement.value = ''; 
+                    inputElement.focus();
+                } else {
+                    inputElement.style.display = 'none';
+                    inputElement.value = ''; 
+                }
+            });
+
+            inputElement.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' || event.keyCode === 13) { 
+                    event.preventDefault(); 
+                    addNewOption();
+                }
+            });
+
+            inputElement.addEventListener('blur', function() {
+                setTimeout(() => {
+                    if (inputElement.style.display === 'block') {
+                        addNewOption();
+                    }
+                }, 150); 
+            });
+        }
+
         function populateSelect(selectId, optionsArray) {
             const selectElement = document.getElementById(selectId);
             if (!selectElement) return;
@@ -495,7 +585,6 @@
                 }
             }
             let finalOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
-            // Ordenação condicional baseada no ID do select
             if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
                 finalOptions.sort((a, b) => {
                     const numA = parseInt(String(a).replace(/[^0-9]/g, ''), 10);
@@ -523,67 +612,6 @@
                 else { selectElement.appendChild(option); }
             });
         }
-
-        function setupDynamicSelect(selectId, inputId, optionValueToTrigger, isNumeric, suffix) {
-            const selectElement = document.getElementById(selectId);
-            const inputElement = document.getElementById(inputId);
-            if (!selectElement || !inputElement) { return; }
-            selectElement.addEventListener('change', function() {
-                if (this.value === optionValueToTrigger) {
-                    inputElement.style.display = 'block';
-                    inputElement.focus();
-                } else {
-                    inputElement.style.display = 'none';
-                }
-            });
-            inputElement.addEventListener('keydown', function(event) {
-                if (event.keyCode === 13) {
-                    event.preventDefault();
-                    let newText = inputElement.value.trim();
-                    if (newText) {
-                        if (isNumeric && isNaN(newText)) {
-                            alert("Por favor, insira um valor numérico."); return;
-                        }
-                        if (suffix) { newText += suffix; }
-                        let optionExists = false;
-                        for(let i=0; i < selectElement.options.length; i++) {
-                            if(selectElement.options[i].value.toLowerCase() === newText.toLowerCase()) {
-                                selectElement.value = selectElement.options[i].value; optionExists = true; break;
-                            }
-                        }
-                        if (!optionExists) {
-                            const currentOptionTexts = [];
-                            for (let i = 0; i < selectElement.options.length; i++) {
-                                const opt = selectElement.options[i];
-                                if (opt.value && opt.value !== optionValueToTrigger && !opt.disabled) {
-                                    currentOptionTexts.push(opt.textContent);
-                                }
-                            }
-                            currentOptionTexts.push(newText);
-                            
-                            // Ordenação condicional ao adicionar novo item
-                            if (selectId === 'referencia_select' || selectId === 'referencia_realizacao_select') {
-                                currentOptionTexts.sort((a, b) => {
-                                    const numA = parseInt(String(a).replace(/[^0-9]/g, ''), 10);
-                                    const numB = parseInt(String(b).replace(/[^0-9]/g, ''), 10);
-                                    if (!isNaN(numA) && !isNaN(numB)) { return numB - numA; }
-                                    if (!isNaN(numB)) return 1;
-                                    if (!isNaN(numA)) return -1;
-                                    return String(b).localeCompare(String(a));
-                                });
-                            } else {
-                                currentOptionTexts.sort((a, b) => String(a).localeCompare(String(b)));
-                            }
-                            populateSelect(selectId, currentOptionTexts); // populateSelect não ordena mais, recebe a lista pré-ordenada
-                            selectElement.value = newText;
-                        }
-                        inputElement.value = '';
-                        inputElement.style.display = 'none';
-                        selectElement.dispatchEvent(new Event('change'));
-                    }
-                }
-            });
-        }
         
         document.addEventListener('DOMContentLoaded', function() {
             const scriptUrl = "https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec";
@@ -600,10 +628,7 @@
                         });
                         return; 
                     }
-                    // Passa false para sortAlphabetically para Referencias, pois o doGet já ordenou decrescente
                     if (data.Referencias) populateSelect('referencia_select', data.Referencias);
-                    
-                    // Para outras listas, populateSelect as ordenará A-Z (ou o doGet já as ordenou A-Z)
                     if (data.Equipes) {
                         populateSelect('home_team_reordered_select', data.Equipes);
                         populateSelect('away_team_reordered_select', data.Equipes);
@@ -613,7 +638,7 @@
                     if (data.Esportes) populateSelect('esporte_select', data.Esportes);
                     if (data.CasasDeApostas) populateSelect('casa_apostas_select', data.CasasDeApostas);
                     if (data.PerfisDePartida) populateSelect('perfil_partida_select', data.PerfisDePartida);
-                    if (data.Stakes) populateSelect('stake_select', data.Stakes);
+                    if (data.Stakes) populateSelect('stake_select', data.Stakes); // Supondo que Stakes também venha
                     console.log("Listas dinâmicas para Realização carregadas.");
                 })
                 .catch(error => {
@@ -635,18 +660,51 @@
             setupDynamicSelect('perfil_partida_select', 'outro_perfil_partida_input', 'outro_perfil_partida');
             setupDynamicSelect('stake_select', 'outra_stake_input', 'outro_stake', true, ' Un');
             
+            // MODIFICAÇÃO 3: Lógica de envio do formulário com mensagem de sucesso e redirecionamento
             const formRealizacao = document.getElementById('realizacaoForm');
             const mercadosExploradosFieldsetRealizacao = document.getElementById('mercados_explorados_fieldset_realizacao');
+            const mensagemStatus = document.getElementById('mensagemStatus'); // Pega o div da mensagem
 
-            if (formRealizacao && mercadosExploradosFieldsetRealizacao) {
+            if (formRealizacao) {
                 formRealizacao.addEventListener('submit', function(event) {
-                    const checkedCheckboxesInMercados = mercadosExploradosFieldsetRealizacao.querySelectorAll('input[type="checkbox"]:checked');
-                    if (checkedCheckboxesInMercados.length === 0) {
-                        alert("Por favor, selecione ao menos uma opção em 'Mercados Explorados'.");
-                        event.preventDefault(); 
-                        mercadosExploradosFieldsetRealizacao.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        return false;
+                    event.preventDefault(); // Previne o envio padrão
+                    
+                    // Validação original para 'Mercados Explorados'
+                    if (mercadosExploradosFieldsetRealizacao) {
+                        const checkedCheckboxesInMercados = mercadosExploradosFieldsetRealizacao.querySelectorAll('input[type="checkbox"]:checked');
+                        if (checkedCheckboxesInMercados.length === 0) {
+                            alert("Por favor, selecione ao menos uma opção em 'Mercados Explorados'.");
+                            mercadosExploradosFieldsetRealizacao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            return; // Interrompe se a validação falhar
+                        }
                     }
+
+                    // Lógica de sucesso e redirecionamento
+                    formRealizacao.style.display = 'none';
+                    mensagemStatus.textContent = 'Enviando registro, por favor aguarde...';
+                    mensagemStatus.className = 'sucesso';
+                    mensagemStatus.style.display = 'block';
+
+                    const dadosDoFormulario = new FormData(formRealizacao);
+                    
+                    fetch(formRealizacao.action, {
+                        method: 'POST',
+                        body: dadosDoFormulario,
+                    })
+                    .then(response => {
+                        mensagemStatus.textContent = 'Operação registrada com sucesso! Redirecionando para a página inicial...';
+                        mensagemStatus.className = 'sucesso';
+
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 2500);
+                    })
+                    .catch(error => {
+                        console.error('Erro de rede ao enviar o formulário:', error);
+                        mensagemStatus.textContent = 'Ocorreu um erro ao enviar. Verifique sua conexão e tente novamente.';
+                        mensagemStatus.className = 'erro';
+                        formRealizacao.style.display = 'block'; 
+                    });
                 });
             }
         });
