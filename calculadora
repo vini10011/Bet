@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Suíte de Análise Preditiva e Gestão (v6.3)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBbRMgIBPBTcPXAa00KYfx管ZTCMrTGccw4iSdBNNWY=" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        body {font-family: "Times New Roman", serif; background-color: #07251F; color: #EAF9E1; margin: 10px; padding: 10px;}
+        h2, h3 {text-align: center;}
+        label, input, select, button, .resultado, .report-preview-item {font-family: "Times New Roman", serif; display: block; width: 100%; max-width: 100%; margin: 10px 0; padding: 10px; border-radius: 12px; box-sizing: border-box; font-size: 16px;}
+        input, select {background-color: #EAF9E1; color: #07251F; border: 1px solid #07251F;}
+        button {background-color: #d4af37; color: #07251F; border: none; font-weight: bold; cursor: pointer; width: auto; display: inline-block; margin-right: 10px; margin-top: 20px;}
+        button:hover {opacity: 0.9;}
+        .resultado {background-color: #103a2f; color: #EAF9E1; display: none; white-space: pre-wrap; padding: 15px; border: 1px solid #d4af37; margin-top: 10px; line-height: 1.6;}
+        button.report-action {background-color: #0f4c3a; color: #EAF9E1; border: 1px solid #d4af37;}
+        .botoes-container {display: flex; gap: 10px; margin-top: 10px; margin-bottom: 10px; flex-wrap: wrap;}
+        .context-factors {display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;}
+        fieldset {border: 1px solid #2a5a4a; border-radius: 8px; padding: 10px 15px; margin-top: 15px;}
+        legend {padding: 0 10px; font-weight: bold; color: #d4af37;}
+        fieldset label {display: flex; align-items: center; margin: 8px 0; padding: 0; font-size: 15px; cursor: pointer;}
+        fieldset input[type="checkbox"] {width: auto; margin-right: 10px;}
+        blockquote {background-color: #103a2f; border-left: 5px solid #d4af37; margin: 20px 0; padding: 15px; font-style: italic;}
+        #menu {display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;}
+        #menu button {background-color: #103a2f; color: #EAF9E1; border: 1px solid #d4af37; margin-top: 0;}
+        #menu button.active {background-color: #d4af37; color: #07251F;}
+        .calculadora-container {display: none;}
+        .adjusted-projection-display {background-color: #103a2f; padding: 10px; margin-top: 20px; border-radius: 8px; text-align: center; border: 1px dashed #d4af37; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;}
+        .adjusted-projection-display span {font-size: 16px;}
+        .adjusted-projection-display strong {color: #d4af37; font-size: 18px; display: block; margin-top: 4px;}
+        #previewRelatorio {min-height: 100px; max-height: 300px; overflow-y: auto; border: 1px dashed #d4af37; padding: 10px; margin-top: 10px; background-color: #07251F;}
+        .report-preview-item {font-size: 14px; margin-bottom: 5px; padding: 8px; background-color: #1a5947; white-space: pre-wrap; border: 1px solid #2a5a4a; word-wrap: break-word;}
+        .report-preview-item strong {color: #d4af37; display: block; margin-bottom: 5px; font-size: 16px;}
+        .dutch-grid {display: grid; grid-template-columns: 1fr 1fr; gap: 15px;}
+        hr.input-divider { border: none; border-top: 1px dashed #2a5a4a; margin: 15px 0; }
+        @media (max-width: 600px) {
+            .context-factors, .dutch-grid {grid-template-columns: 1fr;}
+        }
+    </style>
+</head>
+<body>
+    <h2 style="color: #d4af37;">Suíte de Análise Preditiva e Gestão</h2>
+    <div id="menu">
+        <button onclick="showCalculator('gols')">⚽ Gols / Resultado</button>
+        <button onclick="showCalculator('sot_saves')">🥅 Fin. no Gol / Defesas</button>
+        <button onclick="showCalculator('finalizacoes')">🎯 Total de Finalizações</button>
+        <button onclick="showCalculator('escanteios')">📐 Escanteios</button>
+        <button onclick="showCalculator('cartoes')">🟨 Cartões</button>
+        <button onclick="showCalculator('faltas')">🚧 Faltas</button>
+        <button onclick="showCalculator('apostas')">💰 Gestão de Apostas</button>
+        <button onclick="showCalculator('relatorio')">📋 Relatório</button>
+    </div>
+
+    <div id="calculadora-gols" class="calculadora-container">
+        <h3>Calculadora de Gols / Resultado</h3>
+        <fieldset><legend>1. Dados de Performance (Base, H2H e Eficiência)</legend>
+            <label for="gols_xg_proprio_casa">Média xG Próprio (Casa)</label><input type="text" id="gols_xg_proprio_casa"/>
+            <label for="gols_xga_oponente_visitante">Média xGA Sofrido pelo Oponente (Visitante jogando Fora)</label><input type="text" id="gols_xga_oponente_visitante"/>
+            <hr class="input-divider">
+            <label for="gols_xg_proprio_visitante">Média xG Próprio (Visitante)</label><input type="text" id="gols_xg_proprio_visitante"/>
+            <label for="gols_xga_oponente_casa">Média xGA Sofrido pelo Oponente (Casa jogando em Casa)</label><input type="text" id="gols_xga_oponente_casa"/>
+            <hr class="input-divider">
+            <label for="gols_xg_h2h_casa">xG H2H Próprio (Casa) - (Opcional: últimas 2/3 partidas no mando)</label><input type="text" id="gols_xg_h2h_casa" placeholder="Opcional"/>
+            <label for="gols_xga_h2h_visitante">xGA H2H Oponente (Visitante) - (Opcional: últimas 2/3 partidas no mando)</label><input type="text" id="gols_xga_h2h_visitante" placeholder="Opcional"/>
+             <hr class="input-divider">
+            <label for="gols_xg_h2h_visitante">xG H2H Próprio (Visitante) - (Opcional: últimas 2/3 partidas no mando)</label><input type="text" id="gols_xg_h2h_visitante" placeholder="Opcional"/>
+            <label for="gols_xga_h2h_casa">xGA H2H Oponente (Casa) - (Opcional: últimas 2/3 partidas no mando)</label><input type="text" id="gols_xga_h2h_casa" placeholder="Opcional"/>
+            <hr class="input-divider">
+            <label for="gols_eficiencia_casa">Fator Eficiência Gols (Casa) (Opcional, Ex: 1.1 p/ +10%)</label><input type="text" id="gols_eficiencia_casa" placeholder="Padrão: 1.0"/>
+            <label for="gols_eficiencia_visitante">Fator Eficiência Gols (Visitante) (Opcional, Ex: 0.9 p/ -10%)</label><input type="text" id="gols_eficiencia_visitante" placeholder="Padrão: 1.0"/>
+        </fieldset>
+        <div id="fatores-contextuais-gols"></div>
+        <div class="adjusted-projection-display">
+            <span>λ Casa FINAL<strong id="displayLambdaCasa">0,000</strong></span>
+            <span>λ Visitante FINAL<strong id="displayLambdaVisitante">0,000</strong></span>
+        </div>
+        <button onclick="calcularDixonColes()">Calcular Probabilidades de Gols</button>
+        <button class="report-action" onclick="adicionarAoRelatorio('gols')">Adicionar ao Relatório</button>
+        <div class="resultado" id="resultado_gols"></div>
+    </div>
+
+    <div id="calculadora-sot_saves" class="calculadora-container">
+        <h3>Calculadora de Fin. no Gol & Defesas</h3>
+        <fieldset><legend>1. Dados de Performance (Base e Goleiros)</legend>
+            <label for="sot_saves_pro_casa">Média SoT Pró (Casa)</label><input type="text" id="sot_saves_pro_casa"/>
+            <label for="sot_saves_contra_visitante">Média SoT Cedidas (Visitante)</label><input type="text" id="sot_saves_contra_visitante"/>
+            <hr class="input-divider">
+            <label for="sot_saves_pro_visitante">Média SoT Pró (Visitante)</label><input type="text" id="sot_saves_pro_visitante"/>
+            <label for="sot_saves_contra_casa">Média SoT Cedidas (Casa)</label><input type="text" id="sot_saves_contra_casa"/>
+            <hr class="input-divider">
+            <label for="sot_saves_gk_savepct_casa">% Defesa Goleiro Casa (Opcional)</label>
+            <input type="text" id="sot_saves_gk_savepct_casa" placeholder="Ex: 75 para 75%"/>
+            <label for="sot_saves_gk_savepct_visitante">% Defesa Goleiro Visitante (Opcional)</label>
+            <input type="text" id="sot_saves_gk_savepct_visitante" placeholder="Ex: 81 para 81%"/>
+        </fieldset>
+        <div id="fatores-contextuais-sot_saves"></div>
+        <div class="adjusted-projection-display">
+            <span>SoT Casa FINAL<strong id="displaySotCasa">0,0</strong></span>
+            <span>SoT Visitante FINAL<strong id="displaySotVisitante">0,0</strong></span>
+        </div>
+        <button onclick="calcularSoTSaves()">Calcular Projeção de SoT / Defesas</button>
+        <button class="report-action" onclick="adicionarAoRelatorio('sot_saves')">Adicionar ao Relatório</button>
+        <div class="resultado" id="resultado_sot_saves"></div>
+    </div>
+    
+    <div id="calculadora-finalizacoes" class="calculadora-container">
+        <h3>Calculadora de Total de Finalizações</h3>
+        <fieldset><legend>1. Dados de Performance (Base)</legend>
+            <label for="finalizacoes_pro_casa">Média Finalizações Pró (Casa)</label><input type="text" id="finalizacoes_pro_casa"/>
+            <label for="finalizacoes_contra_visitante">Média Finalizações Cedidas (Visitante)</label><input type="text" id="finalizacoes_contra_visitante"/>
+            <hr class="input-divider">
+            <label for="finalizacoes_pro_visitante">Média Finalizações Pró (Visitante)</label><input type="text" id="finalizacoes_pro_visitante"/>
+            <label for="finalizacoes_contra_casa">Média Finalizações Cedidas (Casa)</label><input type="text" id="finalizacoes_contra_casa"/>
+        </fieldset>
+        <div id="fatores-contextuais-finalizacoes"></div>
+        <div class="adjusted-projection-display">
+            <span>Finalizações Casa FINAL<strong id="displayFinCasa">0,0</strong></span>
+            <span>Finalizações Visitante FINAL<strong id="displayFinVisitante">0,0</strong></span>
+        </div>
+        <button onclick="calcularFinalizacoes()">Calcular Projeção de Finalizações</button>
+        <button class="report-action" onclick="adicionarAoRelatorio('finalizacoes')">Adicionar ao Relatório</button>
+        <div class="resultado" id="resultado_finalizacoes"></div>
+    </div>
+
+    <div id="calculadora-escanteios" class="calculadora-container">
+        <h3>Calculadora de Escanteios</h3>
+        <fieldset><legend>1. Dados de Performance (Base)</legend>
+            <label for="escanteios_pro_casa">Média Escanteios Pró (Casa)</label><input type="text" id="escanteios_pro_casa"/>
+            <label for="escanteios_contra_visitante">Média Escanteios Cedidos (Visitante)</label><input type="text" id="escanteios_contra_visitante"/>
+            <hr class="input-divider">
+            <label for="escanteios_pro_visitante">Média Escanteios Pró (Visitante)</label><input type="text" id="escanteios_pro_visitante"/>
+            <label for="escanteios_contra_casa">Média Escanteios Cedidos (Casa)</label><input type="text" id="escanteios_contra_casa"/>
+        </fieldset>
+        <div id="fatores-contextuais-escanteios"></div>
+         <div class="adjusted-projection-display">
+            <span>Escanteios Casa FINAL<strong id="displayEscCasa">0,0</strong></span>
+            <span>Escanteios Visitante FINAL<strong id="displayEscVisitante">0,0</strong></span>
+        </div>
+        <button onclick="calcularEscanteios()">Calcular Projeção de Escanteios</button>
+        <button class="report-action" onclick="adicionarAoRelatorio('escanteios')">Adicionar ao Relatório</button>
+        <div class="resultado" id="resultado_escanteios"></div>
+    </div>
+
+    <div id="calculadora-cartoes" class="calculadora-container">
+        <h3>Calculadora de Cartões</h3>
+        <fieldset><legend>1. Dados de Performance (Base e H2H)</legend>
+            <label for="cartoes_media_arbitro">Média de Cartões do Árbitro (por partida)</label><input type="text" id="cartoes_media_arbitro"/>
+            <hr class="input-divider">
+            <label for="cartoes_time_casa">Média de Cartões Recebidos (Time da Casa)</label><input type="text" id="cartoes_time_casa"/>
+            <label for="cartoes_time_visitante">Média de Cartões Recebidos (Time Visitante)</label><input type="text" id="cartoes_time_visitante"/>
+            <hr class="input-divider">
+            <label for="cartoes_h2h_casa">Cartões H2H (Casa) - (Opcional: considerar mando últimas 2/3 partidas)</label><input type="text" id="cartoes_h2h_casa" placeholder="Opcional"/>
+            <label for="cartoes_h2h_visitante">Cartões H2H (Visitante) - (Opcional: considerar mando últimas 2/3 partidas)</label><input type="text" id="cartoes_h2h_visitante" placeholder="Opcional"/>
+        </fieldset>
+        <div id="fatores-contextuais-cartoes"></div>
+        <div class="adjusted-projection-display">
+            <span>Cartões Casa FINAL<strong id="displayCartCasa">0,0</strong></span>
+            <span>Cartões Visitante FINAL<strong id="displayCartVisitante">0,0</strong></span>
+        </div>
+        <button onclick="calcularCartoes()">Calcular Projeção de Cartões</button>
+        <button class="report-action" onclick="adicionarAoRelatorio('cartoes')">Adicionar ao Relatório</button>
+        <div class="resultado" id="resultado_cartoes"></div>
+    </div>
+    
+    <div id="calculadora-faltas" class="calculadora-container">
+        <h3>Calculadora de Faltas</h3>
+        <fieldset><legend>1. Dados de Performance (Base, Árbitro e H2H)</legend>
+            <label for="faltas_media_arbitro">Média de Faltas do Árbitro (por partida)</label><input type="text" id="faltas_media_arbitro"/>
+            <hr class="input-divider">
+            <label for="faltas_cometidas_media_casa">Média Faltas Cometidas (Casa)</label><input type="text" id="faltas_cometidas_media_casa"/>
+            <label for="faltas_sofridas_media_visitante">Média Faltas Sofridas pelo Oponente (Visitante)</label><input type="text" id="faltas_sofridas_media_visitante"/>
+            <hr class="input-divider">
+            <label for="faltas_cometidas_media_visitante">Média Faltas Cometidas (Visitante)</label><input type="text" id="faltas_cometidas_media_visitante"/>
+            <label for="faltas_sofridas_media_casa">Média Faltas Sofridas pelo Oponente (Casa)</label><input type="text" id="faltas_sofridas_media_casa"/>
+            <hr class="input-divider">
+            <label for="faltas_cometidas_h2h_casa">Faltas Cometidas H2H (Casa) - (Opcional: últimas 2/3 partidas no mando)</label><input type="text" id="faltas_cometidas_h2h_casa" placeholder="Opcional"/>
+            <label for="faltas_sofridas_h2h_visitante">Faltas Sofridas H2H pelo Oponente (Visitante) - (Opcional: últimas 2/3 partidas no mando)</label><input type="text" id="faltas_sofridas_h2h_visitante" placeholder="Opcional"/>
+            <hr class="input-divider">
+            <label for="faltas_cometidas_h2h_visitante">Faltas Cometidas H2H (Visitante) - (Opcional: últimas 2/3 partidas no mando)</label><input type="text" id="faltas_cometidas_h2h_visitante" placeholder="Opcional"/>
+            <label for="faltas_sofridas_h2h_casa">Faltas Sofridas H2H pelo Oponente (Casa) - (Opcional: últimas 2/3 partidas no mando)</label><input type="text" id="faltas_sofridas_h2h_casa" placeholder="Opcional"/>
+        </fieldset>
+        <div id="fatores-contextuais-faltas"></div>
+        <div class="adjusted-projection-display">
+            <span>Faltas Casa FINAL<strong id="displayFaltasCasa">0,0</strong></span>
+            <span>Faltas Visitante FINAL<strong id="displayFaltasVisitante">0,0</strong></span>
+        </div>
+        <button onclick="calcularFaltas()">Calcular Projeção de Faltas</button>
+        <button class="report-action" onclick="adicionarAoRelatorio('faltas')">Adicionar ao Relatório</button>
+        <div class="resultado" id="resultado_faltas"></div>
+    </div>
+
+    <div id="calculadora-apostas" class="calculadora-container">
+        <h3>Calculadoras de Gestão de Apostas</h3>
+        <fieldset>
+            <legend>Calculadora de Unidade (Critério de Kelly)</legend>
+            <label for="kelly_banca">Valor Total da Banca (R$)</label><input type="text" id="kelly_banca" placeholder="Ex: 1000"/>
+            <label for="kelly_odd">Odd </label><input type="text" id="kelly_odd" placeholder="Ex: 2.50"/>
+            <label for="kelly_prob">Probabilidade (%)</label><input type="text" id="kelly_prob" placeholder="Ex: 45"/>
+            <label for="kelly_fator">Fator de Risco (Kelly Fracionado)</label>
+            <select id="kelly_fator">
+                <option value="1">Full Kelly (Risco Máximo)</option>
+                <option value="0.5" selected>Half Kelly (Recomendado)</option>
+                <option value="0.25">Quarter Kelly (Conservador)</option>
+            </select>
+            <button onclick="calcularKelly()">Calcular Unidade</button>
+            <button class="report-action" onclick="adicionarAoRelatorio('kelly')">Adicionar ao Relatório</button>
+            <div class="resultado" id="resultado_kelly"></div>
+        </fieldset>
+        <fieldset>
+            <legend>Calculadora de Cobertura (Hedge)</legend>
+            <label for="hedge_valor1">Valor da 1ª Aposta</label><input type="text" id="hedge_valor1"/>
+            <label for="hedge_odd1">1ª Odd</label><input type="text" id="hedge_odd1"/>
+            <label for="hedge_odd2">2ª Odd (Odd de Cobertura)</label><input type="text" id="hedge_odd2"/>
+            <label for="hedge_valor2">Valor da 2ª Aposta (opcional)</label><input type="text" id="hedge_valor2"/>
+            <div class="botoes-container">
+                <button onclick="calcularHedge()">Calcular Cobertura</button>
+                <button onclick="fecharPosicao()">Fechar Posição (Lucro Igual)</button>
+            </div>
+            <button class="report-action" onclick="adicionarAoRelatorio('hedge')">Adicionar ao Relatório</button>
+            <div class="resultado" id="resultado_hedge"></div>
+        </fieldset>
+        <fieldset>
+            <legend>Calculadora de Dutching (Valor Total)</legend>
+            <label for="dutch_total_valor">Valor Total a ser Apostado</label><input type="text" id="dutch_total_valor"/>
+            <div class="dutch-grid">
+                <div><label>1ª Odd</label><input type="text" id="dutch_total_odd1" /></div>
+                <div><label>2ª Odd</label><input type="text" id="dutch_total_odd2" /></div>
+                <div><label>3ª Odd</label><input type="text" id="dutch_total_odd3" /></div>
+                <div><label>4ª Odd</label><input type="text" id="dutch_total_odd4" /></div>
+            </div>
+            <button onclick="calcularDutchingPorTotal()">Calcular Dutching Total</button>
+            <button class="report-action" onclick="adicionarAoRelatorio('dutching_total')">Adicionar ao Relatório</button>
+            <div class="resultado" id="resultado_dutching_total"></div>
+        </fieldset>
+        <fieldset>
+            <legend>Calculadora de Dutching (Otimizado por Probabilidade)</legend>
+            <label for="dutch_prob_total_valor">Valor Total a ser Apostar</label><input type="text" id="dutch_prob_total_valor"/>
+            <div class="dutch-grid">
+                <div><label>1ª Odd</label><input type="text" id="dutch_prob_odd_1"/></div>
+                <div><label>Probabildade 1 (%)</label><input type="text" id="dutch_prob_chance_1"/></div>
+                <div><label>2ª Odd</label><input type="text" id="dutch_prob_odd_2"/></div>
+                <div><label>Probabildade 2 (%)</label><input type="text" id="dutch_prob_chance_2"/></div>
+                <div><label>3ª Odd</label><input type="text" id="dutch_prob_odd_3"/></div>
+                <div><label>Probabildade 3 (%)</label><input type="text" id="dutch_prob_chance_3"/></div>
+                <div><label>4ª Odd</label><input type="text" id="dutch_prob_odd_4"/></div>
+                <div><label>Probabildade 4 (%)</label><input type="text" id="dutch_prob_chance_4"/></div>
+            </div>
+            <button onclick="calcularDutchingOtimizado()">Calcular Dutching Otimizado</button>
+            <button class="report-action" onclick="adicionarAoRelatorio('dutching_otimizado')">Adicionar ao Relatório</button>
+            <div class="resultado" id="resultado_dutching_otimizado"></div>
+        </fieldset>
+        <fieldset>
+            <legend>Calculadora de Dutching (Valores Individuais)</legend>
+             <div class="dutch-grid">
+                <div><label>Valor da 1ª Aposta</label><input type="text" id="dutch_val_1"/><label>1ª Odd</label><input type="text" id="dutch_odd_1"/></div>
+                <div><label>Valor da 2ª Aposta</label><input type="text" id="dutch_val_2"/><label>2ª Odd</label><input type="text" id="dutch_odd_2"/></div>
+                <div><label>Valor da 3ª Aposta</label><input type="text" id="dutch_val_3"/><label>3ª Odd</label><input type="text" id="dutch_odd_3"/></div>
+                <div><label>Valor da 4ª Aposta</label><input type="text" id="dutch_val_4"/><label>4ª Odd</label><input type="text" id="dutch_odd_4"/></div>
+                <div><label>Valor da 5ª Aposta</label><input type="text" id="dutch_val_5"/><label>5ª Odd</label><input type="text" id="dutch_odd_5"/></div>
+                <div><label>Valor da 6ª Aposta</label><input type="text" id="dutch_val_6"/><label>6ª Odd</label><input type="text" id="dutch_odd_6"/></div>
+             </div>
+            <button onclick="calcularDutchingPorValores()">Calcular Dutching Individual</button>
+            <button class="report-action" onclick="adicionarAoRelatorio('dutching_valores')">Adicionar ao Relatório</button>
+            <div class="resultado" id="resultado_dutching_valores"></div>
+        </fieldset>
+    </div>
+
+    <div id="calculadora-relatorio" class="calculadora-container">
+        <h3>Relatório Consolidado</h3>
+        <blockquote style="text-align: center;">Visualize as análises, gere um PDF ou limpe os dados.</blockquote>
+        <div id="previewRelatorio"></div>
+        <div class="botoes-container" style="justify-content: center;">
+            <button onclick="gerarPdfRelatorio()">Gerar e Baixar PDF</button>
+            <button class="report-action" onclick="zerarRelatorio()">Zerar Relatório</button>
+        </div>
+    </div>
+
+<script>
+// ===================================================================================
+// SEÇÃO 0: ESTADO GLOBAL E FUNÇÕES AUXILIARES
+// ===================================================================================
+let relatorioDados = [];
+const parseInput = (id) => { const el = document.getElementById(id); if (!el || el.value.trim() === '') return NaN; return parseFloat(String(el.value).replace(',', '.')); };
+const formatOutput = (n, dec=2) => { if (isNaN(n) || n === null) return 'N/A'; return n.toFixed(dec).replace('.', ','); };
+const isChecked = (id) => document.getElementById(id) ? document.getElementById(id).checked : false;
+const getValue = (id) => document.getElementById(id) ? document.getElementById(id).value : 'normal';
+
+// ===================================================================================
+// SEÇÃO 1: NAVEGAÇÃO E RELATÓRIO
+// ===================================================================================
+function showCalculator(id) {
+    document.querySelectorAll('.calculadora-container').forEach(d => d.style.display = 'none');
+    document.getElementById(`calculadora-${id}`).style.display = 'block';
+    document.querySelectorAll('#menu button').forEach(b => {
+        b.classList.remove('active');
+        if (b.getAttribute('onclick') === `showCalculator('${id}')`) b.classList.add('active');
+    });
+}
+
+function adicionarAoRelatorio(tipo) {
+    const resultadoEl = document.getElementById(`resultado_${tipo}`);
+    let titulo;
+
+    if (['hedge', 'dutching_total', 'dutching_valores', 'kelly', 'dutching_otimizado'].includes(tipo)) {
+        const parentFieldset = resultadoEl.parentElement;
+        titulo = parentFieldset.querySelector('legend').innerText;
+    } else {
+        titulo = document.querySelector(`#calculadora-${tipo} h3`).innerText;
+    }
+
+    if (!resultadoEl || !titulo || resultadoEl.style.display === 'none' || resultadoEl.innerText.includes('ERRO')) {
+        alert('Calcule um resultado válido antes de adicionar ao relatório.'); return;
+    }
+    const item = { id: tipo, titulo: titulo, conteudo: resultadoEl.innerText };
+    const index = relatorioDados.findIndex(r => r.id === tipo);
+    if (index > -1) { relatorioDados[index] = item; } else { relatorioDados.push(item); }
+    atualizarPreviewRelatorio();
+    alert(`"${item.titulo}" foi adicionado/atualizado no relatório.`);
+}
+
+function atualizarPreviewRelatorio() {
+    const previewDiv = document.getElementById('previewRelatorio');
+    previewDiv.innerHTML = '';
+    if (relatorioDados.length === 0) {
+        previewDiv.innerHTML = '<p style="text-align:center; font-style:italic; padding: 20px;">Nenhuma análise adicionada.</p>'; return;
+    }
+    relatorioDados.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'report-preview-item';
+        itemDiv.innerHTML = `<strong>${item.titulo}</strong><div style="padding-top: 5px;">${item.conteudo.replace(/\n/g, '<br>')}</div>`;
+        previewDiv.appendChild(itemDiv);
+    });
+}
+
+function gerarPdfRelatorio() {
+    if (relatorioDados.length === 0) {
+        alert('O relatório está vazio.');
+        return;
+    }
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.width = '800px';
+
+    let html = `<div style="font-family: Arial, sans-serif; padding: 20px; color: #333; width: 100%;">`;
+    html += `<h1 style="color: #07251F; text-align: center;">Relatório de Análise Preditiva</h1><p style="text-align: center; font-size: 12px; color: #666;">Gerado em: ${new Date().toLocaleString('pt-BR')}</p><hr style="border-top: 1px solid #ccc; border-bottom: none;">`;
+    
+    relatorioDados.forEach(item => {
+        const conteudoFormatado = item.conteudo.replace(/\n/g, '<br/>');
+        html += `<div style="margin-top: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #fdfdfd;">
+                    <h3 style="background-color: #f2f2f2; padding: 10px; margin: 0; color: #07251F; border-radius: 8px 8px 0 0; font-size: 16px; border-bottom: 1px solid #ddd;">${item.titulo}</h3>
+                    <div style="padding: 12px; font-size: 13px; line-height: 1.6; word-wrap: break-word;">${conteudoFormatado}</div>
+                </div>`;
+    });
+    html += `</div>`;
+    container.innerHTML = html;
+    document.body.appendChild(container);
+
+    setTimeout(() => {
+        const options = {
+            margin: 0.5,
+            filename: 'relatorio_analise_preditiva.pdf',
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().from(container).set(options).save().then(() => {
+            document.body.removeChild(container);
+        }).catch(err => {
+            console.error("Erro ao gerar PDF:", err);
+            document.body.removeChild(container);
+        });
+    }, 300);
+}
+
+function zerarRelatorio() {
+    if (confirm('Tem certeza que deseja limpar todos os dados do relatório?')) {
+        relatorioDados = [];
+        atualizarPreviewRelatorio();
+        alert('Relatório zerado.');
+    }
+}
+
+// ===================================================================================
+// SEÇÃO 2: LÓGICA DAS CALCULADORAS PREDITIVAS
+// ===================================================================================
+function getFatoresContextuais(prefix, tipoCalculadora = 'default') { 
+    let fatorCasa = 1.0, fatorVisitante = 1.0;
+    const pub = getValue(`${prefix}_publico`);
+
+    if (['gols', 'sot_saves', 'finalizacoes', 'escanteios'].includes(tipoCalculadora)) {
+        if (pub === 'cheio') { fatorCasa *= 1.07; fatorVisitante *= 0.95; }
+        if (pub === 'vazio') { fatorCasa *= 0.93; fatorVisitante *= 1.05; }
+        if (isChecked(`${prefix}_chk_altitude`)) { fatorCasa *= 1.12; fatorVisitante *= 0.90; }
+        if (isChecked(`${prefix}_chk_clima_ruim`)) { fatorCasa *= 0.92; fatorVisitante *= 0.92; }
+        if (isChecked(`${prefix}_chk_classico`)) { fatorCasa *= 0.95; fatorVisitante *= 0.95; } 
+        if (isChecked(`${prefix}_chk_casa_descanso`)) fatorCasa *= 0.94;
+        if (isChecked(`${prefix}_chk_casa_motivacao`)) fatorCasa *= 1.10;
+        if (isChecked(`${prefix}_chk_casa_desmotivacao`)) fatorCasa *= 0.90;
+        if (isChecked(`${prefix}_chk_casa_lesao_ataque`)) fatorCasa *= 0.88;
+        if (isChecked(`${prefix}_chk_casa_lesao_defesa`)) fatorVisitante *= 1.12;
+        if (isChecked(`${prefix}_chk_visitante_descanso`)) fatorVisitante *= 0.94;
+        if (isChecked(`${prefix}_chk_visitante_viagem`)) fatorVisitante *= 0.96;
+        if (isChecked(`${prefix}_chk_visitante_motivacao`)) fatorVisitante *= 1.10;
+        if (isChecked(`${prefix}_chk_visitante_desmotivacao`)) fatorVisitante *= 0.90;
+        if (isChecked(`${prefix}_chk_visitante_lesao_ataque`)) fatorVisitante *= 0.88;
+        if (isChecked(`${prefix}_chk_visitante_lesao_defesa`)) fatorCasa *= 1.12;
+    }
+    else if (['cartoes', 'faltas'].includes(tipoCalculadora)) {
+        if (pub === 'cheio') { fatorCasa *= 0.92; fatorVisitante *= 1.18; } 
+        if (pub === 'vazio') { fatorCasa *= 0.95; fatorVisitante *= 0.95; } 
+        if (isChecked(`${prefix}_chk_rigoroso`)) { fatorCasa *= 1.15; fatorVisitante *= 1.25; }
+        if (isChecked(`${prefix}_chk_permissivo`)) { fatorCasa *= 0.85; fatorVisitante *= 0.80; }
+        if (isChecked(`${prefix}_chk_clima_ruim`)) { fatorCasa *= 1.12; fatorVisitante *= 1.12; } 
+        if (isChecked(`${prefix}_chk_classico`)) { fatorCasa *= 1.25; fatorVisitante *= 1.25; } 
+    }
+    return { fatorCasa, fatorVisitante };
+}
+
+function calcularDixonColes() {
+    const xgProprioCasa = parseInput('gols_xg_proprio_casa');
+    const xgaOponenteVisitante = parseInput('gols_xga_oponente_visitante');
+    const xgProprioVisitante = parseInput('gols_xg_proprio_visitante');
+    const xgaOponenteCasa = parseInput('gols_xga_oponente_casa');
+
+    const xgH2HCasa = parseInput('gols_xg_h2h_casa');
+    const xgaH2HVisitante = parseInput('gols_xga_h2h_visitante');
+    const xgH2HVisitante = parseInput('gols_xg_h2h_visitante');
+    const xgaH2HCasa = parseInput('gols_xga_h2h_casa');
+    
+    const eficienciaCasa = parseInput('gols_eficiencia_casa');
+    const eficienciaVis = parseInput('gols_eficiencia_visitante');
+    const rd = document.getElementById('resultado_gols');
+
+    if (isNaN(xgProprioCasa) || isNaN(xgaOponenteVisitante) || isNaN(xgProprioVisitante) || isNaN(xgaOponenteCasa)) {
+        rd.innerText = 'ERRO: Preencha os campos de xG Próprio e xGA do Oponente.'; rd.style.display = 'block'; return;
+    }
+    
+    let lambdaMatchCasa = (xgProprioCasa + xgaOponenteVisitante) / 2;
+    let lambdaMatchVisitante = (xgProprioVisitante + xgaOponenteCasa) / 2;
+
+    let lCasaPonderado = lambdaMatchCasa;
+    let lVisPonderado = lambdaMatchVisitante;
+
+    if (!isNaN(xgH2HCasa) && !isNaN(xgaH2HVisitante) && !isNaN(xgH2HVisitante) && !isNaN(xgaH2HCasa)) {
+        const lambdaH2HCasaMatch = (xgH2HCasa + xgaH2HVisitante) / 2;
+        const lambdaH2HVisitanteMatch = (xgH2HVisitante + xgaH2HCasa) / 2;
+        lCasaPonderado = (lambdaMatchCasa * 0.40) + (lambdaH2HCasaMatch * 0.60);
+        lVisPonderado = (lambdaMatchVisitante * 0.40) + (lambdaH2HVisitanteMatch * 0.60);
+    }
+
+    if (!isNaN(eficienciaCasa) && eficienciaCasa > 0) {
+        lCasaPonderado *= eficienciaCasa;
+    }
+    if (!isNaN(eficienciaVis) && eficienciaVis > 0) {
+        lVisPonderado *= eficienciaVis;
+    }
+
+    const { fatorCasa, fatorVisitante } = getFatoresContextuais('gols', 'gols');
+    const lCasaFinal = lCasaPonderado * fatorCasa;
+    const lVisFinal = lVisPonderado * fatorVisitante;
+    
+    document.getElementById('displayLambdaCasa').textContent = formatOutput(lCasaFinal, 3);
+    document.getElementById('displayLambdaVisitante').textContent = formatOutput(lVisFinal, 3);
+
+    let probCasa = 0, probEmpate = 0, probVis = 0, over25 = 0, placares = [];
+    const factorial = (n) => (n < 0) ? Infinity : (n <= 1) ? 1 : n * factorial(n - 1);
+    const poisson = (k, lambda) => (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
+    
+    for (let i = 0; i <= 6; i++) {
+        for (let j = 0; j <= 6; j++) {
+            const prob = poisson(i, lCasaFinal) * poisson(j, lVisFinal);
+            if(prob > 0.0001) placares.push({ score: `${i}-${j}`, probability: prob });
+            if (i > j) probCasa += prob; else if (j > i) probVis += prob; else probEmpate += prob;
+            if (i + j > 2.5) over25 += prob;
+        }
+    }
+    placares.sort((a, b) => b.probability - a.probability);
+    let placaresTxt = placares.slice(0, 5).map((p, i) => `${i+1}º: ${p.score} (${formatOutput(p.probability * 100, 1)}%)`).join('\n');
+
+    let texto = `--- PROBABILIDADES DE RESULTADO (1x2) ---\n`;
+    texto += `Vitória Casa: ${formatOutput(probCasa * 100)}%\n`;
+    texto += `Empate: ${formatOutput(probEmpate * 100)}%\n`;
+    texto += `Vitória Visitante: ${formatOutput(probVis * 100)}%\n\n`;
+    texto += `--- MERCADO DE GOLS (Mais/Menos 2.5) ---\n`;
+    texto += `Mais de 2.5: ${formatOutput(over25 * 100)}%\n`;
+    texto += `Menos de 2.5: ${formatOutput((1 - over25) * 100)}%\n\n`;
+    texto += `--- TOP 5 PLACARES MAIS PROVÁVEIS ---\n${placaresTxt}`;
+    rd.innerText = texto;
+    rd.style.display = 'block';
+}
+
+function calcularProjecaoSimples(prefix, tipoCalculadora = 'default') {
+    const proCasa = parseInput(`${prefix}_pro_casa`);
+    const contraVis = parseInput(`${prefix}_contra_visitante`);
+    const proVis = parseInput(`${prefix}_pro_visitante`);
+    const contraCasa = parseInput(`${prefix}_contra_casa`);
+    const rd = document.getElementById(`resultado_${prefix}`);
+
+    if (isNaN(proCasa) || isNaN(contraVis) || isNaN(proVis) || isNaN(contraCasa)) {
+        rd.innerText = 'ERRO: Preencha todos os 4 campos de performance base.'; rd.style.display = 'block'; return { error: true };
+    }
+    const projCasaBase = (proCasa + contraVis) / 2;
+    const projVisBase = (proVis + contraCasa) / 2;
+    const { fatorCasa, fatorVisitante } = getFatoresContextuais(prefix, tipoCalculadora);
+    const projCasaFinal = projCasaBase * fatorCasa;
+    const projVisFinal = projVisBase * fatorVisitante;
+    return { projCasaFinal, projVisFinal, rd, error: false };
+}
+
+function calcularFaltas() {
+    const prefix = 'faltas';
+    const mediaArbitroFaltas = parseInput('faltas_media_arbitro');
+    const mediaCometidasCasa = parseInput('faltas_cometidas_media_casa');
+    const mediaSofridasVisitante = parseInput('faltas_sofridas_media_visitante');
+    const mediaCometidasVisitante = parseInput('faltas_cometidas_media_visitante');
+    const mediaSofridasCasa = parseInput('faltas_sofridas_media_casa');
+
+    const h2hCometidasCasa = parseInput('faltas_cometidas_h2h_casa');
+    const h2hSofridasVisitante = parseInput('faltas_sofridas_h2h_visitante');
+    const h2hCometidasVisitante = parseInput('faltas_cometidas_h2h_visitante');
+    const h2hSofridasCasa = parseInput('faltas_sofridas_h2h_casa');
+    
+    const rd = document.getElementById('resultado_faltas');
+
+    if (isNaN(mediaArbitroFaltas) || isNaN(mediaCometidasCasa) || isNaN(mediaSofridasVisitante) || isNaN(mediaCometidasVisitante) || isNaN(mediaSofridasCasa)) {
+        rd.innerText = 'ERRO: Preencha os campos de Média de Faltas (Árbitro, Cometidas por um time e Sofridas pelo Oponente).'; 
+        rd.style.display = 'block'; return;
+    }
+
+    let propensaoPartidaCasa = (mediaCometidasCasa + mediaSofridasVisitante) / 2;
+    let propensaoPartidaVisitante = (mediaCometidasVisitante + mediaSofridasCasa) / 2;
+
+    let faltasBaseCasa = (propensaoPartidaCasa * 0.6) + (mediaArbitroFaltas * 0.4);
+    let faltasBaseVis = (propensaoPartidaVisitante * 0.6) + (mediaArbitroFaltas * 0.4);
+
+    if (!isNaN(h2hCometidasCasa) && !isNaN(h2hSofridasVisitante) && !isNaN(h2hCometidasVisitante) && !isNaN(h2hSofridasCasa)) {
+        const propensaoH2HCasa = (h2hCometidasCasa + h2hSofridasVisitante) / 2;
+        const propensaoH2HVisitante = (h2hCometidasVisitante + h2hSofridasCasa) / 2;
+        
+        faltasBaseCasa = (faltasBaseCasa * 0.50) + (propensaoH2HCasa * 0.50);
+        faltasBaseVis = (faltasBaseVis * 0.50) + (propensaoH2HVisitante * 0.50);
+    }
+    
+    const { fatorCasa, fatorVisitante } = getFatoresContextuais(prefix, 'faltas'); 
+    const faltasCasaFinal = faltasBaseCasa * fatorCasa;
+    const faltasVisFinal = faltasBaseVis * fatorVisitante;
+
+    document.getElementById('displayFaltasCasa').textContent = formatOutput(faltasCasaFinal, 1);
+    document.getElementById('displayFaltasVisitante').textContent = formatOutput(faltasVisFinal, 1);
+
+    let texto = `--- PROJEÇÃO DE FALTAS ---\n`;
+    texto += `Faltas Cometidas (Casa): ${formatOutput(faltasCasaFinal, 1)}\n`;
+    texto += `Faltas Cometidas (Visitante): ${formatOutput(faltasVisFinal, 1)}\n\n`;
+    texto += `--- TOTAIS DA PARTIDA ---\n`;
+    texto += `Total de Faltas na Partida: ${formatOutput(faltasCasaFinal + faltasVisFinal, 1)}`;
+    rd.innerText = texto;
+    rd.style.display = 'block';
+}
+
+
+function calcularSoTSaves() {
+    const prefix = 'sot_saves';
+    const { projCasaFinal, projVisFinal, rd, error } = calcularProjecaoSimples(prefix, 'sot_saves');
+    if (error) return; 
+
+    document.getElementById('displaySotCasa').textContent = formatOutput(projCasaFinal, 1);
+    document.getElementById('displaySotVisitante').textContent = formatOutput(projVisFinal, 1);
+    
+    let texto = `--- PROJEÇÃO POR TIME ---\n`;
+    texto += `Finalizações no Gol (Casa): ${formatOutput(projCasaFinal, 1)}\n`;
+    texto += `Finalizações no Gol (Visitante): ${formatOutput(projVisFinal, 1)}\n\n`;
+    texto += `--- TOTAIS DA PARTIDA ---\n`;
+    texto += `Total de Finalizações no Gol: ${formatOutput(projCasaFinal + projVisFinal, 1)}`;
+
+    const gkSavePctCasa = parseInput('sot_saves_gk_savepct_casa');
+    const gkSavePctVisitante = parseInput('sot_saves_gk_savepct_visitante');
+
+    if (!isNaN(gkSavePctCasa) && !isNaN(gkSavePctVisitante)) {
+        const defesasCasa = projVisFinal * (gkSavePctCasa / 100);
+        const defesasVisitante = projCasaFinal * (gkSavePctVisitante / 100);
+        texto += `\n\n--- ANÁLISE DE GOLEIROS (OPCIONAL) ---\n`;
+        texto += `Defesas Esperadas (Goleiro Casa): ${formatOutput(defesasCasa, 1)}\n`;
+        texto += `Defesas Esperadas (Goleiro Visitante): ${formatOutput(defesasVisitante, 1)}`;
+    }
+    rd.innerText = texto;
+    rd.style.display = 'block';
+}
+
+function calcularFinalizacoes() {
+    const prefix = 'finalizacoes';
+    const { projCasaFinal, projVisFinal, rd, error } = calcularProjecaoSimples(prefix, 'finalizacoes');
+    if (error) return;
+
+    document.getElementById('displayFinCasa').textContent = formatOutput(projCasaFinal, 1);
+    document.getElementById('displayFinVisitante').textContent = formatOutput(projVisFinal, 1);
+
+    let texto = `--- PROJEÇÃO POR TIME ---\n`;
+    texto += `Total de Finalizações (Casa): ${formatOutput(projCasaFinal, 1)}\n`;
+    texto += `Total de Finalizações (Visitante): ${formatOutput(projVisFinal, 1)}\n\n`;
+    texto += `--- TOTAIS DA PARTIDA ---\n`;
+    texto += `Total de Finalizações na Partida: ${formatOutput(projCasaFinal + projVisFinal, 1)}`;
+    rd.innerText = texto;
+    rd.style.display = 'block';
+}
+
+function calcularEscanteios() {
+    const prefix = 'escanteios';
+    const { projCasaFinal, projVisFinal, rd, error } = calcularProjecaoSimples(prefix, 'escanteios');
+    if (error) return;
+    
+    document.getElementById('displayEscCasa').textContent = formatOutput(projCasaFinal, 1);
+    document.getElementById('displayEscVisitante').textContent = formatOutput(projVisFinal, 1);
+
+    let texto = `--- PROJEÇÃO POR TIME ---\n`;
+    texto += `Escanteios (Casa): ${formatOutput(projCasaFinal, 1)}\n`;
+    texto += `Escanteios (Visitante): ${formatOutput(projVisFinal, 1)}\n\n`;
+    texto += `--- TOTAIS DA PARTIDA ---\n`;
+    texto += `Total de Escanteios na Partida: ${formatOutput(projCasaFinal + projVisFinal, 1)}`;
+    rd.innerText = texto;
+    rd.style.display = 'block';
+}
+
+function calcularCartoes() {
+    const prefix = 'cartoes';
+    const mediaArbitro = parseInput('cartoes_media_arbitro');
+    let pCasaTime = parseInput('cartoes_time_casa'); 
+    let pVisTime = parseInput('cartoes_time_visitante'); 
+    const h2hCasa = parseInput('cartoes_h2h_casa');
+    const h2hVis = parseInput('cartoes_h2h_visitante');
+    const rd = document.getElementById('resultado_cartoes');
+
+    if (isNaN(mediaArbitro) || isNaN(pCasaTime) || isNaN(pVisTime)) {
+        rd.innerText = 'ERRO: Preencha Média do Árbitro e Médias de Cartões dos Times.'; 
+        rd.style.display = 'block'; return;
+    }
+
+    let pCasaBase = (pCasaTime * 0.6) + (mediaArbitro * 0.4);
+    let pVisBase = (pVisTime * 0.6) + (mediaArbitro * 0.4);
+
+    if (!isNaN(h2hCasa) && !isNaN(h2hVis)) {
+        pCasaBase = (pCasaBase * 0.50) + (h2hCasa * 0.50);
+        pVisBase = (pVisBase * 0.50) + (h2hVis * 0.50);
+    }
+    
+    const { fatorCasa, fatorVisitante } = getFatoresContextuais(prefix, 'cartoes');
+    let pCasaFinal = pCasaBase * fatorCasa;
+    let pVisFinal = pVisBase * fatorVisitante;
+
+    pCasaFinal = Math.max(0, pCasaFinal);
+    pVisFinal = Math.max(0, pVisFinal);
+
+    document.getElementById('displayCartCasa').textContent = formatOutput(pCasaFinal, 1);
+    document.getElementById('displayCartVisitante').textContent = formatOutput(pVisFinal, 1);
+
+    let texto = `--- PROJEÇÃO DE CARTÕES ---\n`;
+    texto += `Cartões (Casa): ${formatOutput(pCasaFinal, 1)}\n`;
+    texto += `Cartões (Visitante): ${formatOutput(pVisFinal, 1)}\n\n`;
+    texto += `--- TOTAIS DA PARTIDA ---\n`;
+    texto += `Total de Cartões na Partida: ${formatOutput(pCasaFinal + pVisFinal, 1)}`;
+    rd.innerText = texto;
+    rd.style.display = 'block';
+}
+
+// ===================================================================================
+// SEÇÃO 3: CALCULADORAS DE GESTÃO
+// ===================================================================================
+function calcularKelly() {
+    const banca = parseInput('kelly_banca');
+    const odd = parseInput('kelly_odd');
+    const probPercent = parseInput('kelly_prob');
+    const fator = parseInput('kelly_fator'); 
+    const rd = document.getElementById('resultado_kelly');
+    if (isNaN(banca) || isNaN(odd) || isNaN(probPercent) || isNaN(fator)) {
+        rd.innerText = 'ERRO: Preencha todos os campos para calcular.'; rd.style.display = 'block'; return;
+    }
+    const prob = probPercent / 100; 
+    const ev = (odd * prob) - 1; 
+    if (ev <= 0) {
+        rd.innerText = `--- APOSTA SEM VALOR (EV-) ---\n\nO Valor Esperado é de ${formatOutput(ev*100)}%.\n\nNão é recomendado apostar.`;
+        rd.style.display = 'block'; return;
+    }
+    const kellyFraction = ((odd - 1) * prob - (1 - prob)) / (odd - 1);
+    const stakeFraction = kellyFraction * fator;
+    const valorUnidade = banca * stakeFraction;
+    let texto = `--- CÁLCULO DE UNIDADE (KELLY) ---\n\n`;
+    texto += `Fração da Banca (Full Kelly): ${formatOutput(kellyFraction * 100, 2)}%\n`;
+    texto += `Fração com Fator de Risco (${fator*100}% Kelly): ${formatOutput(stakeFraction * 100, 2)}%\n\n`;
+    texto += `Unidade/Stake Recomendada: R$ ${formatOutput(valorUnidade)}\n`;
+    texto += `Lucro Potencial (com esta stake): R$ ${formatOutput(valorUnidade * (odd - 1))}`;
+    rd.innerText = texto; rd.style.display = 'block';
+}
+function calcularHedge() {
+    const valor1 = parseInput('hedge_valor1');
+    const odd1 = parseInput('hedge_odd1');
+    const odd2 = parseInput('hedge_odd2');
+    const valor2Manual = parseInput('hedge_valor2');
+    const rd = document.getElementById('resultado_hedge');
+    if (isNaN(valor1) || isNaN(odd1) || isNaN(odd2)) {
+        rd.innerText = 'ERRO: Preencha valor da 1ª aposta e as duas odds.'; rd.style.display = 'block'; return;
+    }
+    let valor2 = !isNaN(valor2Manual) ? valor2Manual : (valor1 * odd1) / (odd1 + odd2);
+    const total = valor1 + valor2;
+    const lucro1 = (valor1 * odd1) - total;
+    const lucro2 = (valor2 * odd2) - total;
+    const oddEfetiva1 = (valor1 * odd1) / total;
+    const oddEfetiva2 = (valor2 * odd2) / total;
+    let texto = `--- CÁLCULO DE COBERTURA (HEDGE) ---\n\n`;
+    texto += `Aposta 1: R$ ${formatOutput(valor1)} | Lucro: R$ ${formatOutput(lucro1)} (Odd Efetiva: ${formatOutput(oddEfetiva1)})\n`;
+    texto += `Aposta 2: R$ ${formatOutput(valor2)} | Lucro: R$ ${formatOutput(lucro2)} (Odd Efetiva: ${formatOutput(oddEfetiva2)})\n\n`;
+    texto += `Total Apostado: R$ ${formatOutput(total)}`;
+    rd.innerText = texto; rd.style.display = 'block';
+}
+function fecharPosicao() {
+    const valor1 = parseInput('hedge_valor1');
+    const odd1 = parseInput('hedge_odd1');
+    const odd2 = parseInput('hedge_odd2');
+    const rd = document.getElementById('resultado_hedge');
+
+    if (isNaN(valor1) || isNaN(odd1) || isNaN(odd2)) {
+        rd.innerText = 'ERRO: Preencha valor da 1ª aposta e as duas odds.'; 
+        rd.style.display = 'block'; return;
+    }
+
+    const valor2 = (valor1 * odd1) / odd2;
+    document.getElementById('hedge_valor2').value = formatOutput(valor2);
+
+    const totalInvestido = valor1 + valor2;
+    const retornoTotal = valor1 * odd1; 
+    const lucro = retornoTotal - totalInvestido;
+    const oddEfetiva = retornoTotal / totalInvestido;
+
+
+    let texto = `--- FECHAMENTO DE POSIÇÃO (LUCRO GARANTIDO) ---\n\n`;
+    texto += `Para garantir um lucro de R$ ${formatOutput(lucro)}, aposte R$ ${formatOutput(valor2)} na 2ª odd.\n\n`;
+    texto += `Total Apostado: R$ ${formatOutput(totalInvestido)}\n`;
+    texto += `Lucro: R$ ${formatOutput(lucro)}\n`;
+    texto += `Odd Efetiva: ${formatOutput(oddEfetiva)}`;
+    rd.innerText = texto; rd.style.display = 'block';
+}
+function calcularDutchingPorTotal() {
+    const total = parseInput('dutch_total_valor');
+    const rd = document.getElementById('resultado_dutching_total');
+    const odds = [];
+    for(let i = 1; i <= 4; i++) {
+        const odd = parseInput(`dutch_total_odd${i}`);
+        if(!isNaN(odd) && odd > 0) odds.push(odd);
+    }
+    if (isNaN(total) || total <= 0 || odds.length === 0) {
+        rd.innerText = 'ERRO: Preencha valor total e ao menos uma odd válida.'; rd.style.display = 'block'; return;
+    }
+    const somaInversa = odds.reduce((acc, o) => acc + (1 / o), 0);
+    const apostas = odds.map(o => (total * (1 / o)) / somaInversa);
+    const lucro = (apostas[0] * odds[0]) - total; 
+    const arbitragem = somaInversa < 1;
+    const oddEfetiva = (apostas[0] * odds[0]) / total;
+    let texto = `--- RESULTADO DO DUTCHING POR VALOR TOTAL ---\n\n`;
+    texto += apostas.map((v, i) => {
+        return `Aposta na Odd ${formatOutput(odds[i])}: R$ ${formatOutput(v)}`;
+    }).join('\n');
+    texto += `\n\nTotal Apostado: R$ ${formatOutput(total)}\n`;
+    texto += `Lucro (se uma das seleções vencer): R$ ${formatOutput(lucro)}\n`;
+    texto += `Odd Efetiva: ${formatOutput(oddEfetiva)}\n\n`;
+    texto += `Arbitragem: ${arbitragem? '✅ Sim' : '❌ Não'}`;
+    rd.innerText = texto; rd.style.display = 'block';
+}
+function calcularDutchingOtimizado() {
+    const totalStake = parseInput('dutch_prob_total_valor');
+    const rd = document.getElementById('resultado_dutching_otimizado');
+    const selections = [];
+    for (let i = 1; i <= 4; i++) {
+        const odd = parseInput(`dutch_prob_odd_${i}`);
+        const chance = parseInput(`dutch_prob_chance_${i}`);
+        if (!isNaN(odd) && odd > 0 && !isNaN(chance) && chance > 0 && chance <= 100) {
+            selections.push({ odd: odd, chance: chance / 100 }); 
+        }
+    }
+    if (isNaN(totalStake) || totalStake <= 0 || selections.length === 0) {
+        rd.innerText = 'ERRO: Preencha Valor Total e ao menos uma Seleção (Odd e Chance %).'; rd.style.display = 'block'; return;
+    }
+    const sumInvOdds = selections.reduce((acc, s) => acc + (1 / s.odd), 0);
+    if (sumInvOdds === 0) {
+         rd.innerText = 'ERRO: Odds inválidas nas seleções.'; rd.style.display = 'block'; return;
+    }
+    let texto = `--- DUTCHING OTIMIZADO POR PROBABILIDADE ---\n\n`;
+    texto += `--- ALOCAÇÃO DAS STAKES & EV INDIVIDUAL ---\n\n`;
+    let combinedProbOfWinningDutch = 0;
+    selections.forEach((s, i) => {
+        s.stake = (totalStake * (1 / s.odd)) / sumInvOdds;
+        s.ev = (s.odd * s.chance) - 1; 
+        combinedProbOfWinningDutch += s.chance; 
+        texto += `Seleção ${i + 1} (Odd ${formatOutput(s.odd)}, Sua Chance ${formatOutput(s.chance * 100, 1)}%):\n`;
+        texto += `  - Stake: R$ ${formatOutput(s.stake)}\n  - EV Individual: ${formatOutput(s.ev * 100, 1)}%\n\n`;
+    });
+    const expectedReturnIfWin = selections.length > 0 ? selections[0].stake * selections[0].odd : 0; 
+    const profitIfWin = expectedReturnIfWin - totalStake;
+    const effectiveOddDutch = selections.length > 0 ? expectedReturnIfWin / totalStake : 0;
+    const evDutch = selections.length > 0 ? (effectiveOddDutch * combinedProbOfWinningDutch) - 1 : 0;
+    texto += `--- RESULTADOS GERAIS DO DUTCHING ---\n\n`;
+    texto += `Total Apostado: R$ ${formatOutput(totalStake)}\n`;
+    texto += `Lucro (se uma das seleções vencer): R$ ${formatOutput(profitIfWin)}\n`;
+    texto += `Odd Efetiva do Dutching: ${formatOutput(effectiveOddDutch)}\n\n`;
+    texto += `Probabilidade Combinada de Vencer: ${formatOutput(combinedProbOfWinningDutch * 100, 1)}%\n`;
+    texto += `Valor Esperado (EV) do Dutching Completo: ${formatOutput(evDutch * 100, 1)}%\n\n`;
+    texto += `Arbitragem: ${sumInvOdds < 1 ? '✅ Sim' : '❌ Não'}`;
+    rd.innerText = texto; rd.style.display = 'block';
+}
+function calcularDutchingPorValores() {
+    const rd = document.getElementById('resultado_dutching_valores');
+    const apostas = [], odds = [];
+    let totalInvestido = 0;
+    for (let i = 1; i <= 6; i++) {
+        const v = parseInput(`dutch_val_${i}`);
+        const o = parseInput(`dutch_odd_${i}`);
+        if (!isNaN(v) && v > 0 && !isNaN(o) && o > 0) {
+            apostas.push(v); odds.push(o); totalInvestido += v;
+        }
+    }
+    if (apostas.length === 0) {
+        rd.innerText = 'ERRO: Preencha ao menos um par de aposta e odd válidas.'; rd.style.display = 'block'; return;
+    }
+    let texto = `--- ANÁLISE DOS RESULTADOS POR VALORES INDIVIDUAIS ---\n\n`;
+    texto += apostas.map((v, i) => {
+        const retorno = v * odds[i];
+        const lucro = retorno - totalInvestido;
+        const oddEfetiva = retorno / totalInvestido;
+        return `Se a Aposta ${i + 1} (Odd ${formatOutput(odds[i])}, Stake R$ ${formatOutput(v)}) vencer:\n  - Lucro: R$ ${formatOutput(lucro)}\n  - Odd Efetiva: ${formatOutput(oddEfetiva)}`;
+    }).join('\n\n');
+    texto += `\n\nTotal Apostado: R$ ${formatOutput(totalInvestido)}`;
+    rd.innerText = texto; rd.style.display = 'block';
+}
+
+// ===================================================================================
+// SEÇÃO 4: INICIALIZAÇÃO DA PÁGINA
+// ===================================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    showCalculator('contexto'); // Inicia na aba de Contexto
+    atualizarPreviewRelatorio();
+});
+</script>
+</body>
+</html>
