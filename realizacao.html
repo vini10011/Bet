@@ -23,6 +23,27 @@
         .submit-button { background-color: #d4af37; color: #07251F; border: none; font-weight: bold; cursor: pointer; display: inline-block; margin-top: 20px; padding: 10px 22px; border-radius: 8px; font-size: 17px; font-family: "Times New Roman", serif; }
         .form-group input[type="file"]::file-selector-button { margin-right: 12px; border: none; background: #d4af37; padding: 7px 10px; border-radius: 5px; color: #07251F; cursor: pointer; font-family: "Times New Roman", serif; font-weight: bold; }
         
+        /* MODIFICAÇÃO 1: Estilos para a mensagem de status */
+        #mensagemStatus {
+            display: none;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .sucesso {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        .erro {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+
         @media (max-width: 600px) {
             body { padding: 10px; margin:10px;}
             .form-container { padding: 15px; }
