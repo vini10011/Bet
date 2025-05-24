@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realização de Operação</title>
+    <style>
+        body { font-family: "Times New Roman", serif; background-color: #07251F; color: #EAF9E1; margin: 0; padding: 20px; line-height: 1.6; }
+        .form-container { background-color: #103a2f; padding: 20px 30px; border-radius: 12px; border: 1px solid #d4af37; width: 100%; max-width: 750px; margin: 20px auto; }
+        h2 { text-align: center; color: #d4af37; font-size: 24px; margin-bottom:25px;}
+        .form-group { margin-bottom: 18px; }
+        .form-group label, .fieldset-legend-main, .question-title { display: block; font-weight: bold; color: #EAF9E1; margin-bottom: 7px; font-size: 17px; }
+        .fieldset-legend-main { padding: 0 10px; color: #d4af37; font-size: 19px;}
+        .form-group input[type="text"], .form-group input[type="datetime-local"], .form-group input[type="number"], .form-group input[type="file"], .form-group select, .form-group textarea { width: 100%; padding: 10px; border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: "Times New Roman", serif; background-color: #EAF9E1; color: #07251F; border: 1px solid #2a5a4a; }
+        .dynamic-input { margin-top: 8px; }
+        .main-fieldset { border: 1px solid #2a5a4a; border-radius: 8px; padding: 12px 20px; margin-bottom: 22px; }
+        .sub-group { margin-bottom: 18px; border-bottom: 1px dashed #2a5a4a; padding-bottom: 18px; }
+        .sub-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .options-container { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+        .option-item { display: flex; align-items: center; margin-bottom: 5px;}
+        .option-item input[type="radio"], .option-item input[type="checkbox"] { margin-right: 8px; cursor: pointer; width: 17px; height: 17px; flex-shrink: 0;}
+        .option-item label { color: #EAF9E1; font-weight: normal; cursor: pointer; margin-bottom: 0; font-size: 15px; }
+        .submit-button { background-color: #d4af37; color: #07251F; border: none; font-weight: bold; cursor: pointer; display: inline-block; margin-top: 20px; padding: 10px 22px; border-radius: 8px; font-size: 17px; font-family: "Times New Roman", serif; }
+        .form-group input[type="file"]::file-selector-button { margin-right: 12px; border: none; background: #d4af37; padding: 7px 10px; border-radius: 5px; color: #07251F; cursor: pointer; font-family: "Times New Roman", serif; font-weight: bold; }
+        
+        @media (max-width: 600px) {
+            body { padding: 10px; margin:10px;}
+            .form-container { padding: 15px; }
+            h2 { font-size: 20px; }
+            .form-group label, .fieldset-legend-main, .question-title { font-size: 15px; }
+            .fieldset-legend-main {font-size: 17px;}
+            .form-group input[type="text"], .form-group input[type="datetime-local"], .form-group input[type="number"], .form-group input[type="file"], .form-group select, .form-group textarea { padding: 9px; font-size: 14px; }
+            .options-container { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .submit-button{padding: 9px 16px; font-size:15px;}
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <form id="realizacaoForm" action="https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="form_type" value="realizacao">
+            <h2>Realização de Operação</h2>
+            
+            <div class="form-group">
+                <label for="evento_datetime">Data e Horário do Evento</label>
+                <input type="datetime-local" id="evento_datetime" name="evento_datetime" required>
+            </div>
+
+            <fieldset class="main-fieldset">
+                <legend class="fieldset-legend-main">Validações Metodológicas</legend>
+                <div class="sub-group">
+                    <p class="question-title">1. Mental</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="mental_1" name="validacao_mental" value="Inexistente" required><label for="mental_1">Inexistente</label></div>
+                        <div class="option-item"><input type="radio" id="mental_2" name="validacao_mental" value="Muito Ruim"><label for="mental_2">Muito Ruim</label></div>
+                        <div class="option-item"><input type="radio" id="mental_3" name="validacao_mental" value="Ruim"><label for="mental_3">Ruim</label></div>
+                        <div class="option-item"><input type="radio" id="mental_4" name="validacao_mental" value="Bom"><label for="mental_4">Bom</label></div>
+                        <div class="option-item"><input type="radio" id="mental_5" name="validacao_mental" value="Muito Bom"><label for="mental_5">Muito Bom</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">2. Análise do histórico pessoal em operações similares</p>
+                    <div class="options-container">
+                         <div class="option-item"><input type="radio" id="hist_1" name="validacao_historico" value="Inexistente" required><label for="hist_1">Inexistente</label></div>
+                         <div class="option-item"><input type="radio" id="hist_2" name="validacao_historico" value="Muito Ruim"><label for="hist_2">Muito Ruim</label></div>
+                         <div class="option-item"><input type="radio" id="hist_3" name="validacao_historico" value="Ruim"><label for="hist_3">Ruim</label></div>
+                         <div class="option-item"><input type="radio" id="hist_4" name="validacao_historico" value="Bom"><label for="hist_4">Bom</label></div>
+                         <div class="option-item"><input type="radio" id="hist_5" name="validacao_historico" value="Muito Bom"><label for="hist_5">Muito Bom</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">3. Disponibilidade e ambiente de análise</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="amb_1" name="validacao_ambiente" value="Inexistente" required><label for="amb_1">Inexistente</label></div>
+                        <div class="option-item"><input type="radio" id="amb_2" name="validacao_ambiente" value="Muito Ruim"><label for="amb_2">Muito Ruim</label></div>
+                        <div class="option-item"><input type="radio" id="amb_3" name="validacao_ambiente" value="Ruim"><label for="amb_3">Ruim</label></div>
+                        <div class="option-item"><input type="radio" id="amb_4" name="validacao_ambiente" value="Bom"><label for="amb_4">Bom</label></div>
+                        <div class="option-item"><input type="radio" id="amb_5" name="validacao_ambiente" value="Muito Bom"><label for="amb_5">Muito Bom</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">4. Análise do contexto e campeonato</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="contexto_1" name="validacao_contexto_campeonato" value="Inexistente" required><label for="contexto_1">Inexistente</label></div>
+                        <div class="option-item"><input type="radio" id="contexto_2" name="validacao_contexto_campeonato" value="Muito Ruim"><label for="contexto_2">Muito Ruim</label></div>
+                        <div class="option-item"><input type="radio" id="contexto_3" name="validacao_contexto_campeonato" value="Ruim"><label for="contexto_3">Ruim</label></div>
+                        <div class="option-item"><input type="radio"id="contexto_4" name="validacao_contexto_campeonato" value="Bom"><label for="contexto_4">Bom</label></div>
+                        <div class="option-item"><input type="radio" id="contexto_5" name="validacao_contexto_campeonato" value="Muito Bom"><label for="contexto_5">Muito Bom</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">5. Análise do relatório da partida</p>
+                    <div class="options-container">
+                         <div class="option-item"><input type="radio" id="relatorio_1" name="validacao_relatorio_partida" value="Inexistente" required><label for="relatorio_1">Inexistente</label></div>
+                         <div class="option-item"><input type="radio" id="relatorio_2" name="validacao_relatorio_partida" value="Muito Ruim"><label for="relatorio_2">Muito Ruim</label></div>
+                         <div class="option-item"><input type="radio" id="relatorio_3" name="validacao_relatorio_partida" value="Ruim"><label for="relatorio_3">Ruim</label></div>
+                         <div class="option-item"><input type="radio" id="relatorio_4" name="validacao_relatorio_partida" value="Bom"><label for="relatorio_4">Bom</label></div>
+                         <div class="option-item"><input type="radio" id="relatorio_5" name="validacao_relatorio_partida" value="Muito Bom"><label for="relatorio_5">Muito Bom</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">6. Análise visual de partidas recentes e contexto similar</p>
+                    <div class="options-container">
+                         <div class="option-item"><input type="radio" id="visual_1" name="validacao_visual_partidas" value="Inexistente" required><label for="visual_1">Inexistente</label></div>
+                         <div class="option-item"><input type="radio" id="visual_2" name="validacao_visual_partidas" value="Muito Ruim"><label for="visual_2">Muito Ruim</label></div>
+                         <div class="option-item"><input type="radio" id="visual_3" name="validacao_visual_partidas" value="Ruim"><label for="visual_3">Ruim</label></div>
+                         <div class="option-item"><input type="radio" id="visual_4" name="validacao_visual_partidas" value="Bom"><label for="visual_4">Bom</label></div>
+                         <div class="option-item"><input type="radio" id="visual_5" name="validacao_visual_partidas" value="Muito Bom"><label for="visual_5">Muito Bom</label></div>
+                    </div>
+                </div>
+                 <div class="sub-group">
+                    <p class="question-title">7. Análise de prognósticos e Tips</p>
+                    <div class="options-container">
+                         <div class="option-item"><input type="radio" id="tips_1" name="validacao_tips_prognosticos" value="Inexistente" required><label for="tips_1">Inexistente</label></div>
+                         <div class="option-item"><input type="radio" id="tips_2" name="validacao_tips_prognosticos" value="Muito Ruim"><label for="tips_2">Muito Ruim</label></div>
+                         <div class="option-item"><input type="radio" id="tips_3" name="validacao_tips_prognosticos" value="Ruim"><label for="tips_3">Ruim</label></div>
+                         <div class="option-item"><input type="radio" id="tips_4" name="validacao_tips_prognosticos" value="Bom"><label for="tips_4">Bom</label></div>
+                         <div class="option-item"><input type="radio" id="tips_5" name="validacao_tips_prognosticos" value="Muito Bom"><label for="tips_5">Muito Bom</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">8. Pré-partida (Condições Meteorológicas, Odds Aumentadas, Escalações, etc.)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="pre_1" name="validacao_prepartida_condicoes" value="Inexistente" required><label for="pre_1">Inexistente</label></div>
+                        <div class="option-item"><input type="radio" id="pre_2" name="validacao_prepartida_condicoes" value="Muito Ruim"><label for="pre_2">Muito Ruim</label></div>
+                        <div class="option-item"><input type="radio" id="pre_3" name="validacao_prepartida_condicoes" value="Ruim"><label for="pre_3">Ruim</label></div>
+                        <div class="option-item"><input type="radio" id="pre_4" name="validacao_prepartida_condicoes" value="Bom"><label for="pre_4">Bom</label></div>
+                        <div class="option-item"><input type="radio" id="pre_5" name="validacao_prepartida_condicoes" value="Muito Bom"><label for="pre_5">Muito Bom</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">9. Pesquisa de Odds</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="odds_1" name="validacao_pesquisa_odds" value="Inexistente" required><label for="odds_1">Inexistente</label></div>
+                        <div class="option-item"><input type="radio" id="odds_2" name="validacao_pesquisa_odds" value="Muito Ruim"><label for="odds_2">Muito Ruim</label></div>
+                        <div class="option-item"><input type="radio" id="odds_3" name="validacao_pesquisa_odds" value="Ruim"><label for="odds_3">Ruim</label></div>
+                        <div class="option-item"><input type="radio" id="odds_4" name="validacao_pesquisa_odds" value="Bom"><label for="odds_4">Bom</label></div>
+                        <div class="option-item"><input type="radio" id="odds_5" name="validacao_pesquisa_odds" value="Muito Bom"><label for="odds_5">Muito Bom</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">10. Realização Operacional (Validação Pré-Operação)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="op_val_1" name="validacao_realizacao_operacional_pre" value="Inexistente" required><label for="op_val_1">Inexistente</label></div>
+                        <div class="option-item"><input type="radio" id="op_val_2" name="validacao_realizacao_operacional_pre" value="Muito Ruim"><label for="op_val_2">Muito Ruim</label></div>
+                        <div class="option-item"><input type="radio" id="op_val_3" name="validacao_realizacao_operacional_pre" value="Ruim"><label for="op_val_3">Ruim</label></div>
+                        <div class="option-item"><input type="radio" id="op_val_4" name="validacao_realizacao_operacional_pre" value="Bom"><label for="op_val_4">Bom</label></div>
+                        <div class="option-item"><input type="radio" id="op_val_5" name="validacao_realizacao_operacional_pre" value="Muito Bom"><label for="op_val_5">Muito Bom</label></div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="form-group">
+                <label for="referencia">Referência</label>
+                <input type="text" id="referencia" name="referencia" placeholder="Ex: Partida da 5ª rodada, ID da análise, etc." required>
+            </div>
+            
+            <div class="form-group">
+                <label for="estrategia_select">Estratégia</label>
+                <select id="estrategia_select" name="estrategia_select" required>
+                    <option value="" disabled selected>Carregando...</option>
+                    <option value="outro_estrategia">Outro...</option>
+                </select>
+                <input type="text" id="outra_estrategia_input" name="outra_estrategia_input" class="dynamic-input" placeholder="Digite a nova estratégia e pressione Enter" style="display: none;">
+            </div>
+
+            <div class="form-group">
+                <label for="esporte_select">Esporte</label>
+                <select id="esporte_select" name="esporte_select" required>
+                     <option value="" disabled selected>Carregando...</option>
+                     <option value="outro_esporte">Outro...</option>
+                </select>
+                <input type="text" id="outro_esporte_input" name="outro_esporte_input" class="dynamic-input" placeholder="Digite o novo esporte e pressione Enter" style="display: none;">
+            </div>
+
+            <fieldset id="analise_geral_fieldset_realizacao" class="main-fieldset">
+                <legend class="fieldset-legend-main">Análise da Partida (Pré-Operação)</legend>
+                <div class="sub-group">
+                    <p class="question-title">1X2 (2+ Gols Folga Sobre Consenso)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="r_analise_1x2_na" name="analise_1x2_resultado" value="NaoSeAplica" required><label for="r_analise_1x2_na">Não se Aplica</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_1x2_1" name="analise_1x2_resultado" value="1"><label for="r_analise_1x2_1">1</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_1x2_2" name="analise_1x2_resultado" value="2"><label for="r_analise_1x2_2">2</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_1x2_3" name="analise_1x2_resultado" value="3"><label for="r_analise_1x2_3">3</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_1x2_4" name="analise_1x2_resultado" value="4"><label for="r_analise_1x2_4">4</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Gols - Totais (1 Abaixo/Acima Outlier)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="r_analise_gols_na" name="analise_gols_totais" value="NaoSeAplica" required><label for="r_analise_gols_na">Não se Aplica</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_gols_sim" name="analise_gols_totais" value="Sim"><label for="r_analise_gols_sim">Sim</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_gols_nao" name="analise_gols_totais" value="Nao"><label for="r_analise_gols_nao">Não</label></div>
+                    </div>
+                </div>
+                 <div class="sub-group">
+                    <p class="question-title">Gols - Equipes (1 Abaixo/Acima Outlier)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="r_analise_gols_eq_na" name="analise_gols_equipes" value="NaoSeAplica" required><label for="r_analise_gols_eq_na">Não se Aplica</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_gols_eq_sim" name="analise_gols_equipes" value="Sim"><label for="r_analise_gols_eq_sim">Sim</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_gols_eq_nao" name="analise_gols_equipes" value="Nao"><label for="r_analise_gols_eq_nao">Não</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Gols - Totais - HT (1 Abaixo/Acima Outlier)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="r_analise_gols_ht_na" name="analise_gols_totais_ht" value="NaoSeAplica" required><label for="r_analise_gols_ht_na">Não se Aplica</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_gols_ht_sim" name="analise_gols_totais_ht" value="Sim"><label for="r_analise_gols_ht_sim">Sim</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_gols_ht_nao" name="analise_gols_totais_ht" value="Nao"><label for="r_analise_gols_ht_nao">Não</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Gols - Equipes - HT (1 Abaixo/Acima Outlier)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="r_analise_gols_eq_ht_na" name="analise_gols_equipes_ht" value="NaoSeAplica" required><label for="r_analise_gols_eq_ht_na">Não se Aplica</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_gols_eq_ht_sim" name="analise_gols_equipes_ht" value="Sim"><label for="r_analise_gols_eq_ht_sim">Sim</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_gols_eq_ht_nao" name="analise_gols_equipes_ht" value="Nao"><label for="r_analise_gols_eq_ht_nao">Não</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Cartões, Escanteios, Defesas de Goleiro, Faltas, Finalizações Totais ou no Alvo, Impedimentos etc. (Dentro 65% Média e 1 Acima/Abaixo Outlier)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="r_analise_merc_div_na" name="analise_mercados_diversos" value="NaoSeAplica" required><label for="r_analise_merc_div_na">Não se Aplica</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_merc_div_sim" name="analise_mercados_diversos" value="Sim"><label for="r_analise_merc_div_sim">Sim</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_merc_div_nao" name="analise_mercados_diversos" value="Nao"><label for="r_analise_merc_div_nao">Não</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Handicap (2+ Gols Folga Sobre Consenso)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="r_analise_hand_na" name="analise_handicap_europeu" value="NaoSeAplica" required><label for="r_analise_hand_na">Não se Aplica</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_hand_1" name="analise_handicap_europeu" value="1"><label for="r_analise_hand_1">1</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_hand_2" name="analise_handicap_europeu" value="2"><label for="r_analise_hand_2">2</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_hand_3" name="analise_handicap_europeu" value="3"><label for="r_analise_hand_3">3</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_hand_4" name="analise_handicap_europeu" value="4"><label for="r_analise_hand_4">4</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Handicap Asiático (2+ Gols Folga Sobre Consenso)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="r_analise_ha_na" name="analise_handicap_asiatico" value="NaoSeAplica" required><label for="r_analise_ha_na">Não se Aplica</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_ha_1" name="analise_handicap_asiatico" value="1"><label for="r_analise_ha_1">1</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_ha_2" name="analise_handicap_asiatico" value="2"><label for="r_analise_ha_2">2</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_ha_3" name="analise_handicap_asiatico" value="3"><label for="r_analise_ha_3">3</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_ha_4" name="analise_handicap_asiatico" value="4"><label for="r_analise_ha_4">4</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Jogadores (1+ Sem Exceção)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="r_analise_jog_na" name="analise_mercados_jogadores" value="NaoSeAplica" required><label for="r_analise_jog_na">Não se Aplica</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_jog_sim" name="analise_mercados_jogadores" value="Sim"><label for="r_analise_jog_sim">Sim</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_jog_nao" name="analise_mercados_jogadores" value="Nao"><label for="r_analise_jog_nao">Não</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Outros (1+ Sem Exceção)</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="r_analise_outros_na" name="analise_outros_mercados" value="NaoSeAplica" required><label for="r_analise_outros_na">Não se Aplica</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_outros_sim" name="analise_outros_mercados" value="Sim"><label for="r_analise_outros_sim">Sim</label></div>
+                        <div class="option-item"><input type="radio" id="r_analise_outros_nao" name="analise_outros_mercados" value="Nao"><label for="r_analise_outros_nao">Não</label></div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="form-group">
+                <label for="casa_apostas_select">Casa de Apostas (Bet)</label>
+                <select id="casa_apostas_select" name="casa_apostas_select" required>
+                    <option value="" disabled selected>Carregando...</option>
+                    <option value="outro_casa_apostas">Outro...</option>
+                </select>
+                <input type="text" id="outra_casa_apostas_input" name="outra_casa_apostas_input" class="dynamic-input" placeholder="Digite a nova casa e pressione Enter" style="display: none;">
+            </div>
+
+            <div class="form-group">
+                <label for="campeonato_select">Campeonato</label>
+                <select id="campeonato_select" name="campeonato_select" required>
+                    <option value="" disabled selected>Carregando...</option>
+                    <option value="outro_campeonato">Adicionar Novo Campeonato...</option>
+                </select>
+                <input type="text" id="outro_campeonato_input" name="outro_campeonato_input" class="dynamic-input" placeholder="Digite o nome do campeonato e pressione Enter" style="display: none;">
+            </div>
+            
+            <div class="form-group">
+                <label for="perfil_partida_select">Perfil da Partida</label>
+                <select id="perfil_partida_select" name="perfil_partida_select" required>
+                    <option value="" disabled selected>Carregando...</option>
+                    <option value="outro_perfil_partida">Outro...</option>
+                </select>
+                <input type="text" id="outro_perfil_partida_input" name="outro_perfil_partida_input" class="dynamic-input" placeholder="Digite o novo perfil e pressione Enter" style="display: none;">
+            </div>
+
+            <div class="form-group">
+                <label for="home_team_reordered_select">Home (Equipe da Casa)</label>
+                <select id="home_team_reordered_select" name="home_team_select" required> <option value="" disabled selected>Carregando...</option>
+                    <option value="outro_home_team_reordered">Adicionar Nova Equipe...</option>
+                </select>
+                <input type="text" id="outro_home_team_reordered_input" name="outro_home_team_reordered_input" class="dynamic-input" placeholder="Digite o nome da equipe e pressione Enter" style="display: none;">
+            </div>
+
+            <div class="form-group">
+                <label for="away_team_reordered_select">Away (Equipe Visitante)</label>
+                <select id="away_team_reordered_select" name="away_team_select" required> <option value="" disabled selected>Carregando...</option>
+                    <option value="outro_away_team_reordered">Adicionar Nova Equipe...</option>
+                </select>
+                <input type="text" id="outro_away_team_reordered_input" name="outro_away_team_reordered_input" class="dynamic-input" placeholder="Digite o nome da equipe e pressione Enter" style="display: none;">
+            </div>
+
+            <div class="form-group">
+                <label for="stake_select">Stake</label>
+                <select id="stake_select" name="stake_select" required>
+                    <option value="" disabled selected>Carregando...</option>
+                    <option value="0.2 Un">0.2 Un</option>
+                    <option value="0.5 Un">0.5 Un</option>
+                    <option value="1 Un">1 Un</option>
+                    <option value="2 Un">2 Un</option>
+                    <option value="2.5 Un">2.5 Un</option>
+                    <option value="outro_stake">Outra Stake...</option>
+                </select>
+                <input type="number" id="outra_stake_input" name="outra_stake_input" class="dynamic-input" placeholder="Digite o valor numérico (ex: 3.5)" step="0.1" style="display: none;">
+            </div>
+
+            <fieldset id="mercados_explorados_fieldset_realizacao" class="main-fieldset">
+                <legend class="fieldset-legend-main">Mercados Explorados (Selecione ao menos uma opção)</legend>
+                <div class="sub-group">
+                    <p class="question-title">1X2</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="m_r_1x2_home" name="m_r_1x2_opcoes[]" value="Home"><label for="m_r_1x2_home">Home</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_1x2_away" name="m_r_1x2_opcoes[]" value="Away"><label for="m_r_1x2_away">Away</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_1x2_draw" name="m_r_1x2_opcoes[]" value="Draw"><label for="m_r_1x2_draw">Draw</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_1x2_hd" name="m_r_1x2_opcoes[]" value="Home&Draw"><label for="m_r_1x2_hd">Home&Draw</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_1x2_ad" name="m_r_1x2_opcoes[]" value="Away&Draw"><label for="m_r_1x2_ad">Away&Draw</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_1x2_na" name="m_r_1x2_opcoes[]" value="NaoExplorado"><label for="m_r_1x2_na">Não Explorado</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Gols</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="m_r_gols_totais" name="m_r_gols_opcoes[]" value="UO_Totais"><label for="m_r_gols_totais">U/O - Totais</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_gols_equipes" name="m_r_gols_opcoes[]" value="UO_Equipes"><label for="m_r_gols_equipes">U/O - Equipes</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_gols_totais_ht" name="m_r_gols_opcoes[]" value="UO_Totais_HT"><label for="m_r_gols_totais_ht">U/O - Totais - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_gols_equipes_ht" name="m_r_gols_opcoes[]" value="UO_Equipes_HT"><label for="m_r_gols_equipes_ht">U/O - Equipes - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_gols_na" name="m_r_gols_opcoes[]" value="NaoExplorado"><label for="m_r_gols_na">Não Explorado</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Cartões</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="m_r_cartoes_totais" name="m_r_cartoes_opcoes[]" value="UO_Totais"><label for="m_r_cartoes_totais">U/O - Totais</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_cartoes_equipes" name="m_r_cartoes_opcoes[]" value="UO_Equipes"><label for="m_r_cartoes_equipes">U/O - Equipes</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_cartoes_totais_ht" name="m_r_cartoes_opcoes[]" value="UO_Totais_HT"><label for="m_r_cartoes_totais_ht">U/O - Totais - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_cartoes_equipes_ht" name="m_r_cartoes_opcoes[]" value="UO_Equipes_HT"><label for="m_r_cartoes_equipes_ht">U/O - Equipes - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_cartoes_na" name="m_r_cartoes_opcoes[]" value="NaoExplorado"><label for="m_r_cartoes_na">Não Explorado</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Defesas de Goleiro</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="m_r_defesas_home" name="m_r_defesas_opcoes[]" value="Home"><label for="m_r_defesas_home">Home</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_defesas_away" name="m_r_defesas_opcoes[]" value="Away"><label for="m_r_defesas_away">Away</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_defesas_ha" name="m_r_defesas_opcoes[]" value="Home/Away"><label for="m_r_defesas_ha">Home/Away</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_defesas_na" name="m_r_defesas_opcoes[]" value="NaoExplorado"><label for="m_r_defesas_na">Não Explorado</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Escanteios</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="m_r_escanteios_totais" name="m_r_escanteios_opcoes[]" value="UO_Totais"><label for="m_r_escanteios_totais">U/O - Totais</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_escanteios_equipes" name="m_r_escanteios_opcoes[]" value="UO_Equipes"><label for="m_r_escanteios_equipes">U/O - Equipes</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_escanteios_totais_ht" name="m_r_escanteios_opcoes[]" value="UO_Totais_HT"><label for="m_r_escanteios_totais_ht">U/O - Totais - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_escanteios_equipes_ht" name="m_r_escanteios_opcoes[]" value="UO_Equipes_HT"><label for="m_r_escanteios_equipes_ht">U/O - Equipes - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_escanteios_na" name="m_r_escanteios_opcoes[]" value="NaoExplorado"><label for="m_r_escanteios_na">Não Explorado</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Finalizações</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="m_r_finalizacoes_totais" name="m_r_finalizacoes_opcoes[]" value="UO_Totais"><label for="m_r_finalizacoes_totais">U/O - Totais</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_finalizacoes_equipes" name="m_r_finalizacoes_opcoes[]" value="UO_Equipes"><label for="m_r_finalizacoes_equipes">U/O - Equipes</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_finalizacoes_totais_ht" name="m_r_finalizacoes_opcoes[]" value="UO_Totais_HT"><label for="m_r_finalizacoes_totais_ht">U/O - Totais - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_finalizacoes_equipes_ht" name="m_r_finalizacoes_opcoes[]" value="UO_Equipes_HT"><label for="m_r_finalizacoes_equipes_ht">U/O - Equipes - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_finalizacoes_na" name="m_r_finalizacoes_opcoes[]" value="NaoExplorado"><label for="m_r_finalizacoes_na">Não Explorado</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Finalizações no Gol</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="m_r_f_gol_totais" name="m_r_f_gol_opcoes[]" value="UO_Totais"><label for="m_r_f_gol_totais">U/O - Totais</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_f_gol_equipes" name="m_r_f_gol_opcoes[]" value="UO_Equipes"><label for="m_r_f_gol_equipes">U/O - Equipes</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_f_gol_totais_ht" name="m_r_f_gol_opcoes[]" value="UO_Totais_HT"><label for="m_r_f_gol_totais_ht">U/O - Totais - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_f_gol_equipes_ht" name="m_r_f_gol_opcoes[]" value="UO_Equipes_HT"><label for="m_r_f_gol_equipes_ht">U/O - Equipes - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_f_gol_na" name="m_r_f_gol_opcoes[]" value="NaoExplorado"><label for="m_r_f_gol_na">Não Explorado</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Impedimentos</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="m_r_impedimentos_totais" name="m_r_impedimentos_opcoes[]" value="UO_Totais"><label for="m_r_impedimentos_totais">U/O - Totais</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_impedimentos_equipes" name="m_r_impedimentos_opcoes[]" value="UO_Equipes"><label for="m_r_impedimentos_equipes">U/O - Equipes</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_impedimentos_totais_ht" name="m_r_impedimentos_opcoes[]" value="UO_Totais_HT"><label for="m_r_impedimentos_totais_ht">U/O - Totais - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_impedimentos_equipes_ht" name="m_r_impedimentos_opcoes[]" value="UO_Equipes_HT"><label for="m_r_impedimentos_equipes_ht">U/O - Equipes - HT</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_impedimentos_na" name="m_r_impedimentos_opcoes[]" value="NaoExplorado"><label for="m_r_impedimentos_na">Não Explorado</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Outros Mercados</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="checkbox" id="m_r_outros_ambos" name="m_r_outros_opcoes[]" value="ambos_marcam"><label for="m_r_outros_ambos">Ambos Marcam</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_outros_trave" name="m_r_outros_opcoes[]" value="bola_trave"><label for="m_r_outros_trave">Bola na Trave</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_outros_handicap" name="m_r_outros_opcoes[]" value="handicap"><label for="m_r_outros_handicap">Handicap</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_outros_ha" name="m_r_outros_opcoes[]" value="handicap_asiatico"><label for="m_r_outros_ha">Handicap Asiático</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_outros_penalti" name="m_r_outros_opcoes[]" value="penalti"><label for="m_r_outros_penalti">Pênalti</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_outros_jogador" name="m_r_outros_opcoes[]" value="especiais_jogador"><label for="m_r_outros_jogador">Especiais Jogador</label></div>
+                        <div class="option-item"><input type="checkbox" id="m_r_outros_na" name="m_r_outros_opcoes[]" value="NaoExplorado"><label for="m_r_outros_na">Não Explorado</label></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="mercados_obs_realizacao">Outros/OBS (Mercados)</label>
+                    <textarea id="mercados_obs_realizacao" name="mercados_obs_realizacao" rows="4" placeholder="Descreva outros mercados explorados ou adicione observações..."></textarea>
+                </div>
+            </fieldset>
+
+            <fieldset class="main-fieldset">
+                <legend class="fieldset-legend-main">Implementação da Operação</legend>
+                <div class="sub-group">
+                    <p class="question-title">Estratégia Implementada</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="op_impl_sim_r" name="op_estrategia_implementada_realizacao" value="sim" required><label for="op_impl_sim_r">Sim</label></div>
+                        <div class="option-item"><input type="radio" id="op_impl_nao_liq_r" name="op_estrategia_implementada_realizacao" value="nao_liquidez"><label for="op_impl_nao_liq_r">Não - Liquidez</label></div>
+                        <div class="option-item"><input type="radio" id="op_impl_nao_op_r" name="op_estrategia_implementada_realizacao" value="nao_operacional"><label for="op_impl_nao_op_r">Não - Operacional</label></div>
+                        <div class="option-item"><input type="radio" id="op_impl_nao_tempo_r" name="op_estrategia_implementada_realizacao" value="nao_tempo"><label for="op_impl_nao_tempo_r">Não - Tempo</label></div>
+                    </div>
+                </div>
+                <div class="sub-group">
+                    <p class="question-title">Problemas</p>
+                    <div class="options-container">
+                        <div class="option-item"><input type="radio" id="op_prob_nenhum_r" name="op_problemas_realizacao" value="nenhum"><label for="op_prob_nenhum_r">Nenhum</label></div>
+                        <div class="option-item"><input type="radio" id="op_prob_mercado_r" name="op_problemas_realizacao" value="falta_mercado"><label for="op_prob_mercado_r">Falta de Mercado</label></div>
+                        <div class="option-item"><input type="radio" id="op_prob_liquidez_r" name="op_problemas_realizacao" value="falta_liquidez"><label for="op_prob_liquidez_r">Falta de Liquidez Faixa Pretendida</label></div>
+                        <div class="option-item"><input type="radio" id="op_prob_multipla_r" name="op_problemas_realizacao" value="dificuldade_multipla"><label for="op_prob_multipla_r">Dificuldades com Múltipla</label></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="op_obs_implementacao_realizacao">Outros / OBS (Implementação)</label>
+                    <textarea id="op_obs_implementacao_realizacao" name="op_obs_implementacao_realizacao" rows="4" placeholder="Descreva outros problemas ou adicione observações..."></textarea>
+                </div>
+            </fieldset>
+
+            <div class="form-group">
+                <label for="file_upload_realizacao">Upload - Relatório da Análise e/ou Outros</label>
+                <input type="file" id="file_upload_realizacao" name="relatorios_realizacao[]" multiple>
+            </div>
+
+            <button type="submit" class="submit-button">Finalizar Registro de Realização</button>
+        </form>
+    </div>
+    <script>
+        function populateSelect(selectId, optionsArray) {
+            const selectElement = document.getElementById(selectId);
+            if (!selectElement) return;
+            const otherOption = selectElement.querySelector('option[value^="outro_"]');
+            const placeholderOption = selectElement.options[0]; 
+            for (let i = selectElement.options.length - 1; i >= 0; i--) {
+                const currentOption = selectElement.options[i];
+                if (currentOption !== placeholderOption && currentOption !== otherOption) {
+                    selectElement.remove(i);
+                }
+            }
+            let sortedOptions = Array.isArray(optionsArray) ? [...optionsArray] : [];
+            sortedOptions.sort((a, b) => String(a).localeCompare(String(b)));
+            sortedOptions.forEach(optionText => {
+                if (optionText === null || optionText === undefined || String(optionText).trim() === "") return;
+                let optionExists = false;
+                for(let k=0; k < selectElement.options.length; k++) {
+                    if(selectElement.options[k].value === optionText) { optionExists = true; break; }
+                }
+                if(optionExists) return;
+                const option = document.createElement('option');
+                option.value = optionText;
+                option.textContent = optionText;
+                if (otherOption) { selectElement.insertBefore(option, otherOption); } 
+                else { selectElement.appendChild(option); }
+            });
+        }
+
+        function setupDynamicSelect(selectId, inputId, optionValueToTrigger, isNumeric, suffix) {
+            const selectElement = document.getElementById(selectId);
+            const inputElement = document.getElementById(inputId);
+            if (!selectElement || !inputElement) { return; }
+            selectElement.addEventListener('change', function() {
+                if (this.value === optionValueToTrigger) {
+                    inputElement.style.display = 'block';
+                    inputElement.focus();
+                } else {
+                    inputElement.style.display = 'none';
+                }
+            });
+            inputElement.addEventListener('keydown', function(event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    let newText = inputElement.value.trim();
+                    if (newText) {
+                        if (isNumeric && isNaN(newText)) {
+                            alert("Por favor, insira um valor numérico."); return;
+                        }
+                        if (suffix) { newText += suffix; }
+                        let optionExists = false;
+                        for(let i=0; i < selectElement.options.length; i++) {
+                            if(selectElement.options[i].value.toLowerCase() === newText.toLowerCase()) {
+                                selectElement.value = selectElement.options[i].value; optionExists = true; break;
+                            }
+                        }
+                        if (!optionExists) {
+                            const currentOptionTexts = [];
+                            for (let i = 0; i < selectElement.options.length; i++) {
+                                const opt = selectElement.options[i];
+                                if (opt.value && opt.value !== optionValueToTrigger && !opt.disabled) {
+                                    currentOptionTexts.push(opt.textContent);
+                                }
+                            }
+                            currentOptionTexts.push(newText);
+                            populateSelect(selectId, currentOptionTexts);
+                            selectElement.value = newText;
+                        }
+                        inputElement.value = '';
+                        inputElement.style.display = 'none';
+                        selectElement.dispatchEvent(new Event('change'));
+                    }
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbzMohuS0VcT2_f5f-gU4h-8-ADFknbYvvdlODFNyKIWhSzgYVTYM8drqOhJZodiSQRB/exec";
+            
+            fetch(scriptUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) { 
+                        console.error("Erro ao buscar listas:", data.error);
+                        const realizacaoSelectsIds = ['home_team_reordered_select', 'away_team_reordered_select', 'estrategia_select', 'esporte_select', 'casa_apostas_select', 'campeonato_select', 'perfil_partida_select', 'stake_select'];
+                        realizacaoSelectsIds.forEach(id => {
+                             const el = document.getElementById(id);
+                             if(el && el.options.length > 0) el.options[0].textContent = "Erro ao carregar";
+                        });
+                        return; 
+                    }
+                    if (data.Equipes) {
+                        populateSelect('home_team_reordered_select', data.Equipes);
+                        populateSelect('away_team_reordered_select', data.Equipes);
+                    }
+                    if (data.Campeonatos) populateSelect('campeonato_select', data.Campeonatos);
+                    if (data.Estrategias) populateSelect('estrategia_select', data.Estrategias);
+                    if (data.Esportes) populateSelect('esporte_select', data.Esportes);
+                    if (data.CasasDeApostas) populateSelect('casa_apostas_select', data.CasasDeApostas);
+                    if (data.PerfisDePartida) populateSelect('perfil_partida_select', data.PerfisDePartida);
+                    if (data.Stakes) populateSelect('stake_select', data.Stakes);
+                    console.log("Listas dinâmicas para Realização carregadas.");
+                })
+                .catch(error => {
+                     console.error('Erro ao buscar listas do Google Sheet para Realização:', error);
+                     const realizacaoSelectsIds = ['home_team_reordered_select', 'away_team_reordered_select', 'estrategia_select', 'esporte_select', 'casa_apostas_select', 'campeonato_select', 'perfil_partida_select', 'stake_select'];
+                     realizacaoSelectsIds.forEach(id => {
+                         const el = document.getElementById(id);
+                         if(el && el.options.length > 0) el.options[0].textContent = "Falha no carregamento";
+                     });
+                });
+
+            setupDynamicSelect('home_team_reordered_select', 'outro_home_team_reordered_input', 'outro_home_team_reordered');
+            setupDynamicSelect('away_team_reordered_select', 'outro_away_team_reordered_input', 'outro_away_team_reordered');
+            setupDynamicSelect('estrategia_select', 'outra_estrategia_input', 'outro_estrategia');
+            setupDynamicSelect('esporte_select', 'outro_esporte_input', 'outro_esporte');
+            setupDynamicSelect('casa_apostas_select', 'outra_casa_apostas_input', 'outro_casa_apostas');
+            setupDynamicSelect('campeonato_select', 'outro_campeonato_input', 'outro_campeonato');
+            setupDynamicSelect('perfil_partida_select', 'outro_perfil_partida_input', 'outro_perfil_partida');
+            setupDynamicSelect('stake_select', 'outra_stake_input', 'outro_stake', true, ' Un');
+            
+            const formRealizacao = document.getElementById('realizacaoForm');
+            const mercadosExploradosFieldsetRealizacao = document.getElementById('mercados_explorados_fieldset_realizacao');
+
+            if (formRealizacao && mercadosExploradosFieldsetRealizacao) {
+                formRealizacao.addEventListener('submit', function(event) {
+                    const checkedCheckboxesInMercados = mercadosExploradosFieldsetRealizacao.querySelectorAll('input[type="checkbox"]:checked');
+                    if (checkedCheckboxesInMercados.length === 0) {
+                        alert("Por favor, selecione ao menos uma opção em 'Mercados Explorados'.");
+                        event.preventDefault(); 
+                        mercadosExploradosFieldsetRealizacao.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return false;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
