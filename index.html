@@ -3,37 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bet</title>
+    <title>Bet Control</title>
     <link rel="shortcut icon" type="image/png" href="favicon.png">
     <style>
+        /* --- CONFIGURAÇÕES GERAIS --- */
+        body {
+            font-family: "Times New Roman", serif;
+            background-color: #07251F;
+            color: #EAF9E1;
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            color: #d4af37;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        h3 {
+            color: #EAF9E1;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+        }
+
+        /* --- CONTAINERS DE SEÇÃO --- */
+        .section-container {
+            max-width: 800px; 
+            width: 100%;
+            margin: 0 auto 40px auto;
+        }
+        .resources-container { 
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto 40px auto;
+        }
+
+
+        .section-title {
+            color: #d4af37;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #2a5a4a;
+            padding-bottom: 10px;
+        }
+
+        .link-category {
+            margin-bottom: 40px;
+        }
+
+        /* --- ESTILO DE ITEM UNIFICADO --- */
+        .action-item {
+            display: block;
+            padding: 15px 20px;
+            background-color: #103a2f;
+            border: 1px solid #2a5a4a;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #EAF9E1;
+            font-size: 16px;
+            transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .action-item:hover {
+            border-color: #d4af37;
+            transform: translateY(-3px);
+            background-color: #1a4c40;
+        }
+
+        /* Modificador para os 3 botões primários */
+        .action-item--primary {
+            background-color: #d4af37;
+            color: #07251F;
+            border-color: #d4af37;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-item--primary:hover {
+            transform: scale(1.05) translateY(0); 
+            background-color: #e0c25d;
+            border-color: #e0c25d;
+        }
+
+        /* --- LAYOUTS DAS LISTAS DE LINKS --- */
+        .link-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px; 
+        }
+
+        .link-grid {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .link-grid .action-item { 
+            text-align: left;
+        }
+        .link-list .action-item { 
+            text-align: center; 
+        }
+
+
+        /* --- VERSÃO DO COMMIT --- */
         #version-info {
             position: fixed;
-            bottom: 8px; /* Um pouco mais de espaço */
+            bottom: 8px;
             right: 10px;
             z-index: 9999;
-            /* --- Estilos adequados ao seu design --- */
-            background-color: #103a2f; /* Fundo para combinar com o container */
-            color: #EAF9E1;           /* Cor do texto para combinar com o corpo da página */
-            border: 1px solid #d4af37; /* Borda para usar a cor de destaque (dourado) */
-            font-family: monospace;    /* Mantido para legibilidade do hash do commit */
-            font-size: 11px;           /* Um pouco maior para melhor leitura */
+            background-color: #103a2f;
+            color: #EAF9E1;
+            border: 1px solid #d4af37;
+            font-family: monospace;
+            font-size: 11px;
             padding: 4px 8px;
-            border-radius: 6px; /* Um pouco mais arredondado para combinar */
-        } 
-        body { font-family: "Times New Roman", serif; background-color: #07251F; color: #EAF9E1; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; text-align: center; }
-        .container { border: 1px solid #d4af37; padding: 40px 60px; border-radius: 12px; background-color: #103a2f; }
-        h1 { color: #d4af37; margin-bottom: 30px; }
-        .button { display: block; background-color: #d4af37; color: #07251F; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; margin: 15px 0; transition: transform 0.2s ease; }
-        .button:hover { transform: scale(1.05); }
+            border-radius: 6px;
+        }
+
+        /* --- AJUSTES PARA TELAS PEQUENAS --- */
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+            .section-container, .resources-container { 
+                padding: 0;
+            }
+            h1 {
+                font-size: 2em;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Bet</h1>
-        <a href="realizacao.html" class="button">Registro de Operação</a>
-        <a href="validacao.html" class="button">Validação de Operação</a>
-        <a href="calculadora.html" class="button">Cálculos e Predições</a>
-        <div id="version-info">%%VERSION%%</div>
+
+    <div class="section-container">
+        <h1>⚽ Bet Control</h1>
+        <ul class="link-list">
+            <li><a href="calculadora.html" class="action-item action-item--primary">Cálculos e Predições</a></li>
+            <li><a href="realizacao.html" class="action-item action-item--primary">Registro de Operação</a></li>
+            <li><a href="validacao.html" class="action-item action-item--primary">Validação de Operação</a></li>
+        </ul>
     </div>
+
+    <div class="section-container"> 
+        <h2 class="section-title">Ferramentas e Mídias</h2>
+        <div class="link-category">
+            <ul class="link-list">
+                <li><a href="https://oddsagora.com.br" class="action-item">📈 Comparador de Odds (Odds Agora)</a></li>
+                <li><a href="https://www.transfermarkt.com.br/apostas/odds/" class="action-item">📈 Odds Aumentadas (Transfermarkt BR)</a></li>
+                <li><a href="https://www.accuweather.com/" class="action-item">🌦️ Previsão Meteorológica (AccuWeather)</a></li>
+                <li><a href="https://www.sofascore.com/" class="action-item">🧑‍⚖️ SofaScore Árbitro (WhoScored)</a></li>
+                <li><a href="https://t.me/home" class="action-item">✈️ Telegram</a></li>
+                <li><a href="https://www.threads.com/" class="action-item">@ Threads</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="resources-container">
+        <h2 class="section-title">Recursos Externos</h2>
+
+        <div class="link-category">
+            <h3>Notícias Esportivas</h3>
+            <ul class="link-list">
+                <li><a href="https://as.com/" class="action-item">Diario As - Espanha</a></li>
+                <li><a href="https://www.ole.com.ar/" class="action-item">Diario Olé - Argentina</a></li>
+                <li><a href="https://www.espn.com.br/" class="action-item">ESPN - Brasil</a></li>
+                <li><a href="https://ge.globo.com/" class="action-item">Globo Esporte - Brasil</a></li>
+                <li><a href="https://www.lequipe.fr/" class="action-item">L'Équipe - França</a></li>
+                <li><a href="https://www.lance.com.br/" class="action-item">LANCE! - Brasil</a></li>
+                <li><a href="https://www.marca.com/" class="action-item">Marca - Espanha</a></li>
+                <li><a href="https://www.mundodeportivo.com/" class="action-item">Mundo Deportivo - Espanha</a></li>
+            </ul>
+        </div>
+
+        <div class="link-category">
+            <h3>Predições e Análises</h3>
+            <ul class="link-grid">
+                <li><a href="https://www.365scores.com/nl" class="action-item">365 Scores</a></li>
+                <li><a href="https://www.academiadasapostasbrasil.com/previews" class="action-item">Academia das Apostas</a></li>
+                <li><a href="https://andysbetclub.co.uk/predictions/football-tips/" class="action-item">Andys Bet Clubs</a></li>
+                <li><a href="https://www.covers.com/soccer/" class="action-item">Covers</a></li>
+                <li><a href="https://dailysports.net/predictions/" class="action-item">DailySports</a></li>
+                <li><a href="https://eaglepredict.com/" class="action-item">Eagle Predict</a></li>
+                <li><a href="https://t.me/eaglepredict" class="action-item">Eagle Predict (Telegram)</a></li>
+                <li><a href="https://www.footystats.org/" class="action-item">FootyStats</a></li>
+                <li><a href="https://www.forebet.com/en/football-tips-and-predictions-for-today" class="action-item">Forebet</a></li>
+                <li><a href="https://www.goal.com/en-za/betting" class="action-item">Goal.com</a></li>
+                <li><a href="https://www.kickoff.co.uk/" class="action-item">KickOff Uk</a></li>
+                <li><a href="https://www.gazzetta.it/" class="action-item">La Gazzeta dello Sport</a></li>
+                <li><a href="https://theanalyst.com/eu" class="action-item">Opta Analyst</a></li>
+                <li><a href="https://www.predictz.com/predictions/" class="action-item">PredictZ</a></li>
+                <li><a href="https://ratingbet.com/predictions/football/" class="action-item">RatingBet</a></li>
+                <li><a href="https://www.skysports.com/football" class="action-item">SkySports</a></li>
+                <li><a href="https://amp.sportsmole.co.uk/football/preview/" class="action-item">SportsMole</a></li>
+                <li><a href="https://www.sportytrader.com/en/betting-tips/football/today/" class="action-item">SportyTrader</a></li>
+                <li><a href="https://www.transfermarkt.com/betting/tips/" class="action-item">Transfermarkt (Betting Tips)</a></li>
+                <li><a href="https://1xbet.whoscored.com/previews" class="action-item">WhoScored</a></li>
+                <li><a href="https://www.windrawwin.com/predictions/today/" class="action-item">WinDrawWin</a></li>
+                <li><a href="https://xgscore.io/" class="action-item">xGScore (Site)</a></li>
+                <li><a href="https://t.me/xgscore_io" class="action-item">xGScore (Telegram)</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="version-info">%%VERSION%%</div>
+
 </body>
 </html>
