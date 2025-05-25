@@ -1,8 +1,10 @@
+# Arquivo: .github/workflows/deploy.yml
+
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ "main" ] # ou a sua branch principal
+    branches: [ "main" ] # Ou a sua branch principal
   workflow_dispatch:
 
 permissions:
@@ -18,20 +20,25 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get short commit hash
-        id: vars
+        id: vars # Damos um ID a este passo para referenciar sua saída
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Replace placeholder with commit hash
+      - name: Replace placeholder with version info
         run: |
-          sed -i "s|%%VERSION%%|version: ${{ steps.vars.outputs.sha_short }}|g" index.html
-
+          # Cria a string de versão combinando o número do build e o hash do commit
+          VERSION_STRING="Build: #${{ github.run_number }} (commit: ${{ steps.vars.outputs.sha_short }})"
+          
+          # Substitui o placeholder no index.html
+          # Usamos aspas simples em volta do s|...|...|g para o sed lidar bem com o # e ()
+          sed -i 's|%%VERSION%%|'"${VERSION_STRING}"'|g' index.html
+      
       - name: Setup Pages
         uses: actions/configure-pages@v5
-
+        
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '.' # Assume que index.html está na raiz após a modificação
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
