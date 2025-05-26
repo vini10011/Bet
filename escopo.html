@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Análise H2H</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBbRMgIBPBTcPXAa00KYFXZDLCrO0iA_RESdcFW4kUPg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        :root {
+            --primary-bg: #07251F; --secondary-bg: #103A2F; --text-primary: #EAF9E1;
+            --gold: #d4af37; --border-color: #2a5a4a; --border-color-translucent: rgba(42, 90, 74, 0.5);
+        }
+        body {font-family: "Times New Roman", serif; background-color: var(--primary-bg); color: var(--text-primary); margin: 10px; padding: 10px;}
+        h2, h3, h4 {text-align: center;}
+        h4 { color: var(--gold); margin-top: 25px; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; font-size: 1.2em;}
+        label, input, select, button {font-family: "Times New Roman", serif; display: block; width: 100%; max-width: 100%; margin: 10px 0; padding: 10px; border-radius: 12px; box-sizing: border-box; font-size: 16px;}
+        input, select {background-color: var(--text-primary); color: var(--primary-bg); border: 1px solid var(--primary-bg);}
+        button {background-color: var(--gold); color: var(--primary-bg); border: none; font-weight: bold; cursor: pointer; transition: transform 0.2s ease, opacity 0.2s ease;}
+        button:hover:not(:disabled) {opacity: 0.9; transform: scale(1.02);}
+        button:disabled { background-color: #555; color: #aaa; cursor: not-allowed; }
+        button.report-action, button.main-calculate-action {background-color: #0f4c3a; color: var(--text-primary); border: 1px solid var(--gold);}
+        .botoes-container {display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; align-items: center; justify-content: center;}
+        .context-grid {display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;}
+        fieldset {border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; margin-top: 15px;}
+        legend {padding: 0 10px; font-weight: bold; color: var(--gold);}
+        fieldset label {display: flex; align-items: center; margin: 8px 0; padding: 0; font-size: 15px; cursor: pointer;}
+        fieldset input[type="checkbox"] {width: auto; margin-right: 10px;}
+        blockquote {background-color: var(--secondary-bg); border-left: 5px solid var(--gold); margin: 20px 0; padding: 15px; font-style: italic;}
+        #menu {display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;}
+        #menu button {background-color: var(--secondary-bg); color: var(--text-primary); border: 1px solid var(--gold); margin-top: 0;}
+        #menu button.active {background-color: var(--gold); color: var(--primary-bg);}
+        .page-container {display: none;}
+        
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .result-card { background-color: var(--secondary-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; text-align: center; }
+        .result-card-header { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--gold); font-size: 1.1em; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+        .result-card-body { display: flex; justify-content: space-around; align-items: stretch; gap: 15px; } 
+        .team-projection { flex: 1; display: flex; flex-direction: column; justify-content: space-between;} 
+        .team-name { font-size: 0.9em; opacity: 0.8; margin-bottom: 4px; }
+        .base-value { font-size: 0.8em; color: #ccc; opacity: 0.8; margin-top: 2px;}
+        .base-value .liga-avg { font-style: italic; opacity: 0.7; }
+        .projection-value { font-size: 2em; font-weight: bold; color: var(--gold); line-height: 1.1; margin-top: auto;} 
+        .vs-separator { font-size: 1.2em; color: var(--gold); opacity: 0.7; align-self: center; } 
+
+        .prob-card-body { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .prob-item-comparison { display: flex; flex-direction: column; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color-translucent); }
+        .prob-item-comparison:last-child { border-bottom: none; }
+        .prob-label { font-size: 0.95em; margin-bottom: 5px; text-align: center; width: 100%;}
+        .prob-values-pair { display: flex; justify-content: space-around; width: 100%; align-items: baseline;}
+        .prob-value-base, .prob-value-final { font-size: 0.9em; padding: 2px 5px; border-radius: 4px; } 
+        .prob-value-base { color: #bbb; opacity: 0.9; }
+        .prob-value-base strong, .prob-value-final strong { font-weight: bold; }
+        .prob-value-final { color: var(--gold); font-size: 1em; } 
+        
+        .scores-comparison-container { display: flex; justify-content: space-around; gap: 15px; width: 100%; }
+        .scores-list-column { flex: 1; }
+        .scores-list-column h5 { text-align: center; color: #ccc; font-size: 0.9em; margin-bottom: 5px; font-weight: normal; }
+        .scores-list-column ol { list-style-type: none; padding: 0; margin: 0; text-align: left; font-size: 0.9em; }
+        .scores-list-column li { display: flex; justify-content: space-between; padding: 4px; border-radius: 5px; }
+        .scores-list-column li:nth-child(odd) { background-color: var(--primary-bg); }
+        .score-prob { color: var(--gold); font-weight: normal; }
+        @media (max-width: 600px) { .context-grid {grid-template-columns: 1fr;} }
+    </style>
+</head>
+<body>
+    <h2 style="color: #d4af37;">Análise H2H</h2>
+    <div id="menu">
+        <button onclick="showPage('contexto')" class="active">📝 Contexto da Partida</button>
+        <button onclick="showPage('resultados')">📊 Resultados da Análise</button>
+    </div>
+
+    <div id="pagina-contexto" class="page-container">
+        <h3>Contexto da Partida</h3>
+        <blockquote style="text-align: center;">Defina os parâmetros da partida. Os "Valores Base" virão do sistema de predição. Os "Fatores Contextuais" ajustarão esses valores para as projeções "Finais".</blockquote>
+        <fieldset> <legend>Identificação da Partida</legend> <label for="ctx_championship">Campeonato</label> <select id="ctx_championship" onchange="carregarTimesDoCampeonato()"> <option value="">Carregando campeonatos...</option> </select> <div class="context-grid"> <div> <label for="ctx_home">Mandante</label> <select id="ctx_home"> <option value="">Selecione um campeonato primeiro</option> </select> </div> <div> <label for="ctx_away">Visitante</label> <select id="ctx_away"> <option value="">Selecione um campeonato primeiro</option> </select> </div> </div> </fieldset>
+        <fieldset> <legend style="font-size: 1.1em; color: #FFD700;">🎯 Viés de Análise da Partida</legend> <p style="font-size:13px; text-align:center; font-style:italic; margin: -5px 0 10px 0;"> Ajuste global que reflete sua expectativa sobre a dinâmica do jogo. "Arrojado" amplifica o favoritismo; "Conservador" equilibra e reduz o volume geral. </p> <select id="ctx_analytical_bias"> <option value="neutro" selected>Neutro (Padrão)</option> <option value="arrojado">Arrojado (Ampliar Favoritismo)</option> <option value="conservador">Conservador (Equilibrar / Menor Volume)</option> </select> </fieldset>
+        <fieldset> <legend>Fatores Contextuais Gerais</legend> <label for="ctx_stadium_attendance">Público no Estádio</label> <select id="ctx_stadium_attendance"> <option value="medio">Público Médio (Padrão)</option> <option value="lotado">Lotado</option> <option value="vazio">Portões Fechados</option> </select> <label><input type="checkbox" id="ctx_altitude"/> Altitude Elevada</label> <label><input type="checkbox" id="ctx_bad_weather"/> Clima Adverso (Ex: Chuva Forte)</label> <label><input type="checkbox" id="ctx_derby"/> Alta Rivalidade (Clássico/Final)</label> </fieldset>
+        <div class="context-grid"> <fieldset> <legend>Fatores Específicos (Mandante)</legend> <label><input type="checkbox" id="ctx_home_short_rest"/> Descanso Curto (&lt;3 dias)</label> <label><input type="checkbox" id="ctx_home_must_win"/> Alta Motivação (Decisivo)</label> <label><input type="checkbox" id="ctx_home_no_motivation"/> Baixa Motivação (Protocolar)</label> <label><input type="checkbox" id="ctx_home_foco_outro_jogo"/> Foco em Outra Competição</label> <label><input type="checkbox" id="ctx_home_attack_absences"/> Desfalques Chave no Ataque</label> <label><input type="checkbox" id="ctx_home_defense_absences"/> Desfalques Chave na Defesa</label></fieldset> <fieldset> <legend>Fatores Específicos (Visitante)</legend> <label><input type="checkbox" id="ctx_away_short_rest"/> Descanso Curto (&lt;3 dias)</label> <label><input type="checkbox" id="ctx_away_long_travel"/> Viagem Desgastante</label> <label><input type="checkbox"id="ctx_away_must_win"/> Alta Motivação (Decisivo)</label> <label><input type="checkbox" id="ctx_away_no_motivation"/> Baixa Motivação (Protocolar)</label> <label><input type="checkbox" id="ctx_away_foco_outro_jogo"/> Foco em Outra Competição</label> <label><input type="checkbox" id="ctx_away_attack_absences"/> Desfalques Chave no Ataque</label> <label><input type="checkbox" id="ctx_away_defense_absences"/> Desfalques Chave na Defesa</label></fieldset> </div>
+        <fieldset> <legend>Arbitragem</legend> <p style="font-size:12px; font-style:italic;">As projeções serão ajustadas automaticamente com base nas médias do árbitro selecionado.</p> <label for="ctx_referee_select">Árbitro da Partida (Opcional - Carregará médias se disponível)</label> <select id="ctx_referee_select" onchange="preencherMediasArbitroContexto()"> <option value="">Selecione um Árbitro (ou deixe em branco)</option> </select> <label for="ctx_referee_style">Perfil do Árbitro (Sua Análise)</label> <select id="ctx_referee_style"> <option value="normal">Normal (Padrão)</option> <option value="rigido">Rígido</option> <option value="permissivo">Permissivo</option> </select> </fieldset>
+        <div class="botoes-container">
+            <button id="btn-calcular-tudo" onclick="iniciarAnaliseCompleta()" class="main-calculate-action" style="width:100%; padding: 15px; font-size: 18px;">🚀 Gerar Análise Completa</button>
+        </div>
+    </div>
+    
+    <div id="pagina-resultados" class="page-container">
+        <h3>Resultados da Análise Preditiva</h3>
+        <blockquote style="text-align: center;">As projeções abaixo comparam os valores **Base** (Predição Inicial, incluindo média histórica da Liga) com os valores **Finais** (calculados com seu contexto).</blockquote>
+        <div id="results-container" class="results-grid"></div>
+        <div class="botoes-container" style="justify-content: center; margin-top:40px;">
+            <button id="btn-pdf" onclick="gerarRelatorioCompleto()" class="report-action" style="width:80%; max-width:400px; padding: 15px; font-size: 18px;">📋 Baixar Relatório Completo em PDF</button>
+        </div>
+    </div>
+
+    <div id="loading-popup" 
+         style="display: none; 
+                position: fixed; 
+                top: 0; left: 0; 
+                width: 100%; height: 100%; 
+                background-color: rgba(0,0,0,0.75); 
+                z-index: 10000; 
+                justify-content: center; 
+                align-items: center; 
+                flex-direction: column; 
+                text-align: center; 
+                color: var(--text-primary); 
+                padding: 20px; 
+                box-sizing: border-box;">
+        <div style="background-color: var(--secondary-bg); padding: 30px 40px; border-radius: 10px; border: 1px solid var(--gold); box-shadow: 0 0 20px rgba(0,0,0,0.5);">
+            <div id="loading-spinner" style="border: 7px solid #4a6e62; border-top: 7px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px auto;"></div>
+            <p id="loading-message" style="font-size: 1.1em; margin-bottom: 15px;">Processando análise, por favor aguarde...</p>
+            <p id="error-details" style="font-size: 0.9em; color: #ffdddd; max-height: 100px; overflow-y: auto; display:none; text-align:left; background-color: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px;"></p>
+            <button id="loading-error-ok-btn" style="display:none; background-color: var(--gold); color: var(--primary-bg); padding: 10px 25px; margin-top:20px; font-size: 1em; border-radius: 8px;">OK</button>
+        </div>
+    </div>
+    <style> @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } } </style>
+    
+<script>
+'use strict';
+
+// ===================================================================================
+// SEÇÃO 0: CONFIGURAÇÕES E PARÂMETROS GLOBAIS
+// ===================================================================================
+const CONFIG = {
+    API_URL: 'http://SUA_URL_DE_SISTEMA_DE_PREDICAO_AQUI', 
+    DEFAULT_RHO_CALCULO_PLACAR: -0.10, 
+    FACTORS: { 
+        OFFENSIVE: { 
+            homeMustWin: 1.10, homeNoMotivation: 0.88, homeFocoOutroJogo: 0.85,
+            homeAttackAbsences: 0.85, homeDefenseAbsences_ImpactOnOpponent: 1.10,
+            awayMustWin: 1.10, awayNoMotivation: 0.88, awayFocoOutroJogo: 0.85,
+            awayAttackAbsences: 0.85, awayDefenseAbsences_ImpactOnOpponent: 1.10,
+        },
+        DISCIPLINARY: { derby: 1.15, refereeRigido: 1.12, refereePermissivo: 0.90, },
+        GENERAL: {
+            badWeather: 0.90, altitude_Home: 1.05, altitude_Away: 0.95,
+            stadiumLotado_Home: 1.07, stadiumLotado_Away: 0.98,
+            stadiumVazio_Home: 0.95, stadiumVazio_Away: 1.02,
+            homeShortRest: 0.95, awayShortRest: 0.95, awayLongTravel: 0.97,
+        },
+        ANALYTICAL_BIAS: {
+            arrojado_Boost: 1.08, arrojado_Nerf: 0.92,
+            conservador_Pull: 0.5, conservador_Volume: 0.95,
+        },
+        REFEREE_ADJUSTMENT_CAP: { min: 0.75, max: 1.25 }
+    },
+    FALLBACK_DATA: { 
+        LEAGUES: [{ id: "0", name: "Brasileirão Série A (Simulado)", ano: 2024 }, { id: "1", name: "Premier League (Simulado)", ano: 2024 }],
+        TEAMS: { 
+            "0": [{id: 1, name: "Time A (Simulado)"}, {id: 2, name: "Time B (Simulado)"}],
+            "1": [{id: 3, name: "Time C (Simulado)"}, {id: 4, name: "Time D (Simulado)"}]
+        },
+        REFEREES: [{nome: "Árbitro Padrão", avg_yc: 3.0, avg_rc: 0.1, avg_faltas: 22.0}]
+    }
+};
+
+let dadosPartidaSalvos = {}; 
+let analiseResultados = {};
+let dadosArbitroSelecionado = { avgFouls: null, avgCards: null };
+
+// ===================================================================================
+// SEÇÃO 1: FUNÇÕES AUXILIARES E SETUP DA UI
+// ===================================================================================
+const formatOutput = (n, dec = 2) => (n === undefined || isNaN(n) || n === null) ? 'N/A' : n.toFixed(dec);
+const isChecked = id => document.getElementById(id)?.checked || false;
+const getValue = id => document.getElementById(id)?.value || '';
+const getSelectedText = id => document.getElementById(id)?.options[document.getElementById(id).selectedIndex]?.text.split(' (')[0] || '';
+const getSelectedDataset = (id, dataKey) => document.getElementById(id)?.options[document.getElementById(id).selectedIndex]?.dataset[dataKey] || null;
+
+function showPage(pageId) {
+    document.querySelectorAll('.page-container').forEach(c => c.style.display = 'none');
+    document.querySelectorAll('#menu button').forEach(b => b.classList.remove('active'));
+    const page = document.getElementById(`pagina-${pageId}`);
+    if (page) page.style.display = 'block';
+    const button = document.querySelector(`#menu button[onclick="showPage('${pageId}')"]`);
+    if (button) button.classList.add('active');
+}
+
+async function carregarCampeonatos() {
+    const select = document.getElementById('ctx_championship');
+    select.innerHTML = '<option value="">Carregando...</option>';
+    let campeonatos;
+    try {
+        if (CONFIG.API_URL === 'http://SUA_URL_DE_SISTEMA_DE_PREDICAO_AQUI' || !CONFIG.API_URL) {
+            console.warn("API_URL não configurada, usando dados de fallback para campeonatos.");
+            await new Promise(r => setTimeout(r, 100)); // Simula delay
+            campeonatos = CONFIG.FALLBACK_DATA.LEAGUES;
+        } else {
+            const response = await fetch(`${CONFIG.API_URL}/api/campeonatos`); 
+            if (!response.ok) throw new Error(`(API Campeonatos) ${response.status}`);
+            campeonatos = await response.json();
+        }
+
+        if (!campeonatos || campeonatos.length === 0) { // Checa se o fallback também está vazio
+            throw new Error("Nenhum dado de campeonato disponível (API ou Fallback).");
+        }
+
+        select.innerHTML = '<option value="">Selecione</option>';
+        campeonatos.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = `${c.id}_${c.ano}`; 
+            opt.textContent = `${c.nome} (${c.ano})`;
+            opt.dataset.leagueId = c.id;
+            opt.dataset.seasonYear = c.ano; 
+            select.appendChild(opt);
+        });
+    } catch (error) {
+        console.error("Falha ao carregar campeonatos:", error);
+        // Tenta o fallback em caso de erro na API
+        if (!(CONFIG.API_URL === 'http://SUA_URL_DE_SISTEMA_DE_PREDICAO_AQUI' || !CONFIG.API_URL)) {
+            console.warn("Tentando dados de fallback para campeonatos após falha da API.");
+            campeonatos = CONFIG.FALLBACK_DATA.LEAGUES;
+            if (campeonatos && campeonatos.length > 0) {
+                select.innerHTML = '<option value="">Selecione (Fallback)</option>';
+                 campeonatos.forEach(c => { /* ... (código de popular select) ... */ });
+            } else {
+                 select.innerHTML = `<option value="">Erro: ${error.message}</option>`;
+            }
+        } else {
+             select.innerHTML = `<option value="">Erro: ${error.message}</option>`;
+        }
+    }
+}
+
+async function carregarTimesDoCampeonato() {
+    const leagueId = getSelectedDataset('ctx_championship', 'leagueId');
+    const seasonYear = getSelectedDataset('ctx_championship', 'seasonYear'); 
+    
+    const homeSelect = document.getElementById('ctx_home');
+    const awaySelect = document.getElementById('ctx_away');
+    const refSelect = document.getElementById('ctx_referee_select');
+
+    const setErrorMessage = (msg) => {
+        homeSelect.innerHTML = msg; awaySelect.innerHTML = msg; refSelect.innerHTML = msg;
+    };
+
+    setErrorMessage('<option value="">Carregando...</option>');
+
+    if (!leagueId || !seasonYear) {
+        setErrorMessage('<option value="">Selecione um campeonato</option>');
+        return;
+    }
+    
+    let teams, referees;
+    try {
+        if (CONFIG.API_URL === 'http://SUA_URL_DE_SISTEMA_DE_PREDICAO_AQUI' || !CONFIG.API_URL) {
+            console.warn("API_URL não configurada, usando dados de fallback para times e árbitros.");
+            await new Promise(r => setTimeout(r, 100));
+            teams = CONFIG.FALLBACK_DATA.TEAMS[leagueId] || [];
+            referees = CONFIG.FALLBACK_DATA.REFEREES;
+        } else {
+            const [timesResponse, arbitrosResponse] = await Promise.all([ 
+                fetch(`${CONFIG.API_URL}/api/times?campeonato_id=${leagueId}&season=${seasonYear}`),
+                fetch(`${CONFIG.API_URL}/api/arbitros?campeonato_id=${leagueId}&season=${seasonYear}`) 
+            ]);
+            if (!timesResponse.ok) throw new Error(`(API Times) ${timesResponse.status}`);
+            teams = await timesResponse.json();
+            if (!arbitrosResponse.ok) throw new Error(`(API Árbitros) ${arbitrosResponse.status}`);
+            referees = await arbitrosResponse.json();
+        }
+
+        if (!teams || teams.length === 0) {
+            throw new Error("Nenhum time disponível (API ou Fallback).");
+        }
+         if (!referees || referees.length === 0) { // Pode ser normal não ter árbitros sempre
+            console.warn("Nenhum árbitro específico retornado, usando fallback ou lista vazia.");
+            referees = CONFIG.FALLBACK_DATA.REFEREES; // Usa fallback se API não retornar
+        }
+
+
+        [homeSelect, awaySelect].forEach(select => {
+            select.innerHTML = `<option value="">Selecione</option>`;
+            teams.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(t => {
+                select.innerHTML += `<option value="${t.id}">${t.nome}</option>`;
+            });
+        });
+
+        refSelect.innerHTML = `<option value="">Selecione (Opcional)</option>`;
+        referees.forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r.nome; 
+            opt.textContent = `${r.nome} (YC: ${r.avg_yc}, RC: ${r.avg_rc}, FTS: ${r.avg_faltas})`;
+            opt.dataset.avgYc = r.avg_yc;
+            opt.dataset.avgRc = r.avg_rc;
+            opt.dataset.avgFouls = r.avg_faltas;
+            refSelect.appendChild(opt);
+        });
+
+    } catch (error) {
+        console.error("Falha ao carregar times/árbitros:", error);
+        // Tenta fallback em caso de erro
+         if (!(CONFIG.API_URL === 'http://SUA_URL_DE_SISTEMA_DE_PREDICAO_AQUI' || !CONFIG.API_URL)) {
+            console.warn("Tentando dados de fallback para times/árbitros após falha da API.");
+            teams = CONFIG.FALLBACK_DATA.TEAMS[leagueId] || [];
+            referees = CONFIG.FALLBACK_DATA.REFEREES;
+            if (teams.length > 0) {
+                 [homeSelect, awaySelect].forEach(select => { /* ... (código de popular select) ... */ });
+                 refSelect.innerHTML = '<option value="">Selecione (Opcional - Fallback)</option>';
+                 referees.forEach(r => { /* ... (código de popular select) ... */ });
+            } else {
+                setErrorMessage(`<option value="">Erro: ${error.message}</option>`);
+            }
+        } else {
+            setErrorMessage(`<option value="">Erro: ${error.message}</option>`);
+        }
+    }
+}
+
+function preencherMediasArbitroContexto() {
+    const select = document.getElementById('ctx_referee_select');
+    if (select.value) {
+        dadosArbitroSelecionado.avgFouls = parseFloat(getSelectedDataset('ctx_referee_select', 'avgFouls'));
+        const avgYc = parseFloat(getSelectedDataset('ctx_referee_select', 'avgYc'));
+        const avgRc = parseFloat(getSelectedDataset('ctx_referee_select', 'avgRc'));
+        dadosArbitroSelecionado.avgCards = avgYc + avgRc;
+    } else {
+        dadosArbitroSelecionado = { avgFouls: null, avgCards: null };
+    }
+}
+
+// ===================================================================================
+// SEÇÃO 2: LÓGICA DE CÁLCULO E ANÁLISE
+// ===================================================================================
+function getContextualFactors(tipo) {
+    let fatorCasa = 1.0, fatorVisitante = 1.0;
+    const ctx = dadosPartidaSalvos;
+    const F = CONFIG.FACTORS;
+    const isOffensive = ['gols', 'sot', 'finalizacoes', 'escanteios'].includes(tipo);
+    const isDisciplinary = ['faltas', 'cartoesAmarelos', 'cartoesVermelhos'].includes(tipo);
+
+    if (ctx.badWeather) { fatorCasa *= F.GENERAL.badWeather; fatorVisitante *= F.GENERAL.badWeather; }
+    if (ctx.altitude) { fatorCasa *= F.GENERAL.altitude_Home; fatorVisitante *= F.GENERAL.altitude_Away; }
+    if (ctx.stadiumAttendance === 'lotado') { fatorCasa *= F.GENERAL.stadiumLotado_Home; fatorVisitante *= F.GENERAL.stadiumLotado_Away; }
+    if (ctx.stadiumAttendance === 'vazio') { fatorCasa *= F.GENERAL.stadiumVazio_Home; fatorVisitante *= F.GENERAL.stadiumVazio_Away; }
+    if (ctx.derby && isDisciplinary) { fatorCasa *= F.DISCIPLINARY.derby; fatorVisitante *= F.DISCIPLINARY.derby; }
+
+    if (ctx.homeShortRest) fatorCasa *= F.GENERAL.homeShortRest;
+    if (isOffensive) {
+        if (ctx.homeMustWin) fatorCasa *= F.OFFENSIVE.homeMustWin;
+        if (ctx.homeNoMotivation) fatorCasa *= F.OFFENSIVE.homeNoMotivation;
+        if (ctx.homeFocoOutroJogo) fatorCasa *= F.OFFENSIVE.homeFocoOutroJogo;
+        if (ctx.homeAttackAbsences) fatorCasa *= F.OFFENSIVE.homeAttackAbsences;
+        if (ctx.homeDefenseAbsences) fatorVisitante *= F.OFFENSIVE.homeDefenseAbsences_ImpactOnOpponent;
+    }
+    
+    if (ctx.awayShortRest) fatorVisitante *= F.GENERAL.awayShortRest;
+    if (ctx.awayLongTravel) fatorVisitante *= F.GENERAL.awayLongTravel;
+    if (isOffensive) {
+        if (ctx.awayMustWin) fatorVisitante *= F.OFFENSIVE.awayMustWin;
+        if (ctx.awayNoMotivation) fatorVisitante *= F.OFFENSIVE.awayNoMotivation;
+        if (ctx.awayFocoOutroJogo) fatorVisitante *= F.OFFENSIVE.awayFocoOutroJogo;
+        if (ctx.awayAttackAbsences) fatorVisitante *= F.OFFENSIVE.awayAttackAbsences;
+        if (ctx.awayDefenseAbsences) fatorCasa *= F.OFFENSIVE.awayDefenseAbsences_ImpactOnOpponent;
+    }
+
+    if (isDisciplinary && ctx.refereeStyle === 'rigido') { fatorCasa *= F.DISCIPLINARY.refereeRigido; fatorVisitante *= F.DISCIPLINARY.refereeRigido; }
+    if (isDisciplinary && ctx.refereeStyle === 'permissivo') { fatorCasa *= F.DISCIPLINARY.refereePermissivo; fatorVisitante *= F.DISCIPLINARY.refereePermissivo; }
+    
+    if (ctx.analyticalBias === 'arrojado') {
+        if (fatorCasa > fatorVisitante) { fatorCasa *= F.ANALYTICAL_BIAS.arrojado_Boost; fatorVisitante *= F.ANALYTICAL_BIAS.arrojado_Nerf; } 
+        else { fatorCasa *= F.ANALYTICAL_BIAS.arrojado_Nerf; fatorVisitante *= F.ANALYTICAL_BIAS.arrojado_Boost; }
+    } else if (ctx.analyticalBias === 'conservador') {
+        const avg = (fatorCasa + fatorVisitante) / 2;
+        fatorCasa = (fatorCasa * (1 - F.ANALYTICAL_BIAS.conservador_Pull) + avg * F.ANALYTICAL_BIAS.conservador_Pull) * F.ANALYTICAL_BIAS.conservador_Volume;
+        fatorVisitante = (fatorVisitante * (1 - F.ANALYTICAL_BIAS.conservador_Pull) + avg * F.ANALYTICAL_BIAS.conservador_Pull) * F.ANALYTICAL_BIAS.conservador_Volume;
+    }
+    return { fatorCasa, fatorVisitante };
+}
+
+async function iniciarAnaliseCompleta() {
+    const btnCalcular = document.getElementById('btn-calcular-tudo');
+    const loadingPopup = document.getElementById('loading-popup');
+    const loadingMessage = document.getElementById('loading-message');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const errorDetailsP = document.getElementById('error-details');
+    const errorOkBtn = document.getElementById('loading-error-ok-btn');
+
+    dadosPartidaSalvos = {
+        homeTeamName: getSelectedText('ctx_home'), awayTeamName: getSelectedText('ctx_away'),
+        leagueName: getSelectedText('ctx_championship'), analyticalBias: getValue('ctx_analytical_bias'),
+        stadiumAttendance: getValue('ctx_stadium_attendance'), altitude: isChecked('ctx_altitude'),
+        badWeather: isChecked('ctx_bad_weather'), derby: isChecked('ctx_derby'),
+        homeShortRest: isChecked('ctx_home_short_rest'), homeMustWin: isChecked('ctx_home_must_win'),
+        homeNoMotivation: isChecked('ctx_home_no_motivation'), homeFocoOutroJogo: isChecked('ctx_home_foco_outro_jogo'),
+        homeAttackAbsences: isChecked('ctx_home_attack_absences'), homeDefenseAbsences: isChecked('ctx_home_defense_absences'),
+        awayShortRest: isChecked('ctx_away_short_rest'), awayLongTravel: isChecked('ctx_away_long_travel'),
+        awayMustWin: isChecked('ctx_away_must_win'), awayNoMotivation: isChecked('ctx_away_no_motivation'),
+        awayFocoOutroJogo: isChecked('ctx_away_foco_outro_jogo'), awayAttackAbsences: isChecked('ctx_away_attack_absences'),
+        awayDefenseAbsences: isChecked('ctx_away_defense_absences'),
+        refereeFoulsAvg: dadosArbitroSelecionado.avgFouls, refereeCardsAvg: dadosArbitroSelecionado.avgCards,
+        refereeStyle: getValue('ctx_referee_style'), refereeSelectedName: getSelectedText('ctx_referee_select'),
+        campeonatoId: getSelectedDataset('ctx_championship', 'leagueId'),
+        seasonYear: getSelectedDataset('ctx_championship', 'seasonYear'),
+        timeCasaId: getValue('ctx_home'),
+        timeVisitanteId: getValue('ctx_away')
+    };
+    
+    if (!dadosPartidaSalvos.homeTeamName || !dadosPartidaSalvos.awayTeamName || !dadosPartidaSalvos.campeonatoId || !dadosPartidaSalvos.timeCasaId || !dadosPartidaSalvos.timeVisitanteId || !dadosPartidaSalvos.seasonYear) {
+        alert("Seleção incompleta. Verifique campeonato, temporada, time da casa e time visitante.");
+        return; 
+    }
+    
+    // Exibir popup APÓS validação
+    loadingMessage.textContent = 'Coletando parâmetros da partida...'; 
+    errorDetailsP.style.display = 'none'; errorDetailsP.textContent = '';
+    loadingSpinner.style.display = 'block'; errorOkBtn.style.display = 'none';
+    loadingPopup.style.display = 'flex'; 
+    btnCalcular.disabled = true; btnCalcular.textContent = 'Analisando... 🧠';
+
+    try {
+        loadingMessage.textContent = 'Buscando predições base do sistema...';
+        let predicoesBaseDoSistema;
+
+        if (CONFIG.API_URL === 'http://SUA_URL_DE_SISTEMA_DE_PREDICAO_AQUI' || !CONFIG.API_URL) {
+            console.warn("URL do Sistema de Predição não configurada. Usando dados de simulação.");
+            await new Promise(r => setTimeout(r, 1500)); 
+            predicoesBaseDoSistema = { 
+                valores_esperados_base: { 
+                    gols_Home: 1.88, gols_Home_LigaAvg: 1.55, gols_Away: 1.23, gols_Away_LigaAvg: 1.10,
+                    finalizacoes_Home: 14.5, finalizacoes_Home_LigaAvg: 13.0, finalizacoes_Away: 10.2, finalizacoes_Away_LigaAvg: 9.5,
+                    sot_Home: 5.1, sot_Home_LigaAvg: 4.5, sot_Away: 3.8, sot_Away_LigaAvg: 3.2,
+                    escanteios_Home: 6.3, escanteios_Home_LigaAvg: 5.5, escanteios_Away: 4.1, escanteios_Away_LigaAvg: 3.8,
+                    faltas_Home: 11.5, faltas_Home_LigaAvg: 12.0, faltas_Away: 12.8, faltas_Away_LigaAvg: 12.5,
+                    cartoesAmarelos_Home: 1.9, cartoesAmarelos_Home_LigaAvg: 2.1, cartoesAmarelos_Away: 2.2, cartoesAmarelos_Away_LigaAvg: 2.3,
+                    cartoesVermelhos_Home: 0.05, cartoesVermelhos_Home_LigaAvg: 0.06, cartoesVermelhos_Away: 0.07, cartoesVermelhos_Away_LigaAvg: 0.08,
+                    taxaDefesaGoleiro_Home: 0.75, taxaDefesaGoleiro_Home_LigaAvg: 0.72, 
+                    taxaDefesaGoleiro_Away: 0.72, taxaDefesaGoleiro_Away_LigaAvg: 0.70 
+                },
+                probabilidades_base_backend: { 
+                    prob1X2: { home: 0.45, draw: 0.28, away: 0.27 },
+                    prob1X2_LigaAvg: { home: 0.42, draw: 0.30, away: 0.28 },
+                    probOverUnder1_5: { over: 0.80, under: 0.20 },
+                    probOverUnder1_5_LigaAvg: { over: 0.75, under: 0.25 },
+                    probOverUnder2_5: { over: 0.60, under: 0.40 },
+                    probOverUnder2_5_LigaAvg: { over: 0.55, under: 0.45 },
+                    probBTTS: { yes: 0.55, no: 0.45 },
+                    probBTTS_LigaAvg: { yes: 0.50, no: 0.50 },
+                    topScores: [ { score: "1-1", probability: 0.12 }, { score: "2-1", probability: 0.10 }, {score:"1-0", probability: 0.09} ]
+                }
+            };
+        } else { 
+            const response = await fetch(`${CONFIG.API_URL}/api/predicoes_base_partida`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    campeonato_id: dadosPartidaSalvos.campeonatoId,
+                    season_year: dadosPartidaSalvos.seasonYear,
+                    time_casa_id: dadosPartidaSalvos.timeCasaId,
+                    time_visitante_id: dadosPartidaSalvos.timeVisitanteId,
+                })
+            });
+
+            if (!response.ok) {
+                let errorData = { message: `Erro do Sistema de Predição: ${response.status}`};
+                try { errorData = await response.json(); } catch(e) { console.warn("Não foi possível parsear JSON de erro do sistema."); }
+                throw new Error(errorData.erro || errorData.message || errorData.detalhes || `Erro do Sistema de Predição: ${response.status}`);
+            }
+            predicoesBaseDoSistema = await response.json();
+            if (!predicoesBaseDoSistema || !predicoesBaseDoSistema.valores_esperados_base || !predicoesBaseDoSistema.probabilidades_base_backend) {
+                throw new Error("Resposta do sistema de predição inválida ou incompleta.");
+            }
+        }
+        
+        loadingMessage.textContent = 'Aplicando fatores contextuais...';
+        await new Promise(r => setTimeout(r, 300)); 
+
+        analiseResultados = { 
+            probabilidadesBaseSistema: predicoesBaseDoSistema.probabilidades_base_backend,
+        };
+        const VEsBaseSistema = predicoesBaseDoSistema.valores_esperados_base;
+        
+        const metricasParaProcessar = [
+            { keyFE: 'gols', keyAPI_Home: 'gols_Home', keyAPI_Away: 'gols_Away', tipoCtx: 'gols' },
+            { keyFE: 'finalizacoes', keyAPI_Home: 'finalizacoes_Home', keyAPI_Away: 'finalizacoes_Away', tipoCtx: 'finalizacoes' },
+            { keyFE: 'sot', keyAPI_Home: 'sot_Home', keyAPI_Away: 'sot_Away', tipoCtx: 'sot' },
+            { keyFE: 'escanteios', keyAPI_Home: 'escanteios_Home', keyAPI_Away: 'escanteios_Away', tipoCtx: 'escanteios' },
+            { keyFE: 'faltas', keyAPI_Home: 'faltas_Home', keyAPI_Away: 'faltas_Away', tipoCtx: 'faltas' },
+            { keyFE: 'cartoesAmarelos', keyAPI_Home: 'cartoesAmarelos_Home', keyAPI_Away: 'cartoesAmarelos_Away', tipoCtx: 'cartoesAmarelos' },
+            { keyFE: 'cartoesVermelhos', keyAPI_Home: 'cartoesVermelhos_Home', keyAPI_Away: 'cartoesVermelhos_Away', tipoCtx: 'cartoesVermelhos' },
+        ];
+        
+        metricasParaProcessar.forEach(m => {
+            const baseCasa = VEsBaseSistema[m.keyAPI_Home];
+            const baseCasa_LigaAvg = VEsBaseSistema[m.keyAPI_Home + '_LigaAvg'];
+            const baseVis = VEsBaseSistema[m.keyAPI_Away];
+            const baseVis_LigaAvg = VEsBaseSistema[m.keyAPI_Away + '_LigaAvg'];
+
+            const fatores = getContextualFactors(m.tipoCtx);
+            let finalCasa = baseCasa * fatores.fatorCasa;
+            let finalVis = baseVis * fatores.fatorVisitante;
+
+            if (['faltas', 'cartoesAmarelos', 'cartoesVermelhos'].includes(m.tipoCtx)) {
+                const avgArbitro = m.tipoCtx === 'faltas' ? dadosPartidaSalvos.refereeFoulsAvg : dadosPartidaSalvos.refereeCardsAvg;
+                 if (avgArbitro > 0 && m.tipoCtx !== 'cartoesVermelhos') {
+                    const projCombinada = finalCasa + finalVis;
+                    if (projCombinada > 0) {
+                        const ratio = avgArbitro / projCombinada;
+                        const {min, max} = CONFIG.FACTORS.REFEREE_ADJUSTMENT_CAP;
+                        const ratioCap = Math.max(min, Math.min(max, ratio));
+                        finalCasa *= ratioCap;
+                        finalVis *= ratioCap;
+                    }
+                } else if (avgArbitro > 0 && m.tipoCtx === 'cartoesVermelhos' && dadosPartidaSalvos.refereeCardsAvg) {
+                     const baseAmarelosCasa = VEsBaseSistema['cartoesAmarelos_Home'];
+                     const baseAmarelosVis = VEsBaseSistema['cartoesAmarelos_Away'];
+                     if (baseAmarelosCasa !== undefined && baseAmarelosVis !== undefined) {
+                        const fatoresAmarelos = getContextualFactors('cartoesAmarelos');
+                        const projCombinadaAmarelos = (baseAmarelosCasa * fatoresAmarelos.fatorCasa) + (baseAmarelosVis * fatoresAmarelos.fatorVisitante) ;
+                        if (projCombinadaAmarelos > 0) {
+                            const ratioTotalCards = dadosPartidaSalvos.refereeCardsAvg / projCombinadaAmarelos;
+                            const {min, max} = CONFIG.FACTORS.REFEREE_ADJUSTMENT_CAP;
+                            const ratioCap = Math.max(min, Math.min(max, ratioTotalCards));
+                            finalCasa *= ratioCap; 
+                            finalVis *= ratioCap;
+                        }
+                     }
+                }
+            }
+            analiseResultados[m.keyFE] = { baseCasa, baseCasa_LigaAvg, baseVis, baseVis_LigaAvg, finalCasa: Math.max(0,finalCasa), finalVis: Math.max(0,finalVis) };
+        });
+
+        analiseResultados.gkSaves = {
+            baseCasa: VEsBaseSistema.taxaDefesaGoleiro_Home, 
+            baseCasa_LigaAvg: VEsBaseSistema.taxaDefesaGoleiro_Home_LigaAvg,
+            baseVis: VEsBaseSistema.taxaDefesaGoleiro_Away,  
+            baseVis_LigaAvg: VEsBaseSistema.taxaDefesaGoleiro_Away_LigaAvg,
+            finalCasa: Math.max(0, (analiseResultados.sot?.finalVis || 0) * VEsBaseSistema.taxaDefesaGoleiro_Home), 
+            finalVis: Math.max(0, (analiseResultados.sot?.finalCasa || 0) * VEsBaseSistema.taxaDefesaGoleiro_Away)
+        };
+        
+        renderizarResultadosUI();
+        loadingPopup.style.display = 'none'; 
+        showPage('resultados');
+
+    } catch (error) {
+        console.error("Falha na análise completa:", error);
+        loadingMessage.textContent = 'Erro na Análise!';
+        errorDetailsP.textContent = error.message || 'Ocorreu um erro desconhecido.';
+        errorDetailsP.style.display = 'block';
+        loadingSpinner.style.display = 'none';
+        errorOkBtn.style.display = 'inline-block';
+        errorOkBtn.onclick = () => { 
+            loadingPopup.style.display = 'none'; 
+            btnCalcular.disabled = false; 
+            btnCalcular.textContent = '🚀 Gerar Análise Completa';
+        };
+    } finally {
+        // Este finally agora só reabilita o botão se não houve um erro que já mostrou o botão OK.
+        if (errorOkBtn.style.display === 'none') { 
+             btnCalcular.disabled = false;
+             btnCalcular.textContent = '🚀 Gerar Análise Completa';
+        }
+    }
+}
+
+// ===================================================================================
+// SEÇÃO 3: RENDERIZAÇÃO DOS RESULTADOS NA UI
+// ===================================================================================
+function renderizarResultadosUI() {
+    const container = document.getElementById('results-container');
+    container.innerHTML = ''; 
+    const { homeTeamName, awayTeamName } = dadosPartidaSalvos;
+    const probabilidadesBaseSistema = analiseResultados.probabilidadesBaseSistema;
+    
+    const { finalCasa: lambdaCasaFE, finalVis: lambdaVisFE } = analiseResultados.gols;
+    let probCasaFinalFE = 0, probEmpateFinalFE = 0, probVisFinalFE = 0;
+    let over25FinalFE = 0, over15FinalFE = 0, bttsFinalFE = 0;
+    const placaresFinaisFE = [];
+    const factorialCache = {};
+    const factorial = n => { if (n > 170) return Infinity; if (n <= 1) return 1; if (factorialCache[n]) return factorialCache[n]; let r=1; for(let i=2;i<=n;i++)r*=i; factorialCache[n]=r; return r; };
+    const poisson = (k, l) => (l**k * Math.exp(-l)) / factorial(k);
+    const tau = (x, y, lh, la, r) => { 
+        if (r === 0 || r === undefined || r === null) return 1.0; 
+        if (x == 0 && y == 0) return 1 - (lh * la * r);
+        if (x == 1 && y == 0) return 1 + (la * r);
+        if (x == 0 && y == 1) return 1 + (lh * r);
+        if (x == 1 && y == 1) return 1 - r;
+        return 1.0;
+    };
+
+    let totalProbFE = 0;
+    for (let i = 0; i <= 7; i++) for (let j = 0; j <= 7; j++) {
+        const prob_ij_ind = poisson(i, lambdaCasaFE) * poisson(j, lambdaVisFE);
+        const adj_factor = tau(i, j, lambdaCasaFE, lambdaVisFE, CONFIG.DEFAULT_RHO_CALCULO_PLACAR);
+        const p = Math.max(0, prob_ij_ind * adj_factor);
+        if (p > 1e-8) { placaresFinaisFE.push({score: `${i}-${j}`, probability_raw: p}); totalProbFE += p; }
+    }
+
+    if (totalProbFE > 0) {
+        placaresFinaisFE.forEach(p_item => { 
+            p_item.probability = p_item.probability_raw / totalProbFE;
+            const [gC, gV] = p_item.score.split('-').map(Number);
+            if (gC > gV) probCasaFinalFE += p_item.probability;
+            else if (gV > gC) probVisFinalFE += p_item.probability;
+            else probEmpateFinalFE += p_item.probability;
+            if (gC + gV > 2.5) over25FinalFE += p_item.probability;
+            if (gC + gV > 1.5) over15FinalFE += p_item.probability;
+            if (gC > 0 && gV > 0) bttsFinalFE += p_item.probability;
+        });
+    } else { 
+        probCasaFinalFE = 1/3; probEmpateFinalFE = 1/3; probVisFinalFE = 1/3;
+        over25FinalFE = 0.5; over15FinalFE = 0.5; bttsFinalFE = 0.5;
+        placaresFinaisFE.push({score: "0-0", probability: 0.1}, {score: "1-0", probability: 0.1}, {score: "0-1", probability: 0.1});
+    }
+    placaresFinaisFE.sort((a,b) => b.probability - a.probability);
+
+    analiseResultados.gols.probCasaFinalFE = probCasaFinalFE; 
+    analiseResultados.gols.probEmpateFinalFE = probEmpateFinalFE;
+    analiseResultados.gols.probVisFinalFE = probVisFinalFE; 
+    analiseResultados.gols.over25FinalFE = over25FinalFE;
+    analiseResultados.gols.over15FinalFE = over15FinalFE; 
+    analiseResultados.gols.bttsFinalFE = bttsFinalFE;
+    analiseResultados.gols.topScoresFinalFE = placaresFinaisFE.slice(0, 5);
+    analiseResultados.gols.topScoresBase = probabilidadesBaseSistema.topScores; 
+    
+    container.innerHTML += `
+        <div class="result-card">
+            <div class="result-card-header">📊 Probabilidades (1X2)</div>
+            <div class="prob-card-body">
+                <div class="prob-item-comparison">
+                    <span class="prob-label">${homeTeamName} Vence</span>
+                    <div class="prob-values-pair">
+                        <span class="prob-value-base">Base: <strong>${formatOutput(probabilidadesBaseSistema.prob1X2.home*100)}%</strong> <span class="liga-avg">(Média Hist. Liga: ${formatOutput(probabilidadesBaseSistema.prob1X2_LigaAvg.home*100)}%)</span></span>
+                        <span class="prob-value-final">Final: <strong>${formatOutput(probCasaFinalFE*100)}%</strong></span>
+                    </div>
+                </div>
+                <div class="prob-item-comparison">
+                    <span class="prob-label">Empate</span>
+                    <div class="prob-values-pair">
+                        <span class="prob-value-base">Base: <strong>${formatOutput(probabilidadesBaseSistema.prob1X2.draw*100)}%</strong> <span class="liga-avg">(Média Hist. Liga: ${formatOutput(probabilidadesBaseSistema.prob1X2_LigaAvg.draw*100)}%)</span></span>
+                        <span class="prob-value-final">Final: <strong>${formatOutput(probEmpateFinalFE*100)}%</strong></span>
+                    </div>
+                </div>
+                <div class="prob-item-comparison">
+                    <span class="prob-label">${awayTeamName} Vence</span>
+                    <div class="prob-values-pair">
+                        <span class="prob-value-base">Base: <strong>${formatOutput(probabilidadesBaseSistema.prob1X2.away*100)}%</strong> <span class="liga-avg">(Média Hist. Liga: ${formatOutput(probabilidadesBaseSistema.prob1X2_LigaAvg.away*100)}%)</span></span>
+                        <span class="prob-value-final">Final: <strong>${formatOutput(probVisFinalFE*100)}%</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="result-card">
+            <div class="result-card-header">📈 Mercado de Gols</div>
+            <div class="prob-card-body">
+                <div class="prob-item-comparison">
+                    <span class="prob-label">Mais de 1.5 Gols</span>
+                    <div class="prob-values-pair">
+                        <span class="prob-value-base">Base: <strong>${formatOutput(probabilidadesBaseSistema.probOverUnder1_5.over*100)}%</strong> <span class="liga-avg">(Média Hist. Liga: ${formatOutput(probabilidadesBaseSistema.probOverUnder1_5_LigaAvg.over*100)}%)</span></span>
+                        <span class="prob-value-final">Final: <strong>${formatOutput(over15FinalFE*100)}%</strong></span>
+                    </div>
+                </div>
+                <div class="prob-item-comparison">
+                    <span class="prob-label">Mais de 2.5 Gols</span>
+                    <div class="prob-values-pair">
+                        <span class="prob-value-base">Base: <strong>${formatOutput(probabilidadesBaseSistema.probOverUnder2_5.over*100)}%</strong> <span class="liga-avg">(Média Hist. Liga: ${formatOutput(probabilidadesBaseSistema.probOverUnder2_5_LigaAvg.over*100)}%)</span></span>
+                        <span class="prob-value-final">Final: <strong>${formatOutput(over25FinalFE*100)}%</strong></span>
+                    </div>
+                </div>
+                <div class="prob-item-comparison">
+                    <span class="prob-label">Ambas Marcam (Sim)</span>
+                     <div class="prob-values-pair">
+                        <span class="prob-value-base">Base: <strong>${formatOutput(probabilidadesBaseSistema.probBTTS.yes*100)}%</strong> <span class="liga-avg">(Média Hist. Liga: ${formatOutput(probabilidadesBaseSistema.probBTTS_LigaAvg.yes*100)}%)</span></span>
+                        <span class="prob-value-final">Final: <strong>${formatOutput(bttsFinalFE*100)}%</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="result-card">
+            <div class="result-card-header">🎯 Placares Prováveis</div>
+            <div class="scores-comparison-container">
+                <div class="scores-list-column">
+                    <h5>Base (Sistema)</h5>
+                    <ol>${(probabilidadesBaseSistema.topScores || []).map(p => `<li><span>${p.score}</span> <span class="score-prob">${formatOutput(p.probability*100,1)}%</span></li>`).join('')}</ol>
+                </div>
+                <div class="scores-list-column">
+                    <h5>Final (Calculado)</h5>
+                    <ol>${placaresFinaisFE.slice(0,5).map(p => `<li><span>${p.score}</span> <span class="score-prob">${formatOutput(p.probability*100,1)}%</span></li>`).join('')}</ol>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const metricasUI = [
+        { key: 'gols', icone: '⚽', nome: 'Gols Esperados (xG)' },
+        { key: 'finalizacoes', icone: '🎯', nome: 'Finalizações' }, { key: 'sot', icone: '🥅', nome: 'Finalizações no Gol' },
+        { key: 'gkSaves', icone: '🧤', nome: 'Defesas de Goleiro' }, { key: 'escanteios', icone: '📐', nome: 'Escanteios' }, 
+        { key: 'faltas', icone: '🚧', nome: 'Faltas' }, { key: 'cartoesAmarelos', icone: '🟨', nome: 'Cartões Amarelos' },
+        { key: 'cartoesVermelhos', icone: '🟥', nome: 'Cartões Vermelhos' },
+    ];
+    
+    metricasUI.forEach(m => {
+        const data = analiseResultados[m.key];
+        if (!data) {
+            console.warn(`Dados para métrica ${m.key} não encontrados em analiseResultados.`);
+            return;
+        }
+        const baseCasaDisplay = (m.key === 'gkSaves') 
+            ? `${formatOutput(data.baseCasa * 100, 0)}% <span class="liga-avg">(Média Hist. Liga: ${formatOutput(data.baseCasa_LigaAvg * 100, 0)}%)</span>`
+            : `${formatOutput(data.baseCasa)} <span class="liga-avg">(Média Hist. Liga: ${formatOutput(data.baseCasa_LigaAvg)})</span>`;
+        const baseVisDisplay = (m.key === 'gkSaves') 
+            ? `${formatOutput(data.baseVis * 100, 0)}% <span class="liga-avg">(Média Hist. Liga: ${formatOutput(data.baseVis_LigaAvg * 100, 0)}%)</span>`
+            : `${formatOutput(data.baseVis)} <span class="liga-avg">(Média Hist. Liga: ${formatOutput(data.baseVis_LigaAvg)})</span>`;
+
+        container.innerHTML += `
+            <div class="result-card">
+                <div class="result-card-header">${m.icone} ${m.nome}</div>
+                <div class="result-card-body">
+                    <div class="team-projection">
+                        <div class="team-name">${homeTeamName}</div>
+                        <div class="base-value">Base: ${baseCasaDisplay}</div>
+                        <div class="projection-value">${formatOutput(data.finalCasa)}</div>
+                    </div>
+                    <div class="vs-separator">vs</div>
+                    <div class="team-projection">
+                        <div class="team-name">${awayTeamName}</div>
+                        <div class="base-value">Base: ${baseVisDisplay}</div>
+                        <div class="projection-value">${formatOutput(data.finalVis)}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+// ===================================================================================
+// SEÇÃO 4: GERAÇÃO DE RELATÓRIO PDF
+// ===================================================================================
+function gerarRelatorioCompleto() {
+    // ... (Função mantida como na versão anterior, com o teste mínimo comentado e a lógica de PDF simplificada) ...
+    const btn = document.getElementById('btn-pdf');
+    if (Object.keys(analiseResultados).length === 0 || !analiseResultados.gols || !analiseResultados.probabilidadesBaseSistema) { 
+        alert('Gere uma análise primeiro antes de baixar o relatório.');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Gerando PDF...';
+    console.log("Iniciando geração do PDF...");
+    
+    /*
+    // ----- TESTE DE PDF ULTRA-MÍNIMO (Descomente para testar a funcionalidade básica do html2pdf) -----
+    const testElementMinimalPdf = document.createElement('div');
+    testElementMinimalPdf.innerHTML = '<h1 style="color:red; padding:50px; font-size:24px;">PDF Teste MÍNIMO</h1><p>Se isto aparecer, o problema é o conteúdo complexo do relatório.</p>';
+    const optMinimal = { margin: 1, filename: 'TESTE_MINIMAL.pdf', jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+    html2pdf().from(testElementMinimalPdf).set(optMinimal).save()
+        .then(() => {
+            console.log("PDF MÍNIMO gerado com sucesso.");
+            alert("TESTE: PDF MÍNIMO gerado. Verifique seus downloads. Se funcionou, o problema está no conteúdo completo do relatório.");
+        })
+        .catch(err => {
+            console.error("ERRO no PDF MÍNIMO:", err);
+            alert(`ERRO NO TESTE DE PDF MÍNIMO: ${err.message || 'Erro desconhecido'}. Verifique o console (F12).`);
+        })
+        .finally(() => { 
+            btn.disabled = false; btn.textContent = '📋 Baixar Relatório Completo em PDF';
+        });
+    return; 
+    // ----- FIM DO TESTE DE PDF ULTRA-MÍNIMO -----
+    */
+
+
+    const { homeTeamName, awayTeamName, leagueName, analyticalBias, refereeSelectedName, refereeFoulsAvg, refereeCardsAvg } = dadosPartidaSalvos;
+    const probBaseSistema = analiseResultados.probabilidadesBaseSistema; 
+    
+    let pdfContent = `
+        <div style="font-family: Helvetica, Arial, sans-serif; color: #333; width: 100%;">
+            <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px;">
+                <h1 style="margin: 0; color: #1a1a1a; font-size: 24px;">Análise Preditiva de Partida</h1>
+                <h2 style="margin: 5px 0 0 0; color: #555; font-size: 20px;">${homeTeamName} vs ${awayTeamName}</h2>
+            </div>
+            <div style="margin-top: 15px; padding: 12px; background-color: #f9f9f9; border-radius: 8px; font-size: 13px;">
+                <h3 style="margin-top:0; text-align:center; color:#333; border-bottom: 1px solid #ddd; padding-bottom: 6px; font-size: 16px;">Detalhes da Análise</h3>
+                <p><strong>Partida:</strong> ${homeTeamName} (Mandante) vs ${awayTeamName} (Visitante)</p>
+                <p><strong>Campeonato:</strong> ${leagueName}</p>
+                <p><strong>Viés de Análise (Aplicado):</strong> ${analyticalBias}</p>
+                ${refereeSelectedName ? `<p><strong>Árbitro:</strong> ${refereeSelectedName} (Faltas: ${formatOutput(refereeFoulsAvg)} | Cartões Totais: ${formatOutput(refereeCardsAvg)})</p>` : ''}
+            </div>
+    `;
+
+    const criarBlocoMetricaPdf = (data, metricKeyName, tituloExtra = "Base") => {
+        if (!data || data.baseCasa === undefined || data.baseCasa_LigaAvg === undefined) return "<p>Dados parciais ou não disponíveis para esta métrica.</p>";
+        const baseCasaContent = (metricKeyName === 'gkSaves') 
+            ? `${formatOutput(data.baseCasa * 100,0)}% <span style="font-style:italic;opacity:0.7">(Média Hist. Liga: ${formatOutput(data.baseCasa_LigaAvg * 100,0)}%)</span>`
+            : `${formatOutput(data.baseCasa)} <span style="font-style:italic;opacity:0.7">(Média Hist. Liga: ${formatOutput(data.baseCasa_LigaAvg)})</span>`;
+        const baseVisContent = (metricKeyName === 'gkSaves') 
+            ? `${formatOutput(data.baseVis * 100,0)}% <span style="font-style:italic;opacity:0.7">(Média Hist. Liga: ${formatOutput(data.baseVis_LigaAvg * 100,0)}%)</span>`
+            : `${formatOutput(data.baseVis)} <span style="font-style:italic;opacity:0.7">(Média Hist. Liga: ${formatOutput(data.baseVis_LigaAvg)})</span>`;
+        
+        return `
+            <div style="font-size:12px;">
+                <p style="margin-bottom: 3px; margin-top: 8px;"><strong>${homeTeamName}:</strong></p>
+                <p style="margin-top: 0; margin-left: 15px;">&nbsp;&nbsp;${tituloExtra}: ${baseCasaContent} | Final: ${formatOutput(data.finalCasa)}</p>
+                <p style="margin-bottom: 3px;"><strong>${awayTeamName}:</strong></p>
+                <p style="margin-top: 0; margin-left: 15px;">&nbsp;&nbsp;${tituloExtra}: ${baseVisContent} | Final: ${formatOutput(data.finalVis)}</p>
+            </div>
+        `;
+    };
+    
+    if (analiseResultados.gols) {
+        pdfContent += `<div style="margin-top: 15px; page-break-inside: avoid;">
+            <h3 style="background-color: #e9ecef; padding: 8px; border-radius: 8px 8px 0 0; margin:0; color: #1a1a1a; font-size: 15px;">⚽ Gols Esperados (xG)</h3>
+            <div style="border: 1px solid #e9ecef; padding: 12px; border-radius: 0 0 8px 8px;">
+                ${criarBlocoMetricaPdf(analiseResultados.gols, 'gols', "Base xG")}
+            </div></div>
+        `;
+    }
+    
+    if (analiseResultados.gols && probBaseSistema && probBaseSistema.prob1X2_LigaAvg) { 
+        pdfContent += `<div style="margin-top: 15px; page-break-inside: avoid;">
+            <h3 style="background-color: #e9ecef; padding: 8px; border-radius: 8px 8px 0 0; margin:0; color: #1a1a1a; font-size: 15px;">📊 Probabilidades de Mercado</h3>
+            <div style="border: 1px solid #e9ecef; padding: 12px; border-radius: 0 0 8px 8px; font-size: 12px;">
+                <p><strong>${homeTeamName} Vence:</strong> Base ${formatOutput(probBaseSistema.prob1X2.home*100)}% <span style="font-style:italic;opacity:0.7">(Média Hist. Liga: ${formatOutput(probBaseSistema.prob1X2_LigaAvg.home*100)}%)</span> | Final: ${formatOutput(analiseResultados.gols.probCasaFinalFE*100)}%</p>
+                <p><strong>Empate:</strong> Base ${formatOutput(probBaseSistema.prob1X2.draw*100)}% <span style="font-style:italic;opacity:0.7">(Média Hist. Liga: ${formatOutput(probBaseSistema.prob1X2_LigaAvg.draw*100)}%)</span> | Final: ${formatOutput(analiseResultados.gols.probEmpateFinalFE*100)}%</p>
+                <p><strong>${awayTeamName} Vence:</strong> Base ${formatOutput(probBaseSistema.prob1X2.away*100)}% <span style="font-style:italic;opacity:0.7">(Média Hist. Liga: ${formatOutput(probBaseSistema.prob1X2_LigaAvg.away*100)}%)</span> | Final: ${formatOutput(analiseResultados.gols.probVisFinalFE*100)}%</p>
+                <hr style="border:0; border-top:1px solid #eee; margin: 6px 0;"/>
+                <p><strong>Mais de 1.5 Gols:</strong> Base ${formatOutput(probBaseSistema.probOverUnder1_5.over*100)}% <span style="font-style:italic;opacity:0.7">(Média Hist. Liga: ${formatOutput(probBaseSistema.probOverUnder1_5_LigaAvg.over*100)}%)</span> | Final: ${formatOutput(analiseResultados.gols.over15FinalFE*100)}%</p>
+                <p><strong>Mais de 2.5 Gols:</strong> Base ${formatOutput(probBaseSistema.probOverUnder2_5.over*100)}% <span style="font-style:italic;opacity:0.7">(Média Hist. Liga: ${formatOutput(probBaseSistema.probOverUnder2_5_LigaAvg.over*100)}%)</span> | Final: ${formatOutput(analiseResultados.gols.over25FinalFE*100)}%</p>
+                <p><strong>Ambas Marcam (Sim):</strong> Base ${formatOutput(probBaseSistema.probBTTS.yes*100)}% <span style="font-style:italic;opacity:0.7">(Média Hist. Liga: ${formatOutput(probBaseSistema.probBTTS_LigaAvg.yes*100)}%)</span> | Final: ${formatOutput(analiseResultados.gols.bttsFinalFE*100)}%</p>
+                <hr style="border:0; border-top:1px solid #eee; margin: 6px 0;"/>
+                <p><strong>Top Placares (Base):</strong> ${(analiseResultados.gols.topScoresBase || []).map(p => `${p.score} (${formatOutput(p.probability*100,1)}%)`).join(', ')}</p>
+                <p><strong>Top Placares (Final):</strong> ${(analiseResultados.gols.topScoresFinalFE || []).map(p => `${p.score} (${formatOutput(p.probability*100,1)}%)`).join(', ')}</p>
+            </div></div>
+        `;
+    }
+
+    const metricasPdf = [
+        { key: 'finalizacoes', titulo: '🎯 Finalizações' }, { key: 'sot', titulo: '🥅 Finalizações no Gol' },
+        { key: 'gkSaves', titulo: '🧤 Defesas de Goleiro', baseTitle: "Taxa Base Defesa" }, 
+        { key: 'escanteios', titulo: '📐 Escanteios' }, { key: 'faltas', titulo: '🚧 Faltas' },
+        { key: 'cartoesAmarelos', titulo: '🟨 Cartões Amarelos' }, { key: 'cartoesVermelhos', titulo: '🟥 Cartões Vermelhos' }
+    ];
+
+    metricasPdf.forEach(m => {
+        if(analiseResultados[m.key]) { 
+            pdfContent += `<div style="margin-top: 15px; page-break-inside: avoid;">
+                <h3 style="background-color: #e9ecef; padding: 8px; border-radius: 8px 8px 0 0; margin:0; color: #1a1a1a; font-size: 15px;">${m.titulo}</h3>
+                <div style="border: 1px solid #e9ecef; padding: 12px; border-radius: 0 0 8px 8px;">
+                    ${criarBlocoMetricaPdf(analiseResultados[m.key], m.key, m.baseTitle)}
+                </div></div>
+            `;
+        }
+    });
+    pdfContent += `</div>`;
+    
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.position = 'absolute';
+    pdfContainer.style.left = '-99999px'; 
+    pdfContainer.style.width = '8.5in'; 
+    pdfContainer.innerHTML = pdfContent;
+    document.body.appendChild(pdfContainer);
+    console.log("Conteúdo HTML para PDF preparado. Tentando gerar...");
+
+    setTimeout(() => {
+        console.log("Iniciando html2pdf().from().set().save()...");
+        const opt = { 
+            margin: 0.5, filename: `Analise_${homeTeamName.replace(/ /g, '_')}_vs_${awayTeamName.replace(/ /g, '_')}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 }, 
+            html2canvas: { scale: 2, useCORS: true, logging: true, width: pdfContainer.scrollWidth, height: pdfContainer.scrollHeight, windowWidth: pdfContainer.scrollWidth, windowHeight: pdfContainer.scrollHeight }, 
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } 
+        };
+        
+        html2pdf().from(pdfContainer).set(opt).save()
+        .then(() => {
+            console.log("PDF gerado e download iniciado com sucesso.");
+        }).catch(err => {
+            console.error("ERRO DETALHADO NA GERAÇÃO DO PDF:", err);
+            alert(`ERRO AO GERAR PDF: ${err.message || 'Erro desconhecido'}. Por favor, verifique o console do navegador (F12). Tente o 'Teste de PDF Mínimo' no código se o problema persistir.`);
+        }).finally(() => { 
+             if (document.body.contains(pdfContainer)) {
+                document.body.removeChild(pdfContainer);
+                console.log("Container do PDF removido do DOM.");
+            }
+            btn.disabled = false;
+            btn.textContent = '📋 Baixar Relatório Completo em PDF';
+        });
+    }, 500); 
+}
+
+// ===================================================================================
+// SEÇÃO 5: INICIALIZAÇÃO DA PÁGINA
+// ===================================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    showPage('contexto'); 
+    carregarCampeonatos();
+    // carregarTimesDoCampeonato(); // Será chamado pelo onchange do campeonato
+});
+</script>
+</body>
+</html>
