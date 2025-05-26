@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadoras de Gestão de Apostas</title>
+    <style>
+        :root {
+            --primary-bg: #07251F;
+            --secondary-bg: #103A2F;
+            --text-primary: #EAF9E1;
+            --gold: #d4af37;
+            --border-color: #2a5a4a;
+            --secondary-bg-translucent: rgba(16, 58, 47, 0.5);
+        }
+        body {
+            font-family: "Times New Roman", serif; 
+            background-color: var(--primary-bg); 
+            color: var(--text-primary); 
+            margin: 10px; 
+            padding: 10px;
+        }
+        h2, h3 {
+            text-align: center;
+            color: var(--gold); 
+        }
+        label, input, select, button, .resultado {
+            font-family: "Times New Roman", serif; 
+            display: block; 
+            width: 100%; 
+            max-width: 100%; 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-radius: 12px; 
+            box-sizing: border-box; 
+            font-size: 16px;
+        }
+        input, select {
+            background-color: var(--text-primary); 
+            color: var(--primary-bg); 
+            border: 1px solid var(--primary-bg);
+        }
+        button {
+            background-color: var(--gold); 
+            color: var(--primary-bg); 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer; 
+            width: auto; 
+            display: inline-block; 
+            margin-right: 10px; 
+            margin-top: 20px;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+        .resultado {
+            background-color: var(--secondary-bg); 
+            color: var(--text-primary); 
+            display: none; 
+            white-space: pre-wrap; 
+            padding: 15px; 
+            border: 1px solid var(--gold); 
+            margin-top: 15px; 
+            line-height: 1.6;
+            border-radius: 8px;
+        }
+        .botoes-container {
+            display: flex; 
+            gap: 10px; 
+            margin-top: 0px; 
+            margin-bottom: 10px; 
+            flex-wrap: wrap;
+        }
+        .botoes-container button {
+            margin-top: 10px;
+        }
+        fieldset {
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            padding: 15px 20px; 
+            margin-top: 20px; 
+            max-width: 600px; 
+            margin-left:auto; 
+            margin-right:auto;
+            background-color: var(--secondary-bg-translucent);
+        }
+        legend {
+            padding: 0 10px; 
+            font-weight: bold; 
+            color: var(--gold);
+            font-size: 1.1em;
+        }
+        .dutch-grid {
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px; 
+        }
+         .dutch-grid label {
+            margin-bottom: -2px; 
+            font-size: 15px;
+        }
+        .dutch-grid input {
+            padding: 8px;
+            font-size: 15px;
+        }
+
+        /* Estilos do Menu */
+        #menu-calculadoras {
+            display: flex;
+            justify-content: center;
+            gap: 8px; 
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        #menu-calculadoras button {
+            background-color: var(--secondary-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--gold);
+            margin-top: 0;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+        #menu-calculadoras button.active {
+            background-color: var(--gold);
+            color: var(--primary-bg);
+            font-weight: bold;
+        }
+
+        .calculator-page {
+            display: none; 
+        }
+        .calculator-page.active {
+            display: block; 
+        }
+
+        @media (max-width: 700px) { 
+            .dutch-grid {grid-template-columns: 1fr;}
+            #menu-calculadoras button { width: calc(50% - 4px); margin-bottom: 8px;}
+        }
+        @media (max-width: 480px) {
+             #menu-calculadoras button { width: 100%;}
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Calculadoras de Gestão de Apostas</h2>
+
+    <div id="menu-calculadoras">
+        <button onclick="showCalculator('calc-kelly')" class="active">Unidade (Critério de Kelly)</button>
+        <button onclick="showCalculator('calc-hedge')">Cobertura (Hedge)</button>
+        <button onclick="showCalculator('calc-dutching-stake')">Dutching (Stake Total)</button>
+        <button onclick="showCalculator('calc-dutching-otimizado')">Dutching (Otimizado)</button>
+        <button onclick="showCalculator('calc-dutching-valores')">Dutching (Valores Individuais)</button>
+    </div>
+
+    <div id="calc-kelly" class="calculator-page active">
+        <fieldset>
+            <legend>Unidade (Critério de Kelly)</legend>
+            <label for="kelly_banca">Valor Total da Banca (R$)</label><input type="text" id="kelly_banca"/>
+            <label for="kelly_odd">Odd</label><input type="text" id="kelly_odd"/>
+            <label for="kelly_prob">Probabilidade (%)</label><input type="text" id="kelly_prob"/>
+            <label for="kelly_fator">Fator de Risco (Kelly Fracionado)</label>
+            <select id="kelly_fator">
+                <option value="1">Full Kelly (Risco Máximo)</option>
+                <option value="0.5" selected>Half Kelly (Recomendado)</option>
+                <option value="0.25">Quarter Kelly (Conservador)</option>
+            </select>
+            <button onclick="calcularKelly()">Calcular Unidade</button>
+            <div class="resultado" id="resultado_kelly"></div>
+        </fieldset>
+    </div>
+
+    <div id="calc-hedge" class="calculator-page">
+        <fieldset>
+            <legend>Cobertura (Hedge)</legend>
+            <label for="hedge_valor1">Valor da 1ª Aposta</label><input type="text" id="hedge_valor1"/>
+            <label for="hedge_odd1">1ª Odd</label><input type="text" id="hedge_odd1"/>
+            <label for="hedge_odd2">2ª Odd (Odd de Cobertura)</label><input type="text" id="hedge_odd2"/>
+            <label for="hedge_valor2">Valor da 2ª Aposta (opcional)</label><input type="text" id="hedge_valor2"/>
+            <div class="botoes-container">
+                <button onclick="calcularHedge()">Calcular Cobertura</button>
+                <button onclick="fecharPosicao()">Fechar Posição (Lucro/Perda Garantido)</button> 
+            </div>
+            <div class="resultado" id="resultado_hedge"></div>
+        </fieldset>
+    </div>
+
+    <div id="calc-dutching-stake" class="calculator-page">
+        <fieldset>
+            <legend>Dutching (Stake Total)</legend>
+            <label for="dutch_total_valor">Valor Total a ser Apostado</label><input type="text" id="dutch_total_valor"/>
+            <div class="dutch-grid">
+                <div><label>1ª Odd</label><input type="text" id="dutch_total_odd1" /></div>
+                <div><label>2ª Odd</label><input type="text" id="dutch_total_odd2" /></div>
+                <div><label>3ª Odd (opcional)</label><input type="text" id="dutch_total_odd3" /></div>
+                <div><label>4ª Odd (opcional)</label><input type="text" id="dutch_total_odd4" /></div>
+            </div>
+            <button onclick="calcularDutchingPorTotal()">Calcular Dutching</button> 
+            <div class="resultado" id="resultado_dutching_total"></div>
+        </fieldset>
+    </div>
+    
+    <div id="calc-dutching-otimizado" class="calculator-page">
+        <fieldset>
+            <legend>Dutching (Otimizado)</legend>
+            <label for="dutch_prob_total_valor">Valor Total a ser Apostado</label><input type="text" id="dutch_prob_total_valor"/>
+            <div class="dutch-grid">
+                <div><label>1ª Odd</label><input type="text" id="dutch_prob_odd_1"/></div>
+                <div><label>Probabilidade 1 (%)</label><input type="text" id="dutch_prob_chance_1"/></div>
+                <div><label>2ª Odd</label><input type="text" id="dutch_prob_odd_2"/></div>
+                <div><label>Probabilidade 2 (%)</label><input type="text" id="dutch_prob_chance_2"/></div>
+                <div><label>3ª Odd (opcional)</label><input type="text" id="dutch_prob_odd_3"/></div>
+                <div><label>Probabilidade 3 (%) (opcional)</label><input type="text" id="dutch_prob_chance_3"/></div>
+                <div><label>4ª Odd (opcional)</label><input type="text" id="dutch_prob_odd_4"/></div>
+                <div><label>Probabilidade 4 (%) (opcional)</label><input type="text" id="dutch_prob_chance_4"/></div>
+            </div>
+            <button onclick="calcularDutchingOtimizado()">Calcular Dutching</button>
+            <div class="resultado" id="resultado_dutching_otimizado"></div>
+        </fieldset>
+    </div>
+
+    <div id="calc-dutching-valores" class="calculator-page">
+        <fieldset>
+            <legend>Dutching (Valores Individuais)</legend>
+            <div class="dutch-grid">
+                <div><label>Valor da 1ª Aposta</label><input type="text" id="dutch_val_1" /></div>
+                <div><label>1ª Odd</label><input type="text" id="dutch_odd_1" /></div>
+                <div><label>Valor da 2ª Aposta</label><input type="text" id="dutch_val_2" /></div>
+                <div><label>2ª Odd</label><input type="text" id="dutch_odd_2" /></div>
+                <div><label>Valor da 3ª Aposta (opcional)</label><input type="text" id="dutch_val_3" /></div>
+                <div><label>3ª Odd (opcional)</label><input type="text" id="dutch_odd_3" /></div>
+                <div><label>Valor da 4ª Aposta (opcional)</label><input type="text" id="dutch_val_4" /></div>
+                <div><label>4ª Odd (opcional)</label><input type="text" id="dutch_odd_4" /></div>
+                <div><label>Valor da 5ª  (opcional)</label><input type="text" id="dutch_val_5" /></div>
+                <div><label>5ª Odd (opcional)</label><input type="text" id="dutch_odd_5" /></div>
+                <div><label>Valor da 6ª Aposta (opcional)</label><input type="text" id="dutch_val_6" /></div>
+                <div><label>6ª Odd (opcional)</label><input type="text" id="dutch_odd_6" /></div>
+            </div>
+            <button onclick="calcularDutchingPorValores()">Calcular Dutching</button>
+            <div class="resultado" id="resultado_dutching_valores"></div>
+        </fieldset>
+    </div>
+
+<script>
+'use strict';
+
+// --- Funções Auxiliares Refatoradas ---
+const parseInput = (id) => {
+    const el = document.getElementById(id);
+    if (!el || el.value.trim() === '') return NaN;
+    const parsed = parseFloat(String(el.value).replace(',', '.'));
+    return isNaN(parsed) ? NaN : parsed;
+};
+
+const formatOutput = (n, dec = 2) => {
+    if (isNaN(n) || n === null || !isFinite(n)) return 'N/A';
+    return n.toFixed(dec); 
+};
+
+function displayOutput(elementId, message, isError = false) {
+    const rd = document.getElementById(elementId);
+    if (rd) {
+        rd.innerText = message;
+        rd.style.color = isError ? 'var(--gold)' : 'var(--text-primary)';
+        rd.style.display = 'block';
+    }
+}
+
+function hideOutput(elementId) {
+    const rd = document.getElementById(elementId);
+    if (rd) {
+        rd.style.display = 'none';
+    }
+}
+
+function showCalculator(calculatorId) {
+    document.querySelectorAll('.calculator-page').forEach(page => page.classList.remove('active'));
+    document.querySelectorAll('#menu-calculadoras button').forEach(button => button.classList.remove('active'));
+    
+    const pageToShow = document.getElementById(calculatorId);
+    if (pageToShow) pageToShow.classList.add('active');
+    
+    const buttonToActivate = document.querySelector(`#menu-calculadoras button[onclick="showCalculator('${calculatorId}')"]`);
+    if (buttonToActivate) buttonToActivate.classList.add('active');
+}
+
+// --- Funções das Calculadoras (Lógica EXATA fornecida por você) ---
+
+function calcularKelly() {
+    const banca = parseInput('kelly_banca');
+    const odd = parseInput('kelly_odd');
+    const probPercent = parseInput('kelly_prob');
+    const fator = parseFloat(document.getElementById('kelly_fator').value); // É um select, o valor já é numérico
+    const rd = document.getElementById('resultado_kelly');
+    hideOutput('resultado_kelly');
+
+    if (isNaN(banca) || isNaN(odd) || isNaN(probPercent) || isNaN(fator) || odd <= 1 || probPercent < 0 || probPercent > 100 || banca <= 0) { 
+        displayOutput('resultado_kelly', 'ERRO: Preencha todos os campos com valores válidos (Odd > 1, Prob. 0-100%, Banca > 0).', true);
+        return;
+    }
+    const prob = probPercent / 100; 
+    const ev = (odd * prob) - 1; 
+
+    if (prob === 0 || ev <= 0) { 
+        displayOutput('resultado_kelly', `--- APOSTA SEM VALOR (EV ≤ 0 ou Prob. = 0) ---\n\nO Valor Esperado é de ${formatOutput(ev*100, 2)}%.\n\nNão é recomendado apostar.`);
+        return;
+    }
+    
+    const bDecimal = odd - 1; 
+    if (bDecimal === 0) { // Redundante devido a odd <= 1, mas mantido por segurança
+        displayOutput('resultado_kelly', 'ERRO: Odd inválida para cálculo de Kelly (Odd - 1 = 0).', true);
+        return;
+    }
+    // Fórmula de Kelly: (Probabilidade de Vencer * Odds Decimais - Probabilidade de Perder) / Odds Decimais
+    // Probabilidade de Vencer = prob
+    // Odds Decimais (b) = odd - 1
+    // Probabilidade de Perder = 1 - prob
+    const kellyFraction = (prob * bDecimal - (1 - prob)) / bDecimal;
+
+
+    if (kellyFraction <= 0) { 
+        displayOutput('resultado_kelly', `--- APOSTA SEM VALOR (KELLY ≤ 0) ---\n\nFração Kelly: ${formatOutput(kellyFraction * 100, 2)}%\nO Valor Esperado é de ${formatOutput(ev*100, 2)}%.\n\nCritério de Kelly sugere não apostar.`);
+        return;
+    }
+    const stakeFraction = kellyFraction * fator; // 'fator' já é fatorKelly
+    const valorUnidade = banca * stakeFraction;
+
+    let texto = `--- CÁLCULO DE UNIDADE (KELLY) ---\n\n`;
+    texto += `Fração da Banca (Full Kelly): ${formatOutput(kellyFraction * 100, 2)}%\n`;
+    texto += `Fração com Fator de Risco (${formatOutput(fator*100,0)}% Kelly): ${formatOutput(stakeFraction * 100, 2)}%\n\n`;
+    texto += `Unidade/Stake Recomendada: R$ ${formatOutput(valorUnidade, 2)}\n`;
+    texto += `Lucro Potencial (com esta stake): R$ ${formatOutput(valorUnidade * (odd - 1), 2)}`;
+    displayOutput('resultado_kelly', texto);
+}
+
+function calcularHedge() { // isFechamento = false
+    const valor1 = parseInput('hedge_valor1');
+    const odd1 = parseInput('hedge_odd1');
+    const odd2 = parseInput('hedge_odd2');
+    const valor2Manual = parseInput('hedge_valor2');
+    const rd = document.getElementById('resultado_hedge');
+    hideOutput('resultado_hedge');
+
+    if (isNaN(valor1) || valor1 <= 0 || isNaN(odd1) || odd1 <= 1 || isNaN(odd2) || odd2 <= 1 ) {
+        displayOutput('resultado_hedge', 'ERRO: Preencha valor da 1ª aposta (>0) e as duas odds (>1).', true); 
+        return;
+    }
+     if (!isNaN(valor2Manual) && valor2Manual < 0) {
+        displayOutput('resultado_hedge', 'ERRO: Valor da 2ª aposta não pode ser negativo.', true);
+        return;
+    }
+
+    // Lógica EXATA fornecida por você:
+    let valor2 = !isNaN(valor2Manual) ? valor2Manual : (valor1 * odd1) / (odd1 + odd2);
+    if (valor2 < 0) valor2 = 0; // Prevenção adicional
+
+    const total = valor1 + valor2;
+    const lucro1 = (valor1 * odd1) - total;
+    const lucro2 = (valor2 * odd2) - total;
+    
+    const oddEfetiva1 = total > 0 ? (valor1 * odd1) / total : 0; // Adicionado cheque total > 0
+    const oddEfetiva2 = total > 0 ? (valor2 * odd2) / total : 0; // Adicionado cheque total > 0
+
+    let texto = `--- CÁLCULO DE COBERTURA (HEDGE) ---\n\n`;
+    texto += `Aposta 1: R$ ${formatOutput(valor1,2)} @ ${formatOutput(odd1,2)} | Lucro: R$ ${formatOutput(lucro1,2)} (Odd Efetiva: ${formatOutput(oddEfetiva1,2)})\n`;
+    texto += `Aposta 2: R$ ${formatOutput(valor2,2)} @ ${formatOutput(odd2,2)} | Lucro: R$ ${formatOutput(lucro2,2)} (Odd Efetiva: ${formatOutput(oddEfetiva2,2)})\n\n`;
+    texto += `Total Apostado: R$ ${formatOutput(total,2)}`;
+    displayOutput('resultado_hedge', texto);
+}
+
+function fecharPosicao() {
+    const valor1 = parseInput('hedge_valor1');
+    const odd1 = parseInput('hedge_odd1');
+    const odd2 = parseInput('hedge_odd2');
+    const rd = document.getElementById('resultado_hedge');
+    hideOutput('resultado_hedge');
+
+    if (isNaN(valor1) || valor1 <= 0 || isNaN(odd1) || odd1 <= 1 || isNaN(odd2) || odd2 <= 1) {
+        displayOutput('resultado_hedge', 'ERRO: Preencha valor da 1ª aposta (>0) e as duas odds (>1) para fechar posição.', true); 
+        return;
+    }
+
+    const valor2 = (valor1 * odd1) / odd2;
+    document.getElementById('hedge_valor2').value = formatOutput(valor2, 2);
+
+    const totalInvestido = valor1 + valor2;
+    const retornoTotal = valor1 * odd1; 
+    const lucro = retornoTotal - totalInvestido;
+    const oddEfetiva = totalInvestido > 0 ? retornoTotal / totalInvestido : 0; // Adicionado cheque totalInvestido > 0
+
+    let texto = `--- FECHAMENTO DE POSIÇÃO (LUCRO/PERDA GARANTIDO) ---\n\n`; // Ajustado para "Lucro/Perda"
+    texto += `Para obter um resultado de R$ ${formatOutput(lucro,2)}, aposte R$ ${formatOutput(valor2,2)} na 2ª odd (${formatOutput(odd2,2)}).\n\n`;
+    texto += `Total Apostado: R$ ${formatOutput(totalInvestido,2)}\n`;
+    texto += `Retorno Total da Operação: R$ ${formatOutput(retornoTotal,2)}\n`; // Retorno bruto total
+    texto += `Lucro/Prejuízo Resultante: R$ ${formatOutput(lucro,2)}\n`;
+    texto += `Odd Efetiva da Operação: ${formatOutput(oddEfetiva,2)}`;
+    displayOutput('resultado_hedge', texto);
+}
+
+function calcularDutchingPorTotal() {
+    const total = parseInput('dutch_total_valor'); // ID CORRETO do HTML
+    const rd = document.getElementById('resultado_dutching_total'); // ID CORRETO do HTML
+    hideOutput('resultado_dutching_total');
+    const odds = [];
+    for(let i = 1; i <= 4; i++) {
+        const odd = parseInput(`dutch_total_odd${i}`); // ID CORRETO do HTML
+        if(!isNaN(odd) && odd > 1) odds.push(odd); // odds > 1 para Dutching válido
+    }
+    if (isNaN(total) || total <= 0 || odds.length < 2 ) { // Mínimo de 2 odds para Dutching
+        displayOutput('resultado_dutching_total', 'ERRO: Preencha valor total (>0) e ao menos DUAS odds válidas (>1).', true); 
+        return;
+    }
+    const somaInversa = odds.reduce((acc, o) => acc + (1 / o), 0);
+    if (somaInversa === 0) { 
+        displayOutput('resultado_dutching_total','ERRO: Soma das inversas das odds é zero. Verifique as odds.', true); 
+        return;
+    }
+    const apostas = odds.map(o => (total * (1 / o)) / somaInversa);
+    // Para Dutching por stake total, o retorno é o mesmo para qualquer seleção vencedora
+    const retornoPotencial = (apostas.length > 0 && odds.length > 0) ? apostas[0] * odds[0] : 0; 
+    const lucro = retornoPotencial - total; 
+    const arbitragemPercent = somaInversa < 1 ? ((1/somaInversa) - 1)*100 : 0;
+    const oddEfetiva = total > 0 ? retornoPotencial / total : 0;
+
+    let texto = `--- RESULTADO DO DUTCHING POR VALOR TOTAL ---\n\n`;
+    texto += apostas.map((v, i) => {
+        return `Aposta na Odd ${formatOutput(odds[i],2)}: R$ ${formatOutput(v,2)}`;
+    }).join('\n');
+    texto += `\n\nTotal Apostado: R$ ${formatOutput(total,2)}\n`;
+    texto += `Retorno Potencial (se uma das seleções vencer): R$ ${formatOutput(retornoPotencial,2)}\n`;
+    texto += `Lucro (se uma das seleções vencer): R$ ${formatOutput(lucro,2)}\n`;
+    texto += `Odd Efetiva: ${formatOutput(oddEfetiva,2)}\n\n`;
+    texto += `Possibilidade de Arbitragem (Lucro Garantido): ${somaInversa < 1 && lucro > 0 ? '✅ Sim (' + formatOutput(arbitragemPercent,2) + '%)' : '❌ Não'}`;
+    displayOutput('resultado_dutching_total', texto);
+}
+
+function calcularDutchingOtimizado() {
+    const totalStake = parseInput('dutch_prob_total_valor');
+    const rd = document.getElementById('resultado_dutching_otimizado');
+    hideOutput('resultado_dutching_otimizado');
+    const selections = [];
+    for (let i = 1; i <= 4; i++) {
+        const odd = parseInput(`dutch_prob_odd_${i}`);
+        const chance = parseInput(`dutch_prob_chance_${i}`);
+        if (!isNaN(odd) && odd > 1 && !isNaN(chance) && chance >= 0 && chance <= 100) { // chance >= 0
+            selections.push({ odd: odd, chance: chance / 100 }); 
+        } else if ((!isNaN(odd) && odd > 1) || (!isNaN(chance) && chance >=0 && chance <=100 )) {
+             displayOutput(rd.id, `ERRO: Para Seleção ${i}, preencha Odd (>1) e Chance (0-100%) ou deixe ambos os campos vazios.`, true); return;
+        }
+    }
+    if (isNaN(totalStake) || totalStake <= 0 || selections.length < 2) { // Mínimo 2 seleções
+        displayOutput(rd.id, 'ERRO: Preencha Valor Total (>0) e ao menos duas Seleções completas (Odd >1 e Chance 0-100%).', true); return;
+    }
+    
+    const sumInvOdds = selections.reduce((acc, s) => acc + (1 / s.odd), 0);
+    if (sumInvOdds === 0) {
+        displayOutput(rd.id, 'ERRO: Odds inválidas nas seleções resultam em divisão por zero.', true); return;
+    }
+
+    let texto = `--- DUTCHING OTIMIZADO POR PROBABILIDADE ---\n\n`;
+    texto += `--- ALOCAÇÃO DAS STAKES (PARA MESMO LUCRO) & EV INDIVIDUAL ---\n\n`;
+    let combinedProbOfWinningDutch = 0;
+    selections.forEach((s, i) => {
+        s.stake = (totalStake * (1 / s.odd)) / sumInvOdds;
+        s.ev = (s.odd * s.chance) - 1; 
+        combinedProbOfWinningDutch += s.chance; 
+        texto += `Seleção ${i + 1} (Odd ${formatOutput(s.odd,2)}, Sua Chance ${formatOutput(s.chance * 100, 1)}%):\n`;
+        texto += `  - Stake: R$ ${formatOutput(s.stake,2)}\n  - EV Individual: ${formatOutput(s.ev * 100, 1)}%\n\n`;
+    });
+    
+    const expectedReturnIfWin = selections.length > 0 ? selections[0].stake * selections[0].odd : 0; 
+    const profitIfWin = expectedReturnIfWin - totalStake;
+    const effectiveOddDutch = selections.length > 0 && totalStake > 0 ? expectedReturnIfWin / totalStake : 0;
+    const evDutch = selections.length > 0 ? (effectiveOddDutch * combinedProbOfWinningDutch) - 1 : 0;
+    const bookPercent = sumInvOdds; 
+    const arbitragemPercent = bookPercent < 1 ? ((1/bookPercent) - 1)*100 : 0;
+
+
+    texto += `--- RESULTADOS GERAIS DO DUTCHING ---\n\n`;
+    texto += `Total Apostado: R$ ${formatOutput(totalStake,2)}\n`;
+    texto += `Retorno Potencial (se uma das seleções vencer): R$ ${formatOutput(expectedReturnIfWin,2)}\n`;
+    texto += `Lucro (se uma das seleções vencer): R$ ${formatOutput(profitIfWin,2)}\n`;
+    texto += `Odd Efetiva do Dutching: ${formatOutput(effectiveOddDutch,2)}\n\n`;
+    texto += `Probabilidade Combinada de Vencer (Sua Estimativa): ${formatOutput(combinedProbOfWinningDutch * 100, 1)}%\n`;
+    texto += `Valor Esperado (EV) do Dutching Completo (Baseado na sua Prob.): ${formatOutput(evDutch * 100, 1)}%\n\n`;
+    texto += `Overround/Book da Casa (Implícito pelas Odds): ${formatOutput(bookPercent*100, 2)}%\n`;
+    texto += `Possibilidade de Arbitragem (Lucro Garantido): ${bookPercent < 1 && profitIfWin > 0 ? '✅ Sim (' + formatOutput(arbitragemPercent,2) + '%)' : '❌ Não'}`;
+    displayOutput(rd.id, texto);
+}
+
+function calcularDutchingPorValores() {
+    const resultId = 'resultado_dutching_valores';
+    hideOutput(resultId);
+    const apostas = [];
+    const odds = [];
+    let totalInvestido = 0;
+
+    for (let i = 1; i <= 6; i++) { 
+        const valorAposta = parseInput(`dutch_val_${i}`);
+        const oddAposta = parseInput(`dutch_odd_${i}`);
+        if (!isNaN(valorAposta) && valorAposta > 0 && !isNaN(oddAposta) && oddAposta > 1) {
+            apostas.push(valorAposta); 
+            odds.push(oddAposta); 
+            totalInvestido += valorAposta;
+        } else if ((!isNaN(valorAposta) && valorAposta > 0) || (!isNaN(oddAposta) && oddAposta > 0)){
+             displayOutput(resultId, `ERRO: Para Aposta ${i}, preencha Valor da Aposta (>0) e Odd (>1) ou deixe ambos os campos vazios.`, true);
+            return;
+        }
+    }
+
+    if (apostas.length === 0) {
+        displayOutput(resultId, 'ERRO: Preencha ao menos um par de aposta (>0) e odd (>1) válidas.', true); 
+        return;
+    }
+
+    let texto = `--- ANÁLISE DOS RESULTADOS POR VALORES INDIVIDUAIS ---\n\n`;
+    texto += `Total Investido: R$ ${formatOutput(totalInvestido,2)}\n\n`;
+    
+    apostas.forEach((valor, i) => {
+        const retorno = valor * odds[i];
+        const lucro = retorno - totalInvestido;
+        const oddEfetiva = totalInvestido > 0 ? retorno / totalInvestido : 0;
+        // A linha original "texto += `Aposta 1: R$ ${formatOutput(valor1)} | Lucro: R$ ${formatOutput(lucro1)} (Odd Efetiva: ${formatOutput(oddEfetiva1)})\n`;" foi removida pois não pertence a este loop.
+        texto += `Se Aposta ${i + 1} (R$ ${formatOutput(valor,2)} @ ${formatOutput(odds[i],2)}) vencer:\n`; // Legenda original
+        texto += `  - Retorno: R$ ${formatOutput(retorno,2)}\n`;
+        texto += `  - Lucro: R$ ${formatOutput(lucro,2)}\n`;
+        texto += `  - Odd Efetiva sobre o total: ${formatOutput(oddEfetiva,2)}\n\n`;
+    });
+    
+    displayOutput(resultId, texto.trim()); 
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    showCalculator('calc-kelly'); 
+});
+
+</script>
+</body>
+</html>
