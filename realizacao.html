@@ -70,103 +70,63 @@
             <fieldset class="main-fieldset">
                 <legend class="fieldset-legend-main">Validações Metodológicas</legend>
                 <div class="sub-group">
-                    <p class="question-title">1. Mental</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="mental_1" name="validacao_mental" value="Inexistente" required><label for="mental_1">Inexistente</label></div>
-                        <div class="option-item"><input type="radio" id="mental_2" name="validacao_mental" value="Muito Ruim"><label for="mental_2">Muito Ruim</label></div>
-                        <div class="option-item"><input type="radio" id="mental_3" name="validacao_mental" value="Ruim"><label for="mental_3">Ruim</label></div>
-                        <div class="option-item"><input type="radio" id="mental_4" name="validacao_mental" value="Bom"><label for="mental_4">Bom</label></div>
-                        <div class="option-item"><input type="radio" id="mental_5" name="validacao_mental" value="Muito Bom"><label for="mental_5">Muito Bom</label></div>
+                    <div class="option-item">
+                        <input type="checkbox" id="check_mental" name="validacao_mental" value="Realizado">
+                        <label for="check_mental" class="question-title" style="font-weight:normal; font-size: 15px;">1. Mental</label>
                     </div>
                 </div>
                 <div class="sub-group">
-                    <p class="question-title">2. Análise do histórico pessoal em operações similares</p>
-                    <div class="options-container">
-                         <div class="option-item"><input type="radio" id="hist_1" name="validacao_historico" value="Inexistente" required><label for="hist_1">Inexistente</label></div>
-                         <div class="option-item"><input type="radio" id="hist_2" name="validacao_historico" value="Muito Ruim"><label for="hist_2">Muito Ruim</label></div>
-                         <div class="option-item"><input type="radio" id="hist_3" name="validacao_historico" value="Ruim"><label for="hist_3">Ruim</label></div>
-                         <div class="option-item"><input type="radio" id="hist_4" name="validacao_historico" value="Bom"><label for="hist_4">Bom</label></div>
-                         <div class="option-item"><input type="radio" id="hist_5" name="validacao_historico" value="Muito Bom"><label for="hist_5">Muito Bom</label></div>
+                    <div class="option-item">
+                        <input type="checkbox" id="check_historico" name="validacao_historico" value="Realizado">
+                        <label for="check_historico" class="question-title" style="font-weight:normal; font-size: 15px;">2. Análise do histórico pessoal em operações similares</label>
                     </div>
                 </div>
                 <div class="sub-group">
-                    <p class="question-title">3. Disponibilidade e ambiente de análise</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="amb_1" name="validacao_ambiente" value="Inexistente" required><label for="amb_1">Inexistente</label></div>
-                        <div class="option-item"><input type="radio" id="amb_2" name="validacao_ambiente" value="Muito Ruim"><label for="amb_2">Muito Ruim</label></div>
-                        <div class="option-item"><input type="radio" id="amb_3" name="validacao_ambiente" value="Ruim"><label for="amb_3">Ruim</label></div>
-                        <div class="option-item"><input type="radio" id="amb_4" name="validacao_ambiente" value="Bom"><label for="amb_4">Bom</label></div>
-                        <div class="option-item"><input type="radio" id="amb_5" name="validacao_ambiente" value="Muito Bom"><label for="amb_5">Muito Bom</label></div>
+                    <div class="option-item">
+                        <input type="checkbox" id="check_ambiente" name="validacao_ambiente" value="Realizado">
+                        <label for="check_ambiente" class="question-title" style="font-weight:normal; font-size: 15px;">3. Disponibilidade e ambiente de análise</label>
                     </div>
                 </div>
                 <div class="sub-group">
-                    <p class="question-title">4. Análise do contexto e campeonato</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="contexto_1" name="validacao_contexto_campeonato" value="Inexistente" required><label for="contexto_1">Inexistente</label></div>
-                        <div class="option-item"><input type="radio" id="contexto_2" name="validacao_contexto_campeonato" value="Muito Ruim"><label for="contexto_2">Muito Ruim</label></div>
-                        <div class="option-item"><input type="radio" id="contexto_3" name="validacao_contexto_campeonato" value="Ruim"><label for="contexto_3">Ruim</label></div>
-                        <div class="option-item"><input type="radio"id="contexto_4" name="validacao_contexto_campeonato" value="Bom"><label for="contexto_4">Bom</label></div>
-                        <div class="option-item"><input type="radio" id="contexto_5" name="validacao_contexto_campeonato" value="Muito Bom"><label for="contexto_5">Muito Bom</label></div>
+                    <div class="option-item">
+                        <input type="checkbox" id="check_contexto" name="validacao_contexto_campeonato" value="Realizado">
+                        <label for="check_contexto" class="question-title" style="font-weight:normal; font-size: 15px;">4. Análise do contexto e campeonato</label>
                     </div>
                 </div>
                 <div class="sub-group">
-                    <p class="question-title">5. Análise do relatório da partida</p>
-                    <div class="options-container">
-                         <div class="option-item"><input type="radio" id="relatorio_1" name="validacao_relatorio_partida" value="Inexistente" required><label for="relatorio_1">Inexistente</label></div>
-                         <div class="option-item"><input type="radio" id="relatorio_2" name="validacao_relatorio_partida" value="Muito Ruim"><label for="relatorio_2">Muito Ruim</label></div>
-                         <div class="option-item"><input type="radio" id="relatorio_3" name="validacao_relatorio_partida" value="Ruim"><label for="relatorio_3">Ruim</label></div>
-                         <div class="option-item"><input type="radio" id="relatorio_4" name="validacao_relatorio_partida" value="Bom"><label for="relatorio_4">Bom</label></div>
-                         <div class="option-item"><input type="radio" id="relatorio_5" name="validacao_relatorio_partida" value="Muito Bom"><label for="relatorio_5">Muito Bom</label></div>
+                    <div class="option-item">
+                        <input type="checkbox" id="check_relatorio" name="validacao_relatorio_partida" value="Realizado">
+                        <label for="check_relatorio" class="question-title" style="font-weight:normal; font-size: 15px;">5. Análise do relatório da partida</label>
                     </div>
                 </div>
                 <div class="sub-group">
-                    <p class="question-title">6. Análise visual de partidas recentes e contexto similar</p>
-                    <div class="options-container">
-                         <div class="option-item"><input type="radio" id="visual_1" name="validacao_visual_partidas" value="Inexistente" required><label for="visual_1">Inexistente</label></div>
-                         <div class="option-item"><input type="radio" id="visual_2" name="validacao_visual_partidas" value="Muito Ruim"><label for="visual_2">Muito Ruim</label></div>
-                         <div class="option-item"><input type="radio" id="visual_3" name="validacao_visual_partidas" value="Ruim"><label for="visual_3">Ruim</label></div>
-                         <div class="option-item"><input type="radio" id="visual_4" name="validacao_visual_partidas" value="Bom"><label for="visual_4">Bom</label></div>
-                         <div class="option-item"><input type="radio" id="visual_5" name="validacao_visual_partidas" value="Muito Bom"><label for="visual_5">Muito Bom</label></div>
+                    <div class="option-item">
+                        <input type="checkbox" id="check_visual" name="validacao_visual_partidas" value="Realizado">
+                        <label for="check_visual" class="question-title" style="font-weight:normal; font-size: 15px;">6. Análise visual de partidas recentes e contexto similar</label>
                     </div>
                 </div>
                  <div class="sub-group">
-                    <p class="question-title">7. Análise de prognósticos e Tips</p>
-                    <div class="options-container">
-                         <div class="option-item"><input type="radio" id="tips_1" name="validacao_tips_prognosticos" value="Inexistente" required><label for="tips_1">Inexistente</label></div>
-                         <div class="option-item"><input type="radio" id="tips_2" name="validacao_tips_prognosticos" value="Muito Ruim"><label for="tips_2">Muito Ruim</label></div>
-                         <div class="option-item"><input type="radio" id="tips_3" name="validacao_tips_prognosticos" value="Ruim"><label for="tips_3">Ruim</label></div>
-                         <div class="option-item"><input type="radio" id="tips_4" name="validacao_tips_prognosticos" value="Bom"><label for="tips_4">Bom</label></div>
-                         <div class="option-item"><input type="radio" id="tips_5" name="validacao_tips_prognosticos" value="Muito Bom"><label for="tips_5">Muito Bom</label></div>
+                    <div class="option-item">
+                        <input type="checkbox" id="check_tips" name="validacao_tips_prognosticos" value="Realizado">
+                        <label for="check_tips" class="question-title" style="font-weight:normal; font-size: 15px;">7. Análise de prognósticos e Tips</label>
                     </div>
                 </div>
                 <div class="sub-group">
-                    <p class="question-title">8. Pré-partida (Condições Meteorológicas, Odds Aumentadas, Escalações, etc.)</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="pre_1" name="validacao_prepartida_condicoes" value="Inexistente" required><label for="pre_1">Inexistente</label></div>
-                        <div class="option-item"><input type="radio" id="pre_2" name="validacao_prepartida_condicoes" value="Muito Ruim"><label for="pre_2">Muito Ruim</label></div>
-                        <div class="option-item"><input type="radio" id="pre_3" name="validacao_prepartida_condicoes" value="Ruim"><label for="pre_3">Ruim</label></div>
-                        <div class="option-item"><input type="radio" id="pre_4" name="validacao_prepartida_condicoes" value="Bom"><label for="pre_4">Bom</label></div>
-                        <div class="option-item"><input type="radio" id="pre_5" name="validacao_prepartida_condicoes" value="Muito Bom"><label for="pre_5">Muito Bom</label></div>
+                    <div class="option-item">
+                        <input type="checkbox" id="check_prepartida" name="validacao_prepartida_condicoes" value="Realizado">
+                        <label for="check_prepartida" class="question-title" style="font-weight:normal; font-size: 15px;">8. Pré-partida (Condições Meteorológicas, Odds Aumentadas, Escalações, etc.)</label>
                     </div>
                 </div>
                 <div class="sub-group">
-                    <p class="question-title">9. Pesquisa de Odds</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="odds_1" name="validacao_pesquisa_odds" value="Inexistente" required><label for="odds_1">Inexistente</label></div>
-                        <div class="option-item"><input type="radio" id="odds_2" name="validacao_pesquisa_odds" value="Muito Ruim"><label for="odds_2">Muito Ruim</label></div>
-                        <div class="option-item"><input type="radio" id="odds_3" name="validacao_pesquisa_odds" value="Ruim"><label for="odds_3">Ruim</label></div>
-                        <div class="option-item"><input type="radio" id="odds_4" name="validacao_pesquisa_odds" value="Bom"><label for="odds_4">Bom</label></div>
-                        <div class="option-item"><input type="radio" id="odds_5" name="validacao_pesquisa_odds" value="Muito Bom"><label for="odds_5">Muito Bom</label></div>
+                    <div class="option-item">
+                        <input type="checkbox" id="check_odds" name="validacao_pesquisa_odds" value="Realizado">
+                        <label for="check_odds" class="question-title" style="font-weight:normal; font-size: 15px;">9. Pesquisa de Odds</label>
                     </div>
                 </div>
                 <div class="sub-group">
-                    <p class="question-title">10. Realização Operacional (Validação Pré-Operação)</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="op_val_1" name="validacao_realizacao_operacional_pre" value="Inexistente" required><label for="op_val_1">Inexistente</label></div>
-                        <div class="option-item"><input type="radio" id="op_val_2" name="validacao_realizacao_operacional_pre" value="Muito Ruim"><label for="op_val_2">Muito Ruim</label></div>
-                        <div class="option-item"><input type="radio" id="op_val_3" name="validacao_realizacao_operacional_pre" value="Ruim"><label for="op_val_3">Ruim</label></div>
-                        <div class="option-item"><input type="radio" id="op_val_4" name="validacao_realizacao_operacional_pre" value="Bom"><label for="op_val_4">Bom</label></div>
-                        <div class="option-item"><input type="radio" id="op_val_5" name="validacao_realizacao_operacional_pre" value="Muito Bom"><label for="op_val_5">Muito Bom</label></div>
+                    <div class="option-item">
+                        <input type="checkbox" id="check_operacional" name="validacao_realizacao_operacional_pre" value="Realizado">
+                        <label for="check_operacional" class="question-title" style="font-weight:normal; font-size: 15px;">10. Realização Operacional (Validação Pré-Operação)</label>
                     </div>
                 </div>
             </fieldset>
@@ -198,95 +158,6 @@
                 <input type="text" id="outro_esporte_input" name="outro_esporte_input" class="dynamic-input" style="display: none;">
             </div>
 
-            <fieldset id="analise_geral_fieldset_realizacao" class="main-fieldset">
-                <legend class="fieldset-legend-main">Análise da Partida (Pré-Operação)</legend>
-                 <div class="sub-group">
-                    <p class="question-title">1X2 (2+ Gols Folga Sobre Consenso)</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="r_analise_1x2_na" name="analise_1x2_resultado" value="NaoSeAplica" required><label for="r_analise_1x2_na">Não se Aplica</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_1x2_1" name="analise_1x2_resultado" value="1"><label for="r_analise_1x2_1">1</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_1x2_2" name="analise_1x2_resultado" value="2"><label for="r_analise_1x2_2">2</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_1x2_3" name="analise_1x2_resultado" value="3"><label for="r_analise_1x2_3">3</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_1x2_4" name="analise_1x2_resultado" value="4"><label for="r_analise_1x2_4">4</label></div>
-                    </div>
-                </div>
-                <div class="sub-group">
-                    <p class="question-title">Gols - Totais (1 Abaixo/Acima Outlier)</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="r_analise_gols_na" name="analise_gols_totais" value="NaoSeAplica" required><label for="r_analise_gols_na">Não se Aplica</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_gols_sim" name="analise_gols_totais" value="Sim"><label for="r_analise_gols_sim">Sim</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_gols_nao" name="analise_gols_totais" value="Nao"><label for="r_analise_gols_nao">Não</label></div>
-                    </div>
-                </div>
-                 <div class="sub-group">
-                    <p class="question-title">Gols - Equipes (1 Abaixo/Acima Outlier)</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="r_analise_gols_eq_na" name="analise_gols_equipes" value="NaoSeAplica" required><label for="r_analise_gols_eq_na">Não se Aplica</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_gols_eq_sim" name="analise_gols_equipes" value="Sim"><label for="r_analise_gols_eq_sim">Sim</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_gols_eq_nao" name="analise_gols_equipes" value="Nao"><label for="r_analise_gols_eq_nao">Não</label></div>
-                    </div>
-                </div>
-                <div class="sub-group">
-                    <p class="question-title">Gols - Totais - HT (1 Abaixo/Acima Outlier)</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="r_analise_gols_ht_na" name="analise_gols_totais_ht" value="NaoSeAplica" required><label for="r_analise_gols_ht_na">Não se Aplica</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_gols_ht_sim" name="analise_gols_totais_ht" value="Sim"><label for="r_analise_gols_ht_sim">Sim</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_gols_ht_nao" name="analise_gols_totais_ht" value="Nao"><label for="r_analise_gols_ht_nao">Não</label></div>
-                    </div>
-                </div>
-                <div class="sub-group">
-                    <p class="question-title">Gols - Equipes - HT (1 Abaixo/Acima Outlier)</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="r_analise_gols_eq_ht_na" name="analise_gols_equipes_ht" value="NaoSeAplica" required><label for="r_analise_gols_eq_ht_na">Não se Aplica</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_gols_eq_ht_sim" name="analise_gols_equipes_ht" value="Sim"><label for="r_analise_gols_eq_ht_sim">Sim</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_gols_eq_ht_nao" name="analise_gols_equipes_ht" value="Nao"><label for="r_analise_gols_eq_ht_nao">Não</label></div>
-                    </div>
-                </div>
-                <div class="sub-group">
-                    <p class="question-title">Cartões, Escanteios, Defesas de Goleiro, Faltas, Finalizações Totais ou no Alvo, Impedimentos etc. (Dentro 65% Média e 1 Acima/Abaixo Outlier)</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="r_analise_merc_div_na" name="analise_mercados_diversos" value="NaoSeAplica" required><label for="r_analise_merc_div_na">Não se Aplica</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_merc_div_sim" name="analise_mercados_diversos" value="Sim"><label for="r_analise_merc_div_sim">Sim</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_merc_div_nao" name="analise_mercados_diversos" value="Nao"><label for="r_analise_merc_div_nao">Não</label></div>
-                    </div>
-                </div>
-                <div class="sub-group">
-                    <p class="question-title">Handicap (2+ Gols Folga Sobre Consenso)</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="r_analise_hand_na" name="analise_handicap_europeu" value="NaoSeAplica" required><label for="r_analise_hand_na">Não se Aplica</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_hand_1" name="analise_handicap_europeu" value="1"><label for="r_analise_hand_1">1</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_hand_2" name="analise_handicap_europeu" value="2"><label for="r_analise_hand_2">2</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_hand_3" name="analise_handicap_europeu" value="3"><label for="r_analise_hand_3">3</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_hand_4" name="analise_handicap_europeu" value="4"><label for="r_analise_hand_4">4</label></div>
-                    </div>
-                </div>
-                <div class="sub-group">
-                    <p class="question-title">Handicap Asiático (2+ Gols Folga Sobre Consenso)</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="r_analise_ha_na" name="analise_handicap_asiatico" value="NaoSeAplica" required><label for="r_analise_ha_na">Não se Aplica</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_ha_1" name="analise_handicap_asiatico" value="1"><label for="r_analise_ha_1">1</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_ha_2" name="analise_handicap_asiatico" value="2"><label for="r_analise_ha_2">2</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_ha_3" name="analise_handicap_asiatico" value="3"><label for="r_analise_ha_3">3</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_ha_4" name="analise_handicap_asiatico" value="4"><label for="r_analise_ha_4">4</label></div>
-                    </div>
-                </div>
-                <div class="sub-group">
-                    <p class="question-title">Jogadores (1+ Sem Exceção)</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="r_analise_jog_na" name="analise_mercados_jogadores" value="NaoSeAplica" required><label for="r_analise_jog_na">Não se Aplica</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_jog_sim" name="analise_mercados_jogadores" value="Sim"><label for="r_analise_jog_sim">Sim</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_jog_nao" name="analise_mercados_jogadores" value="Nao"><label for="r_analise_jog_nao">Não</label></div>
-                    </div>
-                </div>
-                <div class="sub-group">
-                    <p class="question-title">Outros (1+ Sem Exceção)</p>
-                    <div class="options-container">
-                        <div class="option-item"><input type="radio" id="r_analise_outros_na" name="analise_outros_mercados" value="NaoSeAplica" required><label for="r_analise_outros_na">Não se Aplica</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_outros_sim" name="analise_outros_mercados" value="Sim"><label for="r_analise_outros_sim">Sim</label></div>
-                        <div class="option-item"><input type="radio" id="r_analise_outros_nao" name="analise_outros_mercados" value="Nao"><label for="r_analise_outros_nao">Não</label></div>
-                    </div>
-                </div>
-            </fieldset>
 
             <div class="form-group">
                 <label for="casa_apostas_select">Casa de Apostas (Bet)</label>
